@@ -1,0 +1,33 @@
+-> creating a basic application
+-> where currently the vision is 
+-> User A can create exam manually
+-> or user A can also create it using LLM 
+-> he can ask manually from LLM 
+-> also he can upload book or some pdf
+-> and using this data LLM will generate the quiz
+-> where you can also set something 
+-> how many question you want
+-> how many must be single correct, multicorrect, numerical
+-> how much the difficulty level
+-> also you just want permuted question from it 
+-> or you want to generate same type of new question 
+-> some of these will be given specialized section 
+-> other will be directly put in extra requirements
+-> now as the quiz will get generated 
+-> after that User A can make this exam visible to any user 
+-> he can set +ve, -ve, marks for the question
+-> also he can set the time for the exam 
+-> that this is the specified time for the exam 
+-> also he can set the duration 
+-> here we are just making User A as admin of this
+-> he can do anything to the exam 
+-> he will have full control 
+-> now once the exam is finished 
+-> the resposne will get stored
+-> now when userA want to test it 
+-> he can just ask system test it 
+-> after that he can show rank or something
+-> and user can see all of his exams and ranks 
+-> so if we can see that a teacher can set exam for their students 
+-> so there students can give the exam 
+-> he can put any restrictions also 
