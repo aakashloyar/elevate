@@ -1,5 +1,4 @@
 package domain
-package domain
 
 import "time"
 
@@ -15,9 +14,9 @@ type Submission struct {
 }
 
 type SubmissionAnswer struct {
-	ID            string
-	SubmissionID  string
-	ProblemID     string
-	Answer        []string
-	AnsweredAt    time.Time
+	ID           string
+	SubmissionID string
+	ProblemID    string
+	Answer       []string
+	AnsweredAt   time.Time
 }

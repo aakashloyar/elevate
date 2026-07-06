@@ -1,7 +1,10 @@
 package out
-package out
 
-import "github.com/aakashloyar/elevate/submission/internal/domain"
+import (
+	"time"
+
+	"github.com/aakashloyar/elevate/submission/internal/domain"
+)
 
 type SubmissionRepository interface {
 	Save(submission domain.Submission) error

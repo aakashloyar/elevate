@@ -1,5 +1,4 @@
 package system
-package system
 
 import "time"
 

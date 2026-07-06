@@ -1,5 +1,4 @@
 package submission
-package submission
 
 import "context"
 

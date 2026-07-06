@@ -1,5 +1,4 @@
 package http
-package http
 
 import (
 	"encoding/json"
@@ -27,12 +26,12 @@ type SubmitAnswerRequest struct {
 type SubmitAnswerResponse struct{}
 
 type GetSubmissionResponse struct {
-	ID           string                  `json:"id"`
-	AssessmentID string                  `json:"assessment_id"`
-	UserID       string                  `json:"user_id"`
-	Status       string                  `json:"status"`
-	StartedAt    string                  `json:"started_at"`
-	SubmittedAt  *string                 `json:"submitted_at,omitempty"`
+	ID           string                     `json:"id"`
+	AssessmentID string                     `json:"assessment_id"`
+	UserID       string                     `json:"user_id"`
+	Status       string                     `json:"status"`
+	StartedAt    string                     `json:"started_at"`
+	SubmittedAt  *string                    `json:"submitted_at,omitempty"`
 	Answers      []SubmissionAnswerResponse `json:"answers"`
 }
 
