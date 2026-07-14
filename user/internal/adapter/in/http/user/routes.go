@@ -6,16 +6,19 @@ import (
 )
 
 func RegisterRoutes(mux *http.ServeMux, h *Handler) {
-	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		case http.MethodGet:
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("welcome to user service of elevate"))
 		case http.MethodPost:
-			h.CreateUser(w, r)
+			h.CreateUser(w, r)	
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
-	mux.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/user/", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/users/")
 		parts := strings.Split(path, "/")
 		userID := parts[0]

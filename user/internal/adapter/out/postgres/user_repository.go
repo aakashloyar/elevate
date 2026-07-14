@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-
 	"github.com/aakashloyar/elevate/user/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/user/internal/domain"
 )
