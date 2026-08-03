@@ -1,0 +1,8 @@
+.gitignore
+docs/
+README.md
+Dockerfile
+.dockerignore
+.env*
+server
+*.pem
