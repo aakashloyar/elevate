@@ -12,13 +12,13 @@ DB_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST)/$(PO
 
 migrate-create:
 	@read -p "Enter migration name: " name; \
-	docker run --rm \
+	podman run --rm \
 		-v $(shell pwd)/$(MIGRATIONS_DIR):/migrations \
 		$(MIGRATE_IMAGE) \
 		create -ext sql -dir /migrations -seq $$name
 
 migrate-up:
-	docker run --rm \
+	podman run --rm \
 		-v $(shell pwd)/$(MIGRATIONS_DIR):/migrations \
 		--network host \
 		$(MIGRATE_IMAGE) \
@@ -27,7 +27,7 @@ migrate-up:
 		up
 
 migrate-down:
-	docker run --rm \
+	podman run --rm \
 		-v $(shell pwd)/$(MIGRATIONS_DIR):/migrations \
 		--network host \
 		$(MIGRATE_IMAGE) \
