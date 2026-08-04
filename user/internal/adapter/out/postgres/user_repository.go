@@ -52,9 +52,9 @@ func (r *UserRepository) FindByID(userID string) (domain.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) Delete(userID string) error {
-	_, err := r.db.Exec(`DELETE FROM users WHERE id = $1`, userID)
-	return err
+func (r *UserRepository) Delete(userID string) (sql.Result, error) {
+	result , err := r.db.Exec(`DELETE FROM users WHERE id = $1`, userID)
+	return result,err
 }
 
 func (r *UserRepository) ExistsByUsername(username string) (bool, error) {

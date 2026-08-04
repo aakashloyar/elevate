@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/aakashloyar/elevate/user/config"
 	in "github.com/aakashloyar/elevate/user/internal/application/ports/in/user"
 	"github.com/aakashloyar/elevate/user/internal/application/ports/out"
 )
@@ -16,9 +17,18 @@ func NewDeleteUserService(userRepo out.UserRepository) in.DeleteUserService {
 }
 
 func (s *DeleteUserService) Execute(ctx context.Context, input in.DeleteUserInput) (in.DeleteUserOutput, error) {
-	if err := s.userRepo.Delete(input.UserID); err != nil {
+	result, err := s.userRepo.Delete(input.UserID)
+	if err != nil {
 		return in.DeleteUserOutput{}, err
 	}
 
-	return in.DeleteUserOutput{Deleted: true}, nil
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return in.DeleteUserOutput{}, err
+	}
+
+	if rowsAffected == 0 {
+		return in.DeleteUserOutput{}, config.ErrUserNotFound
+	}
+	return in.DeleteUserOutput{}, nil
 }

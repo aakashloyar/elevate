@@ -1,11 +1,16 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"errors"
+
+	"github.com/joho/godotenv"
 )
 
+var (
+	ErrUserNotFound = errors.New("user not found")
+)
 type PostgresConfig struct {
 	Host     string
 	Port     string

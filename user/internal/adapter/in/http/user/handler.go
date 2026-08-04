@@ -24,6 +24,8 @@ type GetUserResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
+type DeleteUserResponse struct{}
+
 type Handler struct {
 	createUserService in.CreateUserService
 	getUserService    in.GetUserService
@@ -70,7 +72,7 @@ func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request, userID str
 }
 
 func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request, userID string) {
-	out, err := h.deleteUserService.Execute(r.Context(), in.DeleteUserInput{UserID: userID})
+	_, err := h.deleteUserService.Execute(r.Context(), in.DeleteUserInput{UserID: userID})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -78,7 +80,7 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request, userID stri
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]bool{"deleted": out.Deleted})
+	_ = json.NewEncoder(w).Encode(DeleteUserResponse{})
 }
 
 func (h *Handler) IsUserRoute(path string) bool {
