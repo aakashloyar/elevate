@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/user/internal/application/ports/in/user"
+	in "github.com/aakashloyar/elevate/user/internal/application/ports/in"
 )
 
 type CreateUserRequest struct {

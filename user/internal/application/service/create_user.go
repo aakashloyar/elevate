@@ -6,7 +6,7 @@ import (
 	"net/mail"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/user/internal/application/ports/in/user"
+	in "github.com/aakashloyar/elevate/user/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/user/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/user/internal/domain"
 )

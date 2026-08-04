@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/aakashloyar/elevate/user/config"
-	httpuser "github.com/aakashloyar/elevate/user/internal/adapter/in/http/user"
+	httpuser "github.com/aakashloyar/elevate/user/internal/adapter/in/http"
 	postgres "github.com/aakashloyar/elevate/user/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/user/internal/application/ports/out/system"
-	usersvc "github.com/aakashloyar/elevate/user/internal/application/service/user"
+	usersvc "github.com/aakashloyar/elevate/user/internal/application/service"
 )
 
 func main() {
