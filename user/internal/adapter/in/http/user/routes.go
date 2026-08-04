@@ -17,7 +17,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			h.CreateUser(w, r)	
+			h.CreateUser(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -36,6 +36,8 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			switch r.Method {
 			case http.MethodGet:
 				h.GetUserByID(w, r, userID)
+			case http.MethodDelete:
+				h.DeleteUser(w, r, userID)
 			default:
 				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			}

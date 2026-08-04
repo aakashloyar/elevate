@@ -27,10 +27,11 @@ type GetUserResponse struct {
 type Handler struct {
 	createUserService in.CreateUserService
 	getUserService    in.GetUserService
+	deleteUserService in.DeleteUserService
 }
 
-func NewHandler(createUserService in.CreateUserService, getUserService in.GetUserService) *Handler {
-	return &Handler{createUserService: createUserService, getUserService: getUserService}
+func NewHandler(createUserService in.CreateUserService, getUserService in.GetUserService, deleteUserService in.DeleteUserService) *Handler {
+	return &Handler{createUserService: createUserService, getUserService: getUserService, deleteUserService: deleteUserService}
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +67,18 @@ func (h *Handler) GetUserByID(w http.ResponseWriter, r *http.Request, userID str
 		Email:     out.Email,
 		CreatedAt: out.CreatedAt.Format(http.TimeFormat),
 	})
+}
+
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request, userID string) {
+	out, err := h.deleteUserService.Execute(r.Context(), in.DeleteUserInput{UserID: userID})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(map[string]bool{"deleted": out.Deleted})
 }
 
 func (h *Handler) IsUserRoute(path string) bool {
