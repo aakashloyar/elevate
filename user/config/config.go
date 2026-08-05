@@ -33,7 +33,7 @@ type Config struct {
 func load() Config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("error loading .env", err)
+		log.Println(".env file not found, using system environment variables")
 	}
 
 	postgres := PostgresConfig{
