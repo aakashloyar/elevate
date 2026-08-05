@@ -3,7 +3,7 @@ name: User Service CI/CD
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - "user/**"
       - ".github/workflows/user-service.yml"
