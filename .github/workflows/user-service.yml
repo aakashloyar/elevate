@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: user/go.mod
+          cache-dependency-path: user/go.sum
 
       - name: Cache Go Modules
         uses: actions/cache@v4
