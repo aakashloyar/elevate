@@ -89,15 +89,22 @@ jobs:
               -u ${{ github.actor }} \
               --password-stdin
 
+            echo "Pulling latest image..."
             podman pull $IMAGE
 
+            echo "Stopping existing container..."
             podman stop user || true
             podman rm user || true
 
+            echo "Starting new container..."
             podman run -d \
               --name user \
               --restart=always \
+              --env-file /home/ubuntu/user.env \
               -p 8080:8080 \
               $IMAGE
 
-            podman image prune -f
+            echo "Removing old unused images..."
+            podman image prune -a -f
+
+            echo "Deployment completed successfully."
