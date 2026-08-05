@@ -59,3 +59,10 @@ run-image:
 
 clean-image:
 	podman rmi $(IMAGE)
+
+
+go-format:
+	gofmt -w .
+
+format-check:
+	gofmt -l .
