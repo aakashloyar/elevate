@@ -11,16 +11,16 @@ import (
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
-type SubmitAnswerService struct {
+type SaveAnswerService struct {
 	submissionRepo out.SubmissionRepository
 	clock          out.Clock
 }
 
-func NewSubmitAnswerService(submissionRepo out.SubmissionRepository, clock out.Clock) in.SubmitAnswerService {
-	return &SubmitAnswerService{submissionRepo: submissionRepo, clock: clock}
+func NewSaveAnswerService(submissionRepo out.SubmissionRepository, clock out.Clock) in.SaveAnswerService {
+	return &SaveAnswerService{submissionRepo: submissionRepo, clock: clock}
 }
 
-func (s *SubmitAnswerService) Execute(ctx context.Context, input in.SubmitAnswerInput) error {
+func (s *SaveAnswerService) Execute(ctx context.Context, input in.SaveAnswerInput) error {
 	if strings.TrimSpace(input.SubmissionID) == "" {
 		return errors.New("submission id is required")
 	}

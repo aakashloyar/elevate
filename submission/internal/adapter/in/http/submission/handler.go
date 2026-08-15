@@ -18,12 +18,18 @@ type CreateSubmissionResponse struct {
 	StartedAt    string `json:"started_at"`
 }
 
-type SubmitAnswerRequest struct {
+type SaveAnswerRequest struct {
 	ProblemID string   `json:"problem_id"`
 	Answer    []string `json:"answer"`
 }
 
-type SubmitAnswerResponse struct{}
+type SaveAnswerResponse struct{}
+
+type SaveAnswerBatchRequest struct {
+	Answers []SaveAnswerRequest `json:"answers"`
+}
+
+type SaveAnswerBatchResponse struct{}
 
 type GetSubmissionResponse struct {
 	ID           string                     `json:"id"`
@@ -43,14 +49,16 @@ type SubmissionAnswerResponse struct {
 
 type Handler struct {
 	createSubmissionService in.CreateSubmissionService
-	submitAnswerService     in.SubmitAnswerService
+	saveAnswerService       in.SaveAnswerService
+	saveAnswerBatchService  in.SaveAnswerBatchService
 	getSubmissionService    in.GetSubmissionService
 }
 
-func NewHandler(createSubmissionService in.CreateSubmissionService, submitAnswerService in.SubmitAnswerService, getSubmissionService in.GetSubmissionService) *Handler {
+func NewHandler(createSubmissionService in.CreateSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService) *Handler {
 	return &Handler{
 		createSubmissionService: createSubmissionService,
-		submitAnswerService:     submitAnswerService,
+		saveAnswerService:       saveAnswerService,
+		saveAnswerBatchService:  saveAnswerBatchService,
 		getSubmissionService:    getSubmissionService,
 	}
 }
@@ -73,14 +81,34 @@ func (h *Handler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(CreateSubmissionResponse{SubmissionID: out.SubmissionID, StartedAt: out.StartedAt})
 }
 
-func (h *Handler) SubmitAnswer(w http.ResponseWriter, r *http.Request, submissionID string) {
-	var req SubmitAnswerRequest
+func (h *Handler) SaveAnswer(w http.ResponseWriter, r *http.Request, submissionID string) {
+	var req SaveAnswerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.submitAnswerService.Execute(r.Context(), in.SubmitAnswerInput{SubmissionID: submissionID, ProblemID: req.ProblemID, Answer: req.Answer}); err != nil {
+	if err := h.saveAnswerService.Execute(r.Context(), in.SaveAnswerInput{SubmissionID: submissionID, ProblemID: req.ProblemID, Answer: req.Answer}); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) SaveAnswerBatch(w http.ResponseWriter, r *http.Request, submissionID string) {
+	var req SaveAnswerBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	answers := make([]in.SaveAnswerBatchItem, 0, len(req.Answers))
+	for _, item := range req.Answers {
+		answers = append(answers, in.SaveAnswerBatchItem{ProblemID: item.ProblemID, Answer: item.Answer})
+	}
+
+	if err := h.saveAnswerBatchService.Execute(r.Context(), in.SaveAnswerBatchInput{SubmissionID: submissionID, Answers: answers}); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
