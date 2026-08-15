@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/aakashloyar/elevate/assessment/config"
-	httpassessment "github.com/aakashloyar/elevate/assessment/internal/adapter/in/http/assessment"
+	httpassessment "github.com/aakashloyar/elevate/assessment/internal/adapter/in/http"
+	kafkaconsumer "github.com/aakashloyar/elevate/assessment/internal/adapter/in/kafka"
 	postgres "github.com/aakashloyar/elevate/assessment/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out/system"
-	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service/assessment"
+	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 )
 
 func main() {
@@ -34,21 +36,42 @@ func main() {
 	defer db.Close()
 
 	assessmentRepo := postgres.NewAssessmentRepository(db)
-	if err := assessmentRepo.(*postgres.AssessmentRepository).Migrate(); err != nil {
-		log.Fatalf("failed to migrate assessments table: %v", err)
-	}
 
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
 
 	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, idGen, clock)
+	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo)
 	getAssessmentService := assessmentsvc.NewGetAssessmentService(assessmentRepo)
 	deleteAssessmentService := assessmentsvc.NewDeleteAssessmentService(assessmentRepo)
+	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo)
 
-	handler := httpassessment.NewHandler(createAssessmentService, getAssessmentService, deleteAssessmentService)
+	handler := httpassessment.NewHandler(createAssessmentService, listAssessmentsService, getAssessmentService, deleteAssessmentService)
 
 	mux := http.NewServeMux()
 	httpassessment.RegisterRoutes(mux, handler)
+
+	// Start Kafka consumer for problem-created events
+	consumerConfig := kafkaconsumer.Config{
+		Brokers:   config.App.Kafka.Brokers,
+		Topics:    config.App.Kafka.Topics,
+		ClientID:  config.App.Kafka.ClientID,
+		GroupID:   config.App.Kafka.GroupID,
+		APIKey:    config.App.Kafka.APIKey,
+		APISecret: config.App.Kafka.APISecret,
+	}
+	consumer, err := consumerConfig.NewConsumer(addProblemsBatchService)
+	if err != nil {
+		log.Fatalf("failed to create kafka consumer: %v", err)
+	}
+	defer consumer.Close()
+
+	ctx := context.Background()
+	go func() {
+		if err := consumer.Start(ctx); err != nil {
+			log.Printf("assessment kafka consumer stopped: %v", err)
+		}
+	}()
 
 	serverPort := config.App.Server.Port
 	log.Printf("assessment service starting on :%s", serverPort)

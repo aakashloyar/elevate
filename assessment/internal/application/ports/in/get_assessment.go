@@ -13,7 +13,6 @@ type GetAssessmentOutput struct {
 	ID              string
 	Title           string
 	Description     string
-	Status          string
 	DurationSeconds int
 	CreatedBy       string
 	CreatedAt       time.Time
@@ -23,3 +22,4 @@ type GetAssessmentOutput struct {
 type GetAssessmentService interface {
 	Execute(ctx context.Context, input GetAssessmentInput) (GetAssessmentOutput, error)
 }
+

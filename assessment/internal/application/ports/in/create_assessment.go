@@ -5,7 +5,6 @@ import "context"
 type CreateAssessmentInput struct {
 	Title           string
 	Description     string
-	Status          string
 	DurationSeconds int
 	CreatedBy       string
 }

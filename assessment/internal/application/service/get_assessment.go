@@ -3,7 +3,7 @@ package assessment
 import (
 	"context"
 
-	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in/assessment"
+	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
 )
 
@@ -25,7 +25,6 @@ func (s *GetAssessmentService) Execute(ctx context.Context, input in.GetAssessme
 		ID:              assessment.ID,
 		Title:           assessment.Title,
 		Description:     assessment.Description,
-		Status:          assessment.Status,
 		DurationSeconds: assessment.DurationSeconds,
 		CreatedBy:       assessment.CreatedBy,
 		CreatedAt:       assessment.CreatedAt,

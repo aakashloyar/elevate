@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in/assessment"
+	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/assessment/internal/domain"
 )
@@ -27,10 +27,6 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 	}
 
 	description := strings.TrimSpace(input.Description)
-	status := strings.TrimSpace(input.Status)
-	if status == "" {
-		status = "DRAFT"
-	}
 
 	if input.DurationSeconds <= 0 {
 		return in.CreateAssessmentOutput{}, errors.New("duration seconds must be greater than zero")
@@ -45,7 +41,6 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 		ID:              s.idGen.NewID(),
 		Title:           title,
 		Description:     description,
-		Status:          status,
 		DurationSeconds: input.DurationSeconds,
 		CreatedBy:       input.CreatedBy,
 		CreatedAt:       now,
