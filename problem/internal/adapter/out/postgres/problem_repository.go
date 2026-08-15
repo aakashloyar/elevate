@@ -16,42 +16,14 @@ func NewProblemRepository(db *sql.DB) out.ProblemRepository {
 	return &ProblemRepository{db: db}
 }
 
-func (r *ProblemRepository) Migrate() error {
-	queries := []string{
-		`CREATE TABLE IF NOT EXISTS problems (
-			id TEXT PRIMARY KEY,
-			created_by TEXT NOT NULL,
-			title TEXT NOT NULL DEFAULT '',
-			statement TEXT NOT NULL,
-			type TEXT NOT NULL DEFAULT 'SINGLE_CORRECT',
-			difficulty TEXT NOT NULL DEFAULT 'MEDIUM',
-			source_type TEXT NOT NULL DEFAULT 'MANUAL',
-			status TEXT NOT NULL DEFAULT 'DRAFT',
-			created_at TIMESTAMP NOT NULL,
-			updated_at TIMESTAMP NOT NULL
-		)`,
-		`CREATE TABLE IF NOT EXISTS problem_options (
-			id TEXT PRIMARY KEY,
-			problem_id TEXT NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
-			text TEXT NOT NULL,
-			is_correct BOOLEAN NOT NULL DEFAULT FALSE
-		)`,
-		`CREATE TABLE IF NOT EXISTS problem_tags (
-			problem_id TEXT NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
-			tag TEXT NOT NULL,
-			PRIMARY KEY (problem_id, tag)
-		)`,
+func (r *ProblemRepository) Save(problem domain.Problem, options []domain.ProblemOption, tags []domain.ProblemTag) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
 	}
-	for _, query := range queries {
-		if _, err := r.db.Exec(query); err != nil {
-			return err
-		}
-	}
-	return nil
-}
+	defer tx.Rollback()
 
-func (r *ProblemRepository) Save(problem domain.Problem) error {
-	query := `
+	problemQuery := `
 		INSERT INTO problems (
 			id,
 			created_by,
@@ -60,48 +32,42 @@ func (r *ProblemRepository) Save(problem domain.Problem) error {
 			type,
 			difficulty,
 			source_type,
-			status,
 			created_at,
 			updated_at
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
-	_, err := r.db.Exec(query, problem.ID, problem.CreatedBy, problem.Title, problem.Statement, problem.Type, problem.Difficulty, problem.SourceType, problem.Status, problem.CreatedAt, problem.UpdatedAt)
-	return err
-}
-
-func (r *ProblemRepository) SaveOptions(problemID string, options []domain.ProblemOption) error {
-	if len(options) == 0 {
-		return nil
+	if _, err := tx.Exec(problemQuery, problem.ID, problem.CreatedBy, problem.Title, problem.Statement, problem.Type, problem.Difficulty, problem.SourceType, problem.CreatedAt, problem.UpdatedAt); err != nil {
+		return err
 	}
-	stmt := `INSERT INTO problem_options (id, problem_id, text, is_correct) VALUES ($1, $2, $3, $4)`
-	for _, opt := range options {
-		if _, err := r.db.Exec(stmt, opt.ID, problemID, opt.Text, opt.IsCorrect); err != nil {
-			return err
+
+	if len(options) > 0 {
+		optionStmt := `INSERT INTO problem_options (id, problem_id, text, is_correct) VALUES ($1, $2, $3, $4)`
+		for _, opt := range options {
+			if _, err := tx.Exec(optionStmt, opt.ID, problem.ID, opt.Text, opt.IsCorrect); err != nil {
+				return err
+			}
 		}
 	}
-	return nil
-}
 
-func (r *ProblemRepository) SaveTags(problemID string, tags []domain.ProblemTag) error {
-	if len(tags) == 0 {
-		return nil
-	}
-	stmt := `INSERT INTO problem_tags (problem_id, tag) VALUES ($1, $2)`
-	for _, tag := range tags {
-		if _, err := r.db.Exec(stmt, problemID, tag.Tag); err != nil {
-			return err
+	if len(tags) > 0 {
+		tagStmt := `INSERT INTO problem_tags (problem_id, tag) VALUES ($1, $2)`
+		for _, tag := range tags {
+			if _, err := tx.Exec(tagStmt, problem.ID, tag.Tag); err != nil {
+				return err
+			}
 		}
 	}
-	return nil
+
+	return tx.Commit()
 }
 
 func (r *ProblemRepository) FindByID(problemID string) (domain.Problem, []domain.ProblemOption, []domain.ProblemTag, error) {
-	problemQuery := `SELECT id, created_by, title, statement, type, difficulty, source_type, status, created_at, updated_at FROM problems WHERE id = $1`
+	problemQuery := `SELECT id, created_by, title, statement, type, difficulty, source_type, created_at, updated_at FROM problems WHERE id = $1`
 	row := r.db.QueryRow(problemQuery, problemID)
 
 	var problem domain.Problem
-	if err := row.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, &problem.Status, &problem.CreatedAt, &problem.UpdatedAt); err != nil {
+	if err := row.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, &problem.CreatedAt, &problem.UpdatedAt); err != nil {
 		return domain.Problem{}, nil, nil, err
 	}
 
@@ -143,19 +109,31 @@ func (r *ProblemRepository) FindByID(problemID string) (domain.Problem, []domain
 }
 
 func (r *ProblemRepository) List(offset, limit int, filters map[string]string) ([]domain.Problem, error) {
-	query := `SELECT id, created_by, title, statement, type, difficulty, source_type, status, created_at, updated_at FROM problems`
+	query := `SELECT id, created_by, title, statement, type, difficulty, source_type, created_at, updated_at FROM problems`
 	args := []any{}
 	whereClauses := []string{}
+	if value, ok := filters["created_by"]; ok && value != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf("created_by = $%d", len(args)+1))
+		args = append(args, value)
+	}
+	if value, ok := filters["title"]; ok && value != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf("title ILIKE $%d", len(args)+1))
+		args = append(args, "%"+value+"%")
+	}
 	if value, ok := filters["type"]; ok && value != "" {
 		whereClauses = append(whereClauses, fmt.Sprintf("type = $%d", len(args)+1))
 		args = append(args, value)
 	}
-	if value, ok := filters["status"]; ok && value != "" {
-		whereClauses = append(whereClauses, fmt.Sprintf("status = $%d", len(args)+1))
+	if value, ok := filters["difficulty"]; ok && value != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf("difficulty = $%d", len(args)+1))
+		args = append(args, value)
+	}
+	if value, ok := filters["source_type"]; ok && value != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf("source_type = $%d", len(args)+1))
 		args = append(args, value)
 	}
 	if value, ok := filters["tag"]; ok && value != "" {
-		whereClauses = append(whereClauses, fmt.Sprintf("id IN (SELECT problem_id FROM problem_tags WHERE lower(tag) = lower($%d))", len(args)+1))
+		whereClauses = append(whereClauses, fmt.Sprintf("EXISTS (SELECT 1 FROM problem_tags pt WHERE pt.problem_id = problems.id AND lower(pt.tag) = lower($%d))", len(args)+1))
 		args = append(args, value)
 	}
 	if len(whereClauses) > 0 {
@@ -173,7 +151,7 @@ func (r *ProblemRepository) List(offset, limit int, filters map[string]string) (
 	problems := []domain.Problem{}
 	for rows.Next() {
 		var problem domain.Problem
-		if err := rows.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, &problem.Status, &problem.CreatedAt, &problem.UpdatedAt); err != nil {
+		if err := rows.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, &problem.CreatedAt, &problem.UpdatedAt); err != nil {
 			return nil, err
 		}
 		problems = append(problems, problem)
@@ -181,19 +159,68 @@ func (r *ProblemRepository) List(offset, limit int, filters map[string]string) (
 	return problems, nil
 }
 
-func (r *ProblemRepository) Update(problem domain.Problem) error {
+func (r *ProblemRepository) Update(problem domain.Problem, options []domain.ProblemOption, tags []domain.ProblemTag) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	query := `
 		UPDATE problems
-		SET title = $2, statement = $3, type = $4, difficulty = $5, source_type = $6, status = $7, updated_at = $8
+		SET created_by = $2, title = $3, statement = $4, type = $5, difficulty = $6, source_type = $7, updated_at = $8
 		WHERE id = $1
 	`
-	_, err := r.db.Exec(query, problem.ID, problem.Title, problem.Statement, problem.Type, problem.Difficulty, problem.SourceType, problem.Status, problem.UpdatedAt)
-	return err
+	if _, err := tx.Exec(query, problem.ID, problem.CreatedBy, problem.Title, problem.Statement, problem.Type, problem.Difficulty, problem.SourceType, problem.UpdatedAt); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(`DELETE FROM problem_options WHERE problem_id = $1`, problem.ID); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`DELETE FROM problem_tags WHERE problem_id = $1`, problem.ID); err != nil {
+		return err
+	}
+
+	if len(options) > 0 {
+		optionStmt := `INSERT INTO problem_options (id, problem_id, text, is_correct) VALUES ($1, $2, $3, $4)`
+		for _, opt := range options {
+			if _, err := tx.Exec(optionStmt, opt.ID, problem.ID, opt.Text, opt.IsCorrect); err != nil {
+				return err
+			}
+		}
+	}
+
+	if len(tags) > 0 {
+		tagStmt := `INSERT INTO problem_tags (problem_id, tag) VALUES ($1, $2)`
+		for _, tag := range tags {
+			if _, err := tx.Exec(tagStmt, problem.ID, tag.Tag); err != nil {
+				return err
+			}
+		}
+	}
+
+	return tx.Commit()
 }
 
 func (r *ProblemRepository) DeleteByID(problemID string) error {
-	_, err := r.db.Exec(`DELETE FROM problems WHERE id = $1`, problemID)
-	return err
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.Exec(`DELETE FROM problem_options WHERE problem_id = $1`, problemID); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`DELETE FROM problem_tags WHERE problem_id = $1`, problemID); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`DELETE FROM problems WHERE id = $1`, problemID); err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func joinClauses(clauses []string) string {

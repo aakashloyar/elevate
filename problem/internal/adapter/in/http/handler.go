@@ -6,17 +6,17 @@ import (
 	"strconv"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in/problem"
+	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
+	"github.com/aakashloyar/elevate/problem/internal/domain"
 )
 
 type CreateProblemRequest struct {
 	CreatedBy  string                     `json:"created_by"`
 	Title      string                     `json:"title"`
 	Statement  string                     `json:"statement"`
-	Type       string                     `json:"type"`
-	Difficulty string                     `json:"difficulty"`
-	SourceType string                     `json:"source_type"`
-	Status     string                     `json:"status"`
+	Type       domain.ProblemType         `json:"type"`
+	Difficulty domain.Difficulty          `json:"difficulty"`
+	SourceType domain.SourceType          `json:"source_type"`
 	Options    []CreateProblemOptionInput `json:"options"`
 	Tags       []string                   `json:"tags"`
 }
@@ -35,10 +35,9 @@ type GetProblemResponse struct {
 	CreatedBy  string                  `json:"created_by"`
 	Title      string                  `json:"title"`
 	Statement  string                  `json:"statement"`
-	Type       string                  `json:"type"`
-	Difficulty string                  `json:"difficulty"`
-	SourceType string                  `json:"source_type"`
-	Status     string                  `json:"status"`
+	Type       domain.ProblemType      `json:"type"`
+	Difficulty domain.Difficulty       `json:"difficulty"`
+	SourceType domain.SourceType       `json:"source_type"`
 	Options    []ProblemOptionResponse `json:"options"`
 	Tags       []string                `json:"tags"`
 	CreatedAt  string                  `json:"created_at"`
@@ -56,12 +55,11 @@ type ListProblemsResponse struct {
 }
 
 type ListProblemItemResponse struct {
-	ID         string `json:"id"`
-	Title      string `json:"title"`
-	Type       string `json:"type"`
-	Difficulty string `json:"difficulty"`
-	Status     string `json:"status"`
-	CreatedAt  string `json:"created_at"`
+	ID         string             `json:"id"`
+	Title      string             `json:"title"`
+	Type       domain.ProblemType `json:"type"`
+	Difficulty domain.Difficulty  `json:"difficulty"`
+	CreatedAt  string             `json:"created_at"`
 }
 
 type Handler struct {
@@ -101,7 +99,6 @@ func (h *Handler) CreateProblem(w http.ResponseWriter, r *http.Request) {
 		Type:       req.Type,
 		Difficulty: req.Difficulty,
 		SourceType: req.SourceType,
-		Status:     req.Status,
 		Options:    options,
 		Tags:       req.Tags,
 	})
@@ -137,7 +134,6 @@ func (h *Handler) GetProblemByID(w http.ResponseWriter, r *http.Request, problem
 		Type:       out.Type,
 		Difficulty: out.Difficulty,
 		SourceType: out.SourceType,
-		Status:     out.Status,
 		Options:    options,
 		Tags:       out.Tags,
 		CreatedAt:  out.CreatedAt.Format(http.TimeFormat),
@@ -157,11 +153,14 @@ func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	out, err := h.listProblemsService.Execute(r.Context(), in.ListProblemsInput{
-		Offset: offset,
-		Limit:  limit,
-		Type:   query.Get("type"),
-		Status: query.Get("status"),
-		Tag:    query.Get("tag"),
+		Offset:     offset,
+		Limit:      limit,
+		CreatedBy:  strings.TrimSpace(query.Get("createdBy")),
+		Title:      strings.TrimSpace(query.Get("title")),
+		Type:       strings.TrimSpace(query.Get("type")),
+		Difficulty: strings.TrimSpace(query.Get("difficulty")),
+		SourceType: strings.TrimSpace(query.Get("sourceType")),
+		Tag:        strings.TrimSpace(query.Get("tag")),
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -170,7 +169,7 @@ func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
 
 	items := make([]ListProblemItemResponse, 0, len(out.Problems))
 	for _, item := range out.Problems {
-		items = append(items, ListProblemItemResponse{ID: item.ID, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, Status: item.Status, CreatedAt: item.CreatedAt})
+		items = append(items, ListProblemItemResponse{ID: item.ID, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, CreatedAt: item.CreatedAt})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -198,7 +197,6 @@ func (h *Handler) UpdateProblem(w http.ResponseWriter, r *http.Request, problemI
 		Type:       req.Type,
 		Difficulty: req.Difficulty,
 		SourceType: req.SourceType,
-		Status:     req.Status,
 		Options:    options,
 		Tags:       req.Tags,
 	}); err != nil {

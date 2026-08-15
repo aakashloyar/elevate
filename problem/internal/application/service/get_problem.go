@@ -3,7 +3,7 @@ package problem
 import (
 	"context"
 
-	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in/problem"
+	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 )
 
@@ -39,7 +39,6 @@ func (s *GetProblemService) Execute(ctx context.Context, input in.GetProblemInpu
 		Type:       problem.Type,
 		Difficulty: problem.Difficulty,
 		SourceType: problem.SourceType,
-		Status:     problem.Status,
 		Options:    optionOutputs,
 		Tags:       tagsOutput,
 		CreatedAt:  problem.CreatedAt,

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in/problem"
+	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 )
 
@@ -18,11 +18,20 @@ func NewListProblemsService(problemRepo out.ProblemRepository) in.ListProblemsSe
 
 func (s *ListProblemsService) Execute(ctx context.Context, input in.ListProblemsInput) (in.ListProblemsOutput, error) {
 	filters := map[string]string{}
+	if input.CreatedBy != "" {
+		filters["created_by"] = input.CreatedBy
+	}
+	if input.Title != "" {
+		filters["title"] = input.Title
+	}
 	if input.Type != "" {
 		filters["type"] = input.Type
 	}
-	if input.Status != "" {
-		filters["status"] = input.Status
+	if input.Difficulty != "" {
+		filters["difficulty"] = input.Difficulty
+	}
+	if input.SourceType != "" {
+		filters["source_type"] = input.SourceType
 	}
 	if input.Tag != "" {
 		filters["tag"] = input.Tag
@@ -40,7 +49,6 @@ func (s *ListProblemsService) Execute(ctx context.Context, input in.ListProblems
 			Title:      p.Title,
 			Type:       p.Type,
 			Difficulty: p.Difficulty,
-			Status:     p.Status,
 			CreatedAt:  p.CreatedAt.Format(time.RFC3339),
 		})
 	}

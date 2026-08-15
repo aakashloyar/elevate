@@ -1,15 +1,18 @@
 package problem
 
-import "context"
+import (
+	"context"
+
+	"github.com/aakashloyar/elevate/problem/internal/domain"
+)
 
 type CreateProblemInput struct {
 	CreatedBy  string
 	Title      string
 	Statement  string
-	Type       string
-	Difficulty string
-	SourceType string
-	Status     string
+	Type       domain.ProblemType
+	Difficulty domain.Difficulty
+	SourceType domain.SourceType
 	Options    []CreateProblemOptionInput
 	Tags       []string
 }

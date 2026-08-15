@@ -3,6 +3,8 @@ package problem
 import (
 	"context"
 	"time"
+
+	"github.com/aakashloyar/elevate/problem/internal/domain"
 )
 
 type GetProblemInput struct {
@@ -14,10 +16,9 @@ type GetProblemOutput struct {
 	CreatedBy  string
 	Title      string
 	Statement  string
-	Type       string
-	Difficulty string
-	SourceType string
-	Status     string
+	Type       domain.ProblemType
+	Difficulty domain.Difficulty
+	SourceType domain.SourceType
 	Options    []ProblemOptionOutput
 	Tags       []string
 	CreatedAt  time.Time

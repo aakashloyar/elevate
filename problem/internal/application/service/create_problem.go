@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in/problem"
+	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/problem/internal/domain"
 )
@@ -36,29 +36,11 @@ func (s *CreateProblemService) Execute(ctx context.Context, input in.CreateProbl
 		CreatedBy:  createdBy,
 		Title:      strings.TrimSpace(input.Title),
 		Statement:  statement,
-		Type:       strings.ToUpper(strings.TrimSpace(input.Type)),
-		Difficulty: strings.ToUpper(strings.TrimSpace(input.Difficulty)),
-		SourceType: strings.ToUpper(strings.TrimSpace(input.SourceType)),
-		Status:     strings.ToUpper(strings.TrimSpace(input.Status)),
+		Type:       input.Type,
+		Difficulty: input.Difficulty,
+		SourceType: input.SourceType,
 		CreatedAt:  s.clock.Now(),
 		UpdatedAt:  s.clock.Now(),
-	}
-
-	if problem.Status == "" {
-		problem.Status = "DRAFT"
-	}
-	if problem.Type == "" {
-		problem.Type = "SINGLE_CORRECT"
-	}
-	if problem.Difficulty == "" {
-		problem.Difficulty = "MEDIUM"
-	}
-	if problem.SourceType == "" {
-		problem.SourceType = "MANUAL"
-	}
-
-	if err := s.problemRepo.Save(problem); err != nil {
-		return in.CreateProblemOutput{}, err
 	}
 
 	options := make([]domain.ProblemOption, 0, len(input.Options))
@@ -70,9 +52,6 @@ func (s *CreateProblemService) Execute(ctx context.Context, input in.CreateProbl
 			IsCorrect: opt.IsCorrect,
 		})
 	}
-	if err := s.problemRepo.SaveOptions(problem.ID, options); err != nil {
-		return in.CreateProblemOutput{}, err
-	}
 
 	tags := make([]domain.ProblemTag, 0, len(input.Tags))
 	for _, tag := range input.Tags {
@@ -82,7 +61,8 @@ func (s *CreateProblemService) Execute(ctx context.Context, input in.CreateProbl
 		}
 		tags = append(tags, domain.ProblemTag{ProblemID: problem.ID, Tag: tagName})
 	}
-	if err := s.problemRepo.SaveTags(problem.ID, tags); err != nil {
+
+	if err := s.problemRepo.Save(problem, options, tags); err != nil {
 		return in.CreateProblemOutput{}, err
 	}
 

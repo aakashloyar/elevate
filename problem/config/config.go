@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -20,10 +21,21 @@ type ServerConfig struct {
 	Port string
 }
 
+type KafkaConfig struct {
+	Brokers   []string
+	Topics    []string
+	ClientID  string
+	GroupID   string
+	APIKey    string
+	APISecret string
+}
+
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Kafka    KafkaConfig
 }
+
 
 func load() Config {
 	if err := godotenv.Load(); err != nil {
@@ -44,7 +56,18 @@ func load() Config {
 		server.Port = "8080"
 	}
 
-	return Config{Postgres: postgres, Server: server}
+	kafka := KafkaConfig{
+		Brokers:   strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		Topics:    strings.Split(os.Getenv("KAFKA_TOPICS"), ","),
+		ClientID:  os.Getenv("KAFKA_CLIENT_ID"),
+		GroupID:   os.Getenv("KAFKA_GROUP_ID"),
+		APIKey:    os.Getenv("KAFKA_API_KEY"),
+		APISecret: os.Getenv("KAFKA_API_SECRET"),
+	}
+	return Config{Postgres: postgres, Server: server, Kafka: kafka}
 }
 
-var App = load()
+var (
+	App = load()
+	CreatedProblemBatchTopic = strings.Split(os.Getenv("KAFKA_TOPICS"), ",")[0]
+)

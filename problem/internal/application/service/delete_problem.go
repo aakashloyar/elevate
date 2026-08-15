@@ -3,7 +3,7 @@ package problem
 import (
 	"context"
 
-	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in/problem"
+	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 )
 
