@@ -8,7 +8,7 @@ MIGRATE_IMAGE := migrate/migrate:v4.19.1
 
 DB_URL := postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST)/$(POSTGRES_DB)?sslmode=$(POSTGRES_SSLMODE)
 
-IMAGE_NAME := user-service
+IMAGE_NAME := elevate-user-service
 IMAGE_TAG := latest
 REGISTRY := ghcr.io/aakashloyar
 
