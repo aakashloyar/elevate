@@ -12,6 +12,7 @@ import (
 	"github.com/aakashloyar/elevate/submission/config"
 	httpsubmission "github.com/aakashloyar/elevate/submission/internal/adapter/in/http"
 	"github.com/aakashloyar/elevate/submission/internal/adapter/in/worker"
+	kafkaproducer "github.com/aakashloyar/elevate/submission/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/submission/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out/system"
 	submissionservice "github.com/aakashloyar/elevate/submission/internal/application/service"
@@ -42,14 +43,24 @@ func main() {
 
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
+	producer, err := kafkaproducer.NewProducer(kafkaproducer.Config{
+		Brokers:   config.App.Kafka.Brokers,
+		ClientID:  config.App.Kafka.ClientID,
+		APIKey:    config.App.Kafka.APIKey,
+		APISecret: config.App.Kafka.APISecret,
+	})
+	if err != nil {
+		log.Fatalf("failed to create Kafka producer: %v", err)
+	}
+	defer producer.Close()
 
 	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, idGen, clock)
 	startSubmissionService := submissionservice.NewStartSubmissionService(submissionRepo, clock)
 	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, clock)
 	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(saveAnswerService)
 	getSubmissionService := submissionservice.NewGetSubmissionService(submissionRepo)
-	submitSubmissionService := submissionservice.NewSubmitSubmissionService(submissionRepo, clock)
-	expireSubmissionsService := submissionservice.NewExpireSubmissionsService(submissionRepo, clock)
+	submitSubmissionService := submissionservice.NewSubmitSubmissionService(submissionRepo, clock, producer, config.App.Kafka.SubmissionSubmittedTopic)
+	expireSubmissionsService := submissionservice.NewExpireSubmissionsService(submissionRepo, clock, producer, config.App.Kafka.SubmissionSubmittedTopic)
 
 	handler := httpsubmission.NewHandler(createSubmissionService, startSubmissionService, saveAnswerService, saveAnswerBatchService, getSubmissionService, submitSubmissionService)
 	expirationWorker := worker.NewExpirationWorker(expireSubmissionsService)

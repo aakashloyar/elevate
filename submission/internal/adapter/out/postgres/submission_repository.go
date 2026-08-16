@@ -144,8 +144,8 @@ func (r *SubmissionRepository) Submit(submissionID string, submittedAt time.Time
 	return updated == 1, err
 }
 
-func (r *SubmissionRepository) ExpireSubmissions(expiredAt time.Time, limit int) (int, error) {
-	result, err := r.db.Exec(`WITH expired AS (
+func (r *SubmissionRepository) ExpireSubmissions(expiredAt time.Time, limit int) ([]string, error) {
+	rows, err := r.db.Query(`WITH expired AS (
 		SELECT id
 		FROM submissions
 		WHERE status = 'IN_PROGRESS' AND expires_at <= $1
@@ -156,12 +156,25 @@ func (r *SubmissionRepository) ExpireSubmissions(expiredAt time.Time, limit int)
 	UPDATE submissions AS submission
 	SET status = 'SUBMITTED', submitted_at = $1, updated_at = $1
 	FROM expired
-	WHERE submission.id = expired.id AND submission.status = 'IN_PROGRESS'`, expiredAt, limit)
+	WHERE submission.id = expired.id AND submission.status = 'IN_PROGRESS'
+	RETURNING submission.id`, expiredAt, limit)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	updated, err := result.RowsAffected()
-	return int(updated), err
+	defer rows.Close()
+
+	submissionIDs := make([]string, 0)
+	for rows.Next() {
+		var submissionID string
+		if err := rows.Scan(&submissionID); err != nil {
+			return nil, err
+		}
+		submissionIDs = append(submissionIDs, submissionID)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return submissionIDs, nil
 }
 
 func pqStringArray(values []string) []string {

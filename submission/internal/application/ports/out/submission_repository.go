@@ -13,5 +13,5 @@ type SubmissionRepository interface {
 	UpdateStatus(submissionID string, status domain.SubmissionStatus) error
 	UpdateStartTime(submissionID string, startedAt, expiresAt time.Time, status domain.SubmissionStatus) error
 	Submit(submissionID string, submittedAt time.Time) (bool, error)
-	ExpireSubmissions(expiredAt time.Time, limit int) (int, error)
+	ExpireSubmissions(expiredAt time.Time, limit int) ([]string, error)
 }

@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -20,9 +21,18 @@ type ServerConfig struct {
 	Port string
 }
 
+type KafkaConfig struct {
+	Brokers                  []string
+	ClientID                 string
+	APIKey                   string
+	APISecret                string
+	SubmissionSubmittedTopic string
+}
+
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Kafka    KafkaConfig
 }
 
 func load() Config {
@@ -44,7 +54,18 @@ func load() Config {
 		server.Port = "8080"
 	}
 
-	return Config{Postgres: postgres, Server: server}
+	kafka := KafkaConfig{
+		Brokers:                  strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		ClientID:                 os.Getenv("KAFKA_CLIENT_ID"),
+		APIKey:                   os.Getenv("KAFKA_API_KEY"),
+		APISecret:                os.Getenv("KAFKA_API_SECRET"),
+		SubmissionSubmittedTopic: os.Getenv("KAFKA_SUBMISSION_SUBMITTED_TOPIC"),
+	}
+	if kafka.SubmissionSubmittedTopic == "" {
+		kafka.SubmissionSubmittedTopic = "submission-submitted"
+	}
+
+	return Config{Postgres: postgres, Server: server, Kafka: kafka}
 }
 
 var App = load()
