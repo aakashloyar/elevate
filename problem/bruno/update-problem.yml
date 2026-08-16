@@ -5,7 +5,41 @@ info:
 
 http:
   method: PUT
-  url: ""
+  url: http://localhost:8080/problems/e0560c45-5c54-4618-ae36-d2f83a0eee4a
+  body:
+    type: json
+    data: |-
+      {
+        "created_by": "019fd16d-8296-7039-949f-65044c31d28f",
+        "title": "What is the time complexity of binary search?",
+        "statement": "What is the time complexity of searching for an element using binary search?",
+        "type": "single",
+        "difficulty": "easy",
+        "source_type": "manual",
+        "options": [
+          {
+            "text": "O(n)",
+            "is_correct": false
+          },
+          {
+            "text": "O(log n)",
+            "is_correct": true
+          },
+          {
+            "text": "O(n^2)",
+            "is_correct": false
+          },
+          {
+            "text": "O(n log n)",
+            "is_correct": false
+          }
+        ],
+        "tags": [
+          "algorithms",
+          "binary-search",
+          "time-complexity"
+        ]
+      }
   auth: inherit
 
 settings:

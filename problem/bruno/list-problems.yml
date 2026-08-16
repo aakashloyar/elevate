@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: ""
+  url: http://localhost:8080/problems?type=single
+  params:
+    - name: type
+      value: single
+      type: query
   auth: inherit
 
 settings:
