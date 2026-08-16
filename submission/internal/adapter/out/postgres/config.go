@@ -26,5 +26,17 @@ func (c Config) NewDB() (*sql.DB, error) {
 		c.DBName,
 		c.SSLMode,
 	)
-	return sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Neon pooler endpoints use PgBouncer transaction pooling. lib/pq sends
+	// parameterized queries through the extended protocol with an unnamed
+	// prepared statement. Keeping one client connection prevents concurrent
+	// requests from binding against each other's unnamed statement state.
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(1)
+
+	return db, nil
 }

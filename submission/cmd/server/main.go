@@ -39,9 +39,6 @@ func main() {
 	defer db.Close()
 
 	submissionRepo := postgres.NewSubmissionRepository(db)
-	if err := submissionRepo.(*postgres.SubmissionRepository).Migrate(); err != nil {
-		log.Fatalf("failed to migrate submission tables: %v", err)
-	}
 
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
@@ -65,7 +62,7 @@ func main() {
 
 	serverPort := config.App.Server.Port
 	log.Printf("submission service starting on :%s", serverPort)
-	if err := http.ListenAndServe(":"+serverPort, mux); err != nil && err != http.ErrServerClosed {
+	if err := http.ListenAndServe(":"+serverPort, mux); err != nil {
 		log.Fatal(err)
 	}
 }

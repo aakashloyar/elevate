@@ -33,4 +33,6 @@ problemId
 
 answer //array of optionid which are selected
 
-answeredAt
+createdAt // first attempt
+
+updatedAt // most recent attempt

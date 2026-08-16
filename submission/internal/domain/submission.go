@@ -36,5 +36,6 @@ type SubmissionAnswer struct {
 	SubmissionID string
 	ProblemID    string
 	Answer       []string
-	AnsweredAt   time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }

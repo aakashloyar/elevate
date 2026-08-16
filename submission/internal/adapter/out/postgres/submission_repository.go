@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/lib/pq"
+
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
@@ -14,39 +16,6 @@ type SubmissionRepository struct {
 
 func NewSubmissionRepository(db *sql.DB) out.SubmissionRepository {
 	return &SubmissionRepository{db: db}
-}
-
-func (r *SubmissionRepository) Migrate() error {
-	queries := []string{
-		`CREATE TABLE IF NOT EXISTS submissions (
-			id TEXT PRIMARY KEY,
-			assessment_id TEXT NOT NULL,
-			user_id TEXT NOT NULL,
-			status TEXT NOT NULL DEFAULT 'IN_PROGRESS',
-			started_at TIMESTAMP NOT NULL,
-			duration_seconds INTEGER NOT NULL,
-			expires_at TIMESTAMP,
-			submitted_at TIMESTAMP,
-			created_at TIMESTAMP NOT NULL,
-			updated_at TIMESTAMP NOT NULL
-		)`,
-		`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS duration_seconds INTEGER NOT NULL DEFAULT 0`,
-		`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP`,
-		`CREATE INDEX IF NOT EXISTS idx_submissions_expiration ON submissions (expires_at) WHERE status = 'IN_PROGRESS'`,
-		`CREATE TABLE IF NOT EXISTS submission_answers (
-			id TEXT PRIMARY KEY,
-			submission_id TEXT NOT NULL REFERENCES submissions(id) ON DELETE CASCADE,
-			problem_id TEXT NOT NULL,
-			answer TEXT[] NOT NULL,
-			answered_at TIMESTAMP NOT NULL
-		)`,
-	}
-	for _, query := range queries {
-		if _, err := r.db.Exec(query); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (r *SubmissionRepository) Save(submission domain.Submission) error {
@@ -69,22 +38,52 @@ func (r *SubmissionRepository) Save(submission domain.Submission) error {
 	return err
 }
 
-func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswer) error {
+func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswer) (bool, error) {
 	if answer.ID == "" {
 		answer.ID = time.Now().UTC().Format(time.RFC3339Nano)
 	}
+	tx, err := r.db.Begin()
+	if err != nil {
+		return false, err
+	}
+	defer tx.Rollback()
+
+	var status domain.SubmissionStatus
+	if err := tx.QueryRow(`SELECT status FROM submissions WHERE id = $1 FOR UPDATE`, answer.SubmissionID).Scan(&status); err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	if status != domain.SubmissionStatusInProgress {
+		return false, nil
+	}
+
 	query := `
 		INSERT INTO submission_answers (
 			id,
 			submission_id,
 			problem_id,
 			answer,
-			answered_at
+			created_at,
+			updated_at
 		)
-		VALUES ($1, $2, $3, $4, $5)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (submission_id, problem_id)
+		DO UPDATE SET
+			answer = EXCLUDED.answer,
+			updated_at = EXCLUDED.updated_at
 	`
-	_, err := r.db.Exec(query, answer.ID, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answer.AnsweredAt)
-	return err
+	if _, err := tx.Exec(query, answer.ID, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answer.CreatedAt, answer.UpdatedAt); err != nil {
+		return false, err
+	}
+	if _, err := tx.Exec(`UPDATE submissions SET updated_at = $2 WHERE id = $1`, answer.SubmissionID, answer.UpdatedAt); err != nil {
+		return false, err
+	}
+	if err := tx.Commit(); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswer, error) {
@@ -104,7 +103,7 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 		submission.SubmittedAt = &submittedAt.Time
 	}
 
-	answerQuery := `SELECT problem_id, answer, answered_at FROM submission_answers WHERE submission_id = $1 ORDER BY answered_at`
+	answerQuery := `SELECT problem_id, answer, created_at, updated_at FROM submission_answers WHERE submission_id = $1 ORDER BY created_at`
 	answerRows, err := r.db.Query(answerQuery, submissionID)
 	if err != nil {
 		return domain.Submission{}, nil, err
@@ -115,7 +114,7 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	for answerRows.Next() {
 		var answer domain.SubmissionAnswer
 		var rawAnswer []string
-		if err := answerRows.Scan(&answer.ProblemID, &rawAnswer, &answer.AnsweredAt); err != nil {
+		if err := answerRows.Scan(&answer.ProblemID, pq.Array(&rawAnswer), &answer.CreatedAt, &answer.UpdatedAt); err != nil {
 			return domain.Submission{}, nil, err
 		}
 		answer.Answer = rawAnswer

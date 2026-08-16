@@ -40,13 +40,16 @@ type GetSubmissionResponse struct {
 	StartedAt    string                     `json:"started_at"`
 	ExpiresAt    *string                    `json:"expires_at,omitempty"`
 	SubmittedAt  *string                    `json:"submitted_at,omitempty"`
+	CreatedAt    string                     `json:"created_at"`
+	UpdatedAt    string                     `json:"updated_at"`
 	Answers      []SubmissionAnswerResponse `json:"answers"`
 }
 
 type SubmissionAnswerResponse struct {
-	ProblemID  string   `json:"problem_id"`
-	Answer     []string `json:"answer"`
-	AnsweredAt string   `json:"answered_at"`
+	ProblemID string   `json:"problem_id"`
+	Answer    []string `json:"answer"`
+	CreatedAt string   `json:"created_at"`
+	UpdatedAt string   `json:"updated_at"`
 }
 
 type Handler struct {
@@ -142,7 +145,12 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 
 	answers := make([]SubmissionAnswerResponse, 0, len(out.Answers))
 	for _, ans := range out.Answers {
-		answers = append(answers, SubmissionAnswerResponse{ProblemID: ans.ProblemID, Answer: ans.Answer, AnsweredAt: ans.AnsweredAt.Format(http.TimeFormat)})
+		answers = append(answers, SubmissionAnswerResponse{
+			ProblemID: ans.ProblemID,
+			Answer:    ans.Answer,
+			CreatedAt: ans.CreatedAt.Format(http.TimeFormat),
+			UpdatedAt: ans.UpdatedAt.Format(http.TimeFormat),
+		})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -155,6 +163,8 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		StartedAt:    out.StartedAt.Format(http.TimeFormat),
 		ExpiresAt:    expiresAt,
 		SubmittedAt:  submittedAt,
+		CreatedAt:    out.CreatedAt.Format(http.TimeFormat),
+		UpdatedAt:    out.UpdatedAt.Format(http.TimeFormat),
 		Answers:      answers,
 	})
 }

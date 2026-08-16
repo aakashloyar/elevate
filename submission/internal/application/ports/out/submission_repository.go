@@ -8,7 +8,7 @@ import (
 
 type SubmissionRepository interface {
 	Save(submission domain.Submission) error
-	SaveAnswer(answer domain.SubmissionAnswer) error
+	SaveAnswer(answer domain.SubmissionAnswer) (bool, error)
 	FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswer, error)
 	UpdateStatus(submissionID string, status domain.SubmissionStatus) error
 	UpdateStartTime(submissionID string, startedAt, expiresAt time.Time, status domain.SubmissionStatus) error

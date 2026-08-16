@@ -24,9 +24,10 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 	answerOutputs := make([]in.SubmissionAnswerOutput, 0, len(answers))
 	for _, ans := range answers {
 		answerOutputs = append(answerOutputs, in.SubmissionAnswerOutput{
-			ProblemID:  ans.ProblemID,
-			Answer:     ans.Answer,
-			AnsweredAt: ans.AnsweredAt,
+			ProblemID: ans.ProblemID,
+			Answer:    ans.Answer,
+			CreatedAt: ans.CreatedAt,
+			UpdatedAt: ans.UpdatedAt,
 		})
 	}
 
@@ -38,6 +39,8 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 		StartedAt:    submission.StartedAt,
 		ExpiresAt:    submission.ExpiresAt,
 		SubmittedAt:  submission.SubmittedAt,
+		CreatedAt:    submission.CreatedAt,
+		UpdatedAt:    submission.UpdatedAt,
 		Answers:      answerOutputs,
 	}, nil
 }

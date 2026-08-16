@@ -4,7 +4,8 @@ import (
 	"context"
 	"errors"
 	"strings"
-	"time"
+
+	"github.com/google/uuid"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
@@ -29,23 +30,38 @@ func (s *SaveAnswerService) Execute(ctx context.Context, input in.SaveAnswerInpu
 	}
 
 	answer := make([]string, 0, len(input.Answer))
+	seenAnswerIDs := make(map[string]struct{}, len(input.Answer))
 	for _, value := range input.Answer {
 		trimmed := strings.TrimSpace(value)
-		if trimmed != "" {
-			answer = append(answer, trimmed)
+		if trimmed == "" {
+			continue
 		}
+		if _, err := uuid.Parse(trimmed); err != nil {
+			return errors.New("answer id must be a valid UUID")
+		}
+		if _, exists := seenAnswerIDs[trimmed]; exists {
+			return errors.New("answer ids must be unique")
+		}
+
+		seenAnswerIDs[trimmed] = struct{}{}
+		answer = append(answer, trimmed)
 	}
 
-	if err := s.submissionRepo.SaveAnswer(domain.SubmissionAnswer{
+	now := s.clock.Now()
+	saved, err := s.submissionRepo.SaveAnswer(domain.SubmissionAnswer{
 		ID:           "",
 		SubmissionID: input.SubmissionID,
 		ProblemID:    input.ProblemID,
 		Answer:       answer,
-		AnsweredAt:   s.clock.Now(),
-	}); err != nil {
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	})
+	if err != nil {
 		return err
 	}
+	if !saved {
+		return errors.New("submission must be in IN_PROGRESS state")
+	}
 
-	_ = time.Now()
 	return nil
 }

@@ -1,0 +1,23 @@
+info:
+  name: create-submission
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8082/submissions
+  body:
+    type: json
+    data: |-
+      {
+        "assessment_id": "e03b0122-c1d0-4cd9-8df2-d3de8dfe2eac",
+        "user_id": "019fd16d-8296-7039-949f-65044c31d28f",
+        "duration_seconds": 120
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

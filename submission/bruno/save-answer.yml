@@ -1,0 +1,22 @@
+info:
+  name: save-answer
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:8082/submissions/0eef0286-f9ae-4851-a24b-3c617a943b71/save
+  body:
+    type: json
+    data: |-
+      {
+        "problem_id": "d50f18e5-98df-4491-8be5-003c4162533f",
+        "answer": ["169b08e2-2972-4e50-b0c3-08bec657057a"]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

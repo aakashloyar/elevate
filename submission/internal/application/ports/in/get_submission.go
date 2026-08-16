@@ -19,13 +19,16 @@ type GetSubmissionOutput struct {
 	StartedAt    time.Time
 	ExpiresAt    *time.Time
 	SubmittedAt  *time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 	Answers      []SubmissionAnswerOutput
 }
 
 type SubmissionAnswerOutput struct {
-	ProblemID  string
-	Answer     []string
-	AnsweredAt time.Time
+	ProblemID string
+	Answer    []string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type GetSubmissionService interface {
