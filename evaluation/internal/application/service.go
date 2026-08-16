@@ -73,11 +73,53 @@ func EvaluateAnswer(problem domain.Problem, answer []string, scheme domain.Marki
 		result.Status, result.Marks = "skipped", skipped
 		return result
 	}
+	if problem.Type == domain.ProblemTypeMultiple {
+		return evaluateMultipleAnswer(result, answer, correctOptionIDs(problem.Options), correct, incorrect)
+	}
 	if sameSet(answer, correctOptionIDs(problem.Options)) {
 		result.Status, result.Marks = "correct", correct
 	} else {
 		result.Status, result.Marks = "incorrect", incorrect
 	}
+	return result
+}
+
+// evaluateMultipleAnswer gives proportional marks only when every selected
+// option is correct. Selecting any incorrect option receives the configured
+// incorrect mark for the question.
+func evaluateMultipleAnswer(result domain.QuestionResult, answer, correctOptionIDs []string, correctMarks, incorrectMarks float64) domain.QuestionResult {
+	correctOptions := make(map[string]struct{}, len(correctOptionIDs))
+	for _, optionID := range correctOptionIDs {
+		correctOptions[optionID] = struct{}{}
+	}
+	if len(correctOptions) == 0 {
+		result.Status, result.Marks = "incorrect", incorrectMarks
+		return result
+	}
+
+	selected := make(map[string]struct{}, len(answer))
+	for _, optionID := range answer {
+		if optionID == "" {
+			result.Status, result.Marks = "incorrect", incorrectMarks
+			return result
+		}
+		if _, alreadySelected := selected[optionID]; alreadySelected {
+			result.Status, result.Marks = "incorrect", incorrectMarks
+			return result
+		}
+		selected[optionID] = struct{}{}
+		if _, isCorrect := correctOptions[optionID]; !isCorrect {
+			result.Status, result.Marks = "incorrect", incorrectMarks
+			return result
+		}
+	}
+
+	if len(selected) == len(correctOptions) {
+		result.Status, result.Marks = "correct", correctMarks
+		return result
+	}
+	result.Status = "partially_correct"
+	result.Marks = float64(len(selected)) * correctMarks / float64(len(correctOptions))
 	return result
 }
 
