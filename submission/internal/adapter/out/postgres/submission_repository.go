@@ -123,6 +123,18 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	return submission, answers, nil
 }
 
+func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {
+	var status domain.SubmissionStatus
+	var expiresAt sql.NullTime
+	if err := r.db.QueryRow(`SELECT status, expires_at FROM submissions WHERE id = $1`, submissionID).Scan(&status, &expiresAt); err != nil {
+		return "", nil, err
+	}
+	if expiresAt.Valid {
+		return status, &expiresAt.Time, nil
+	}
+	return status, nil, nil
+}
+
 func (r *SubmissionRepository) UpdateStatus(submissionID string, status domain.SubmissionStatus) error {
 	_, err := r.db.Exec(`UPDATE submissions SET status = $2, updated_at = NOW() WHERE id = $1`, submissionID, status)
 	return err

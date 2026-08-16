@@ -45,6 +45,12 @@ type GetSubmissionResponse struct {
 	Answers      []SubmissionAnswerResponse `json:"answers"`
 }
 
+type GetSubmissionStatusResponse struct {
+	SubmissionID string  `json:"submission_id"`
+	Status       string  `json:"status"`
+	ExpiresAt    *string `json:"expires_at"`
+}
+
 type SubmissionAnswerResponse struct {
 	ProblemID string   `json:"problem_id"`
 	Answer    []string `json:"answer"`
@@ -53,22 +59,24 @@ type SubmissionAnswerResponse struct {
 }
 
 type Handler struct {
-	createSubmissionService in.CreateSubmissionService
-	startSubmissionService  in.StartSubmissionService
-	saveAnswerService       in.SaveAnswerService
-	saveAnswerBatchService  in.SaveAnswerBatchService
-	getSubmissionService    in.GetSubmissionService
-	submitSubmissionService in.SubmitSubmissionService
+	createSubmissionService    in.CreateSubmissionService
+	startSubmissionService     in.StartSubmissionService
+	saveAnswerService          in.SaveAnswerService
+	saveAnswerBatchService     in.SaveAnswerBatchService
+	getSubmissionService       in.GetSubmissionService
+	getSubmissionStatusService in.GetSubmissionStatusService
+	submitSubmissionService    in.SubmitSubmissionService
 }
 
-func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, submitSubmissionService in.SubmitSubmissionService) *Handler {
+func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, getSubmissionStatusService in.GetSubmissionStatusService, submitSubmissionService in.SubmitSubmissionService) *Handler {
 	return &Handler{
-		createSubmissionService: createSubmissionService,
-		startSubmissionService:  startSubmissionService,
-		saveAnswerService:       saveAnswerService,
-		saveAnswerBatchService:  saveAnswerBatchService,
-		getSubmissionService:    getSubmissionService,
-		submitSubmissionService: submitSubmissionService,
+		createSubmissionService:    createSubmissionService,
+		startSubmissionService:     startSubmissionService,
+		saveAnswerService:          saveAnswerService,
+		saveAnswerBatchService:     saveAnswerBatchService,
+		getSubmissionService:       getSubmissionService,
+		getSubmissionStatusService: getSubmissionStatusService,
+		submitSubmissionService:    submitSubmissionService,
 	}
 }
 
@@ -166,6 +174,28 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		CreatedAt:    out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:    out.UpdatedAt.Format(http.TimeFormat),
 		Answers:      answers,
+	})
+}
+
+func (h *Handler) GetSubmissionStatus(w http.ResponseWriter, r *http.Request, submissionID string) {
+	out, err := h.getSubmissionStatusService.Execute(r.Context(), in.GetSubmissionStatusInput{SubmissionID: submissionID})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var expiresAt *string
+	if out.ExpiresAt != nil {
+		value := out.ExpiresAt.Format(http.TimeFormat)
+		expiresAt = &value
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(GetSubmissionStatusResponse{
+		SubmissionID: out.SubmissionID,
+		Status:       string(out.Status),
+		ExpiresAt:    expiresAt,
 	})
 }
 

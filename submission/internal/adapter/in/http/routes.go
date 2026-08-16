@@ -52,6 +52,16 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "status" {
+			switch r.Method {
+			case http.MethodGet:
+				h.GetSubmissionStatus(w, r, submissionID)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+			return
+		}
+
 		if len(parts) == 2 && parts[1] == "start" {
 			switch r.Method {
 			case http.MethodPost:
