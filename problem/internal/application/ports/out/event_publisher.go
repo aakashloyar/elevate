@@ -1,16 +1,18 @@
 package out
 
-import (
-	"context"
-)	
+import "context"
 
 type CreatedBatchEvent struct {
-	Topic        string
-	AssessmentID string
-	ProblemIDs   []string
+	AssessmentID string   `json:"assessment_id"`
+	ProblemIDs   []string `json:"problem_ids"`
+}
+
+type CreatedBatchMessage struct {
+	Topic string
+	Event CreatedBatchEvent
 }
 
 type EventPublisher interface {
-	PublishCreatedBatch(ctx context.Context, event CreatedBatchEvent) error
+	PublishCreatedBatch(ctx context.Context, message CreatedBatchMessage) error
 	Close()
 }

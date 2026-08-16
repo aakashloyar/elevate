@@ -43,10 +43,12 @@ func (s *CreateProblemBatchService) Execute(ctx context.Context, input in.Create
 		return in.CreateProblemBatchOutput{}, nil
 	}
 	if input.AssessmentID != "" {
-		if err := s.producer.PublishCreatedBatch(ctx, out.CreatedBatchEvent{
-			Topic:        config.CreatedProblemBatchTopic,
-			AssessmentID: input.AssessmentID,
-			ProblemIDs:   createdIDs,
+		if err := s.producer.PublishCreatedBatch(ctx, out.CreatedBatchMessage{
+			Topic: config.CreatedProblemBatchTopic,
+			Event: out.CreatedBatchEvent{
+				AssessmentID: input.AssessmentID,
+				ProblemIDs:   createdIDs,
+			},
 		}); err != nil {
 			log.Printf("failed to write problem-created message: %v", err)
 		}

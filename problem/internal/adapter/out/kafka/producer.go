@@ -6,21 +6,19 @@ import (
 	"time"
 
 	"github.com/twmb/franz-go/pkg/kgo"
-	
+
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 )
 
+func (p *Producer) PublishCreatedBatch(ctx context.Context, message out.CreatedBatchMessage) error {
 
-
-func (p *Producer) PublishCreatedBatch(ctx context.Context, event out.CreatedBatchEvent) error {
-
-	bytes, err := json.Marshal(event)
+	bytes, err := json.Marshal(message.Event)
 	if err != nil {
 		return err
 	}
 
 	record := &kgo.Record{
-		Topic:     event.Topic,
+		Topic:     message.Topic,
 		Value:     bytes,
 		Timestamp: time.Now(),
 	}
