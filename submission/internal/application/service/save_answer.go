@@ -5,8 +5,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/google/uuid"
-
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
@@ -30,20 +28,11 @@ func (s *SaveAnswerService) Execute(ctx context.Context, input in.SaveAnswerInpu
 	}
 
 	answer := make([]string, 0, len(input.Answer))
-	seenAnswerIDs := make(map[string]struct{}, len(input.Answer))
 	for _, value := range input.Answer {
 		trimmed := strings.TrimSpace(value)
 		if trimmed == "" {
 			continue
 		}
-		if _, err := uuid.Parse(trimmed); err != nil {
-			return errors.New("answer id must be a valid UUID")
-		}
-		if _, exists := seenAnswerIDs[trimmed]; exists {
-			return errors.New("answer ids must be unique")
-		}
-
-		seenAnswerIDs[trimmed] = struct{}{}
 		answer = append(answer, trimmed)
 	}
 
