@@ -22,4 +22,3 @@ type GetAssessmentOutput struct {
 type GetAssessmentService interface {
 	Execute(ctx context.Context, input GetAssessmentInput) (GetAssessmentOutput, error)
 }
-

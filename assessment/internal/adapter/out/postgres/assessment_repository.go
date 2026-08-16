@@ -155,6 +155,24 @@ func (r *AssessmentRepository) AddProblems(assessmentID string, problemIDs []str
 	return tx.Commit()
 }
 
+func (r *AssessmentRepository) FindProblemIDs(assessmentID string) ([]string, error) {
+	rows, err := r.db.Query(`SELECT problem_id FROM assessment_problems WHERE assessment_id = $1 ORDER BY problem_id`, assessmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	problemIDs := make([]string, 0)
+	for rows.Next() {
+		var problemID string
+		if err := rows.Scan(&problemID); err != nil {
+			return nil, err
+		}
+		problemIDs = append(problemIDs, problemID)
+	}
+	return problemIDs, rows.Err()
+}
+
 func (r *AssessmentRepository) FindMarkingScheme(assessmentID string) (domain.AssessmentMarkingScheme, error) {
 	row := r.db.QueryRow(`
 		SELECT

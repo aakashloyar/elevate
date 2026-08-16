@@ -8,6 +8,7 @@ type AssessmentRepository interface {
 	FindByID(assessmentID string) (domain.Assessment, error)
 	DeleteByID(assessmentID string) error
 	AddProblems(assessmentID string, problemIDs []string) error
+	FindProblemIDs(assessmentID string) ([]string, error)
 	FindMarkingScheme(assessmentID string) (domain.AssessmentMarkingScheme, error)
 	CreateMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error
 	UpsertMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error

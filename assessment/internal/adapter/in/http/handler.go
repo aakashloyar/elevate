@@ -35,31 +35,37 @@ type GetAssessmentResponse struct {
 }
 
 type Handler struct {
-	createAssessmentService    in.CreateAssessmentService
-	listAssessmentsService     in.ListAssessmentsService
-	getAssessmentService       in.GetAssessmentService
-	deleteAssessmentService    in.DeleteAssessmentService
-	createProblemService       in.CreateAssessmentProblemService
-	getMarkingSchemeService    in.GetAssessmentMarkingSchemeService
-	upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService
-	createMarkingSchemeService in.CreateAssessmentMarkingSchemeService
+	createAssessmentService      in.CreateAssessmentService
+	listAssessmentsService       in.ListAssessmentsService
+	getAssessmentService         in.GetAssessmentService
+	deleteAssessmentService      in.DeleteAssessmentService
+	createProblemService         in.CreateAssessmentProblemService
+	getAssessmentProblemsService in.GetAssessmentProblemsService
+	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
+	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
+	createMarkingSchemeService   in.CreateAssessmentMarkingSchemeService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, createProblemService in.CreateAssessmentProblemService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, createProblemService in.CreateAssessmentProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
 	return &Handler{
-		createAssessmentService:    createAssessmentService,
-		listAssessmentsService:     listAssessmentsService,
-		getAssessmentService:       getAssessmentService,
-		deleteAssessmentService:    deleteAssessmentService,
-		createProblemService:       createProblemService,
-		getMarkingSchemeService:    getMarkingSchemeService,
-		upsertMarkingSchemeService: upsertMarkingSchemeService,
-		createMarkingSchemeService: createMarkingSchemeService,
+		createAssessmentService:      createAssessmentService,
+		listAssessmentsService:       listAssessmentsService,
+		getAssessmentService:         getAssessmentService,
+		deleteAssessmentService:      deleteAssessmentService,
+		createProblemService:         createProblemService,
+		getAssessmentProblemsService: getAssessmentProblemsService,
+		getMarkingSchemeService:      getMarkingSchemeService,
+		upsertMarkingSchemeService:   upsertMarkingSchemeService,
+		createMarkingSchemeService:   createMarkingSchemeService,
 	}
 }
 
 type ListAssessmentsResponse struct {
 	Assessments []GetAssessmentResponse `json:"assessments"`
+}
+
+type GetAssessmentProblemsResponse struct {
+	ProblemIDs []string `json:"problem_ids"`
 }
 
 type CreateAssessmentProblemRequest struct {
@@ -225,6 +231,16 @@ func (h *Handler) GetAssessmentMarkingScheme(w http.ResponseWriter, r *http.Requ
 		NumericalIncorrectMarks: markingScheme.NumericalIncorrectMarks,
 		NumericalSkippedMarks:   markingScheme.NumericalSkippedMarks,
 	}))
+}
+
+func (h *Handler) GetAssessmentProblems(w http.ResponseWriter, r *http.Request, assessmentID string) {
+	out, err := h.getAssessmentProblemsService.Execute(r.Context(), in.GetAssessmentProblemsInput{AssessmentID: assessmentID})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(GetAssessmentProblemsResponse{ProblemIDs: out.ProblemIDs})
 }
 
 func (h *Handler) PutAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
