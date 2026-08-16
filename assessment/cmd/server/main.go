@@ -10,6 +10,7 @@ import (
 	httpassessment "github.com/aakashloyar/elevate/assessment/internal/adapter/in/http"
 	kafkaconsumer "github.com/aakashloyar/elevate/assessment/internal/adapter/in/kafka"
 	postgres "github.com/aakashloyar/elevate/assessment/internal/adapter/out/postgres"
+	problemhttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/problemhttp"
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out/system"
 	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 )
@@ -44,9 +45,11 @@ func main() {
 	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo)
 	getAssessmentService := assessmentsvc.NewGetAssessmentService(assessmentRepo)
 	deleteAssessmentService := assessmentsvc.NewDeleteAssessmentService(assessmentRepo)
+	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)
+	createAssessmentProblemService := assessmentsvc.NewCreateAssessmentProblemService(assessmentRepo, problemClient)
 	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo)
 
-	handler := httpassessment.NewHandler(createAssessmentService, listAssessmentsService, getAssessmentService, deleteAssessmentService)
+	handler := httpassessment.NewHandler(createAssessmentService, listAssessmentsService, getAssessmentService, deleteAssessmentService, createAssessmentProblemService)
 
 	mux := http.NewServeMux()
 	httpassessment.RegisterRoutes(mux, handler)

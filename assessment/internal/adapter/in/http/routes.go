@@ -26,20 +26,29 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 	})
 
 	mux.HandleFunc("/assessments/", func(w http.ResponseWriter, r *http.Request) {
-		path := strings.TrimPrefix(r.URL.Path, "/assessments/")
+		path := strings.Trim(strings.TrimPrefix(r.URL.Path, "/assessments/"), "/")
 		parts := strings.Split(path, "/")
 		assessmentID := parts[0]
 		if assessmentID == "" {
 			http.Error(w, "missing assessment id", http.StatusBadRequest)
 			return
 		}
-
 		if len(parts) == 1 {
 			switch r.Method {
 			case http.MethodGet:
 				h.GetAssessmentByID(w, r, assessmentID)
 			case http.MethodDelete:
 				h.DeleteAssessment(w, r, assessmentID)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+			return
+		}
+
+		if len(parts) == 2 && parts[1] == "problem" {
+			switch r.Method {
+			case http.MethodPost:
+				h.CreateAssessmentProblem(w, r, assessmentID)
 			default:
 				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			}

@@ -4,8 +4,17 @@ info:
   seq: 2
 
 http:
-  method: GET
-  url: ""
+  method: POST
+  url: http://localhost:8080/assessments
+  body:
+    type: json
+    data: |-
+      {
+        "title": "dummy-exam2",
+        "description": "just for testing purpose second",
+        "duration_seconds": 120,
+        "created_by": "019fd16d-8296-7039-949f-65044c31d28f"
+      }
   auth: inherit
 
 settings:
