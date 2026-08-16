@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/assessments
+  url: http://localhost:8081/assessments
   body:
     type: json
     data: |-

@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: ""
+  url: http://localhost:8081/assessments?userID=019fd16d-8296-7039-949f-65044c31d28f
+  params:
+    - name: userID
+      value: 019fd16d-8296-7039-949f-65044c31d28f
+      type: query
   auth: inherit
 
 settings:

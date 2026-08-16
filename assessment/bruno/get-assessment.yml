@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: ""
+  url: http://localhost:8081/assessments/280e7a36-cfe5-44ee-bfaf-a6013486354b
   auth: inherit
 
 settings:

@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://localhost:8080/assessments/e03b0122-c1d0-4cd9-8df2-d3de8dfe2eac
+  url: http://localhost:8081/assessments/e03b0122-c1d0-4cd9-8df2-d3de8dfe2eac
   auth: inherit
 
 settings:
