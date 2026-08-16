@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
@@ -32,5 +33,7 @@ func (s *StartSubmissionService) Execute(ctx context.Context, input in.StartSubm
 		return errors.New("submission must be in CREATED state")
 	}
 
-	return s.submissionRepo.UpdateStartTime(input.SubmissionID, s.clock.Now(), domain.SubmissionStatusInProgress)
+	startedAt := s.clock.Now()
+	expiresAt := startedAt.Add(time.Duration(submission.DurationSeconds) * time.Second)
+	return s.submissionRepo.UpdateStartTime(input.SubmissionID, startedAt, expiresAt, domain.SubmissionStatusInProgress)
 }

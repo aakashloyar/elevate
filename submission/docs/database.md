@@ -13,6 +13,10 @@ status
 
 startedAt
 
+durationSeconds
+
+expiresAt
+
 submittedAt
 
 createdAt

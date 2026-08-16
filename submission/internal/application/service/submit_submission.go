@@ -7,7 +7,6 @@ import (
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
-	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 type SubmitSubmissionService struct {
@@ -24,13 +23,13 @@ func (s *SubmitSubmissionService) Execute(ctx context.Context, input in.SubmitSu
 		return errors.New("submission id is required")
 	}
 
-	submission, _, err := s.submissionRepo.FindByID(input.SubmissionID)
+	submitted, err := s.submissionRepo.Submit(input.SubmissionID, s.clock.Now())
 	if err != nil {
 		return err
 	}
-	if !submission.Status.IsSubmittable() {
-		return errors.New("submission is already submitted")
+	if !submitted {
+		return errors.New("submission is already submitted or has expired")
 	}
 
-	return s.submissionRepo.UpdateSubmissionTime(input.SubmissionID, s.clock.Now(), domain.SubmissionStatusSubmitted)
+	return nil
 }

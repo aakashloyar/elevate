@@ -19,14 +19,16 @@ func (s SubmissionStatus) IsSubmittable() bool {
 }
 
 type Submission struct {
-	ID           string
-	AssessmentID string
-	UserID       string
-	Status       SubmissionStatus
-	StartedAt    time.Time
-	SubmittedAt  *time.Time
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID              string
+	AssessmentID    string
+	UserID          string
+	Status          SubmissionStatus
+	StartedAt       time.Time
+	DurationSeconds int
+	ExpiresAt       *time.Time
+	SubmittedAt     *time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type SubmissionAnswer struct {

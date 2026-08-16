@@ -9,8 +9,9 @@ import (
 )
 
 type CreateSubmissionRequest struct {
-	AssessmentID string `json:"assessment_id"`
-	UserID       string `json:"user_id"`
+	AssessmentID    string `json:"assessment_id"`
+	UserID          string `json:"user_id"`
+	DurationSeconds int    `json:"duration_seconds"`
 }
 
 type CreateSubmissionResponse struct {
@@ -37,6 +38,7 @@ type GetSubmissionResponse struct {
 	UserID       string                     `json:"user_id"`
 	Status       string                     `json:"status"`
 	StartedAt    string                     `json:"started_at"`
+	ExpiresAt    *string                    `json:"expires_at,omitempty"`
 	SubmittedAt  *string                    `json:"submitted_at,omitempty"`
 	Answers      []SubmissionAnswerResponse `json:"answers"`
 }
@@ -74,7 +76,7 @@ func (h *Handler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.createSubmissionService.Execute(r.Context(), in.CreateSubmissionInput{AssessmentID: req.AssessmentID, UserID: req.UserID})
+	out, err := h.createSubmissionService.Execute(r.Context(), in.CreateSubmissionInput{AssessmentID: req.AssessmentID, UserID: req.UserID, DurationSeconds: req.DurationSeconds})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -132,6 +134,11 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		value := out.SubmittedAt.Format(http.TimeFormat)
 		submittedAt = &value
 	}
+	var expiresAt *string
+	if out.ExpiresAt != nil {
+		value := out.ExpiresAt.Format(http.TimeFormat)
+		expiresAt = &value
+	}
 
 	answers := make([]SubmissionAnswerResponse, 0, len(out.Answers))
 	for _, ans := range out.Answers {
@@ -146,6 +153,7 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		UserID:       out.UserID,
 		Status:       string(out.Status),
 		StartedAt:    out.StartedAt.Format(http.TimeFormat),
+		ExpiresAt:    expiresAt,
 		SubmittedAt:  submittedAt,
 		Answers:      answers,
 	})

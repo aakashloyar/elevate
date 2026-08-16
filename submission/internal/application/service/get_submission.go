@@ -36,6 +36,7 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 		UserID:       submission.UserID,
 		Status:       submission.Status,
 		StartedAt:    submission.StartedAt,
+		ExpiresAt:    submission.ExpiresAt,
 		SubmittedAt:  submission.SubmittedAt,
 		Answers:      answerOutputs,
 	}, nil

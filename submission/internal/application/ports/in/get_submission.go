@@ -17,6 +17,7 @@ type GetSubmissionOutput struct {
 	UserID       string
 	Status       domain.SubmissionStatus
 	StartedAt    time.Time
+	ExpiresAt    *time.Time
 	SubmittedAt  *time.Time
 	Answers      []SubmissionAnswerOutput
 }

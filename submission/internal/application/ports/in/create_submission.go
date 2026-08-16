@@ -3,8 +3,9 @@ package submission
 import "context"
 
 type CreateSubmissionInput struct {
-	AssessmentID string
-	UserID       string
+	AssessmentID    string
+	UserID          string
+	DurationSeconds int
 }
 
 type CreateSubmissionOutput struct {

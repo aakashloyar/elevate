@@ -28,16 +28,20 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 	if strings.TrimSpace(input.UserID) == "" {
 		return in.CreateSubmissionOutput{}, errors.New("user id is required")
 	}
+	if input.DurationSeconds <= 0 {
+		return in.CreateSubmissionOutput{}, errors.New("duration seconds must be greater than zero")
+	}
 
 	now := s.clock.Now()
 	submission := domain.Submission{
-		ID:           s.idGen.NewID(),
-		AssessmentID: input.AssessmentID,
-		UserID:       input.UserID,
-		Status:       domain.SubmissionStatusCreated,
-		StartedAt:    now,
-		CreatedAt:    now,
-		UpdatedAt:    now,
+		ID:              s.idGen.NewID(),
+		AssessmentID:    input.AssessmentID,
+		UserID:          input.UserID,
+		Status:          domain.SubmissionStatusCreated,
+		StartedAt:       now,
+		DurationSeconds: input.DurationSeconds,
+		CreatedAt:       now,
+		UpdatedAt:       now,
 	}
 
 	if err := s.submissionRepo.Save(submission); err != nil {
