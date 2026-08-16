@@ -3,7 +3,7 @@ package submission
 import (
 	"context"
 
-	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in/submission"
+	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 )
 

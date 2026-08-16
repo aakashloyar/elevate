@@ -113,13 +113,32 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	return submission, answers, nil
 }
 
-func (r *SubmissionRepository) UpdateStatus(submissionID, status string) error {
+func (r *SubmissionRepository) UpdateStatus(submissionID string, status domain.SubmissionStatus) error {
 	_, err := r.db.Exec(`UPDATE submissions SET status = $2, updated_at = NOW() WHERE id = $1`, submissionID, status)
 	return err
 }
 
-func (r *SubmissionRepository) UpdateSubmissionTime(submissionID string, submittedAt time.Time) error {
-	_, err := r.db.Exec(`UPDATE submissions SET submitted_at = $2, status = 'SUBMITTED', updated_at = NOW() WHERE id = $1`, submissionID, submittedAt)
+func (r *SubmissionRepository) UpdateStartTime(submissionID string, startedAt time.Time, status domain.SubmissionStatus) error {
+	_, err := r.db.Exec(`UPDATE submissions SET started_at = $2, status = $3, updated_at = NOW() WHERE id = $1`, submissionID, startedAt, status)
+	return err
+}
+
+func (r *SubmissionRepository) UpdateSubmissionTime(submissionID string, submittedAt time.Time, status domain.SubmissionStatus) error {
+	_, err := r.db.Exec(`UPDATE submissions SET submitted_at = $2, status = $3, updated_at = NOW() WHERE id = $1`, submissionID, submittedAt, status)
+	return err
+}
+
+func (r *SubmissionRepository) ExpireSubmissions(submissionID string) error {
+	_, err := r.db.Exec(`UPDATE submissions
+		SET
+			status = 'SUBMITTED',
+			submitted_at = NOW()
+		WHERE
+			id = $1
+			AND status = 'IN_PROGRESS'
+			AND expires_at <= NOW()
+	`, submissionID)
+
 	return err
 }
 

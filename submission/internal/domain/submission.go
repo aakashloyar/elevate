@@ -2,11 +2,27 @@ package domain
 
 import "time"
 
+type SubmissionStatus string
+
+const (
+	SubmissionStatusCreated    SubmissionStatus = "CREATED"
+	SubmissionStatusInProgress SubmissionStatus = "IN_PROGRESS"
+	SubmissionStatusSubmitted  SubmissionStatus = "SUBMITTED"
+)
+
+func (s SubmissionStatus) IsStartable() bool {
+	return s == SubmissionStatusCreated
+}
+
+func (s SubmissionStatus) IsSubmittable() bool {
+	return s == SubmissionStatusInProgress
+}
+
 type Submission struct {
 	ID           string
 	AssessmentID string
 	UserID       string
-	Status       string
+	Status       SubmissionStatus
 	StartedAt    time.Time
 	SubmittedAt  *time.Time
 	CreatedAt    time.Time

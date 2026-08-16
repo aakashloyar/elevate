@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in/submission"
+	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 )
 
 type CreateSubmissionRequest struct {
@@ -49,17 +49,21 @@ type SubmissionAnswerResponse struct {
 
 type Handler struct {
 	createSubmissionService in.CreateSubmissionService
+	startSubmissionService  in.StartSubmissionService
 	saveAnswerService       in.SaveAnswerService
 	saveAnswerBatchService  in.SaveAnswerBatchService
 	getSubmissionService    in.GetSubmissionService
+	submitSubmissionService in.SubmitSubmissionService
 }
 
-func NewHandler(createSubmissionService in.CreateSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService) *Handler {
+func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, submitSubmissionService in.SubmitSubmissionService) *Handler {
 	return &Handler{
 		createSubmissionService: createSubmissionService,
+		startSubmissionService:  startSubmissionService,
 		saveAnswerService:       saveAnswerService,
 		saveAnswerBatchService:  saveAnswerBatchService,
 		getSubmissionService:    getSubmissionService,
+		submitSubmissionService: submitSubmissionService,
 	}
 }
 
@@ -140,11 +144,29 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		ID:           out.ID,
 		AssessmentID: out.AssessmentID,
 		UserID:       out.UserID,
-		Status:       out.Status,
+		Status:       string(out.Status),
 		StartedAt:    out.StartedAt.Format(http.TimeFormat),
 		SubmittedAt:  submittedAt,
 		Answers:      answers,
 	})
+}
+
+func (h *Handler) SubmitSubmission(w http.ResponseWriter, r *http.Request, submissionID string) {
+	if err := h.submitSubmissionService.Execute(r.Context(), in.SubmitSubmissionInput{SubmissionID: submissionID}); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) StartSubmission(w http.ResponseWriter, r *http.Request, submissionID string) {
+	if err := h.startSubmissionService.Execute(r.Context(), in.StartSubmissionInput{SubmissionID: submissionID}); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) IsSubmissionRoute(path string) bool {

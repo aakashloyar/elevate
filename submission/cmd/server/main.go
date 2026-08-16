@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/aakashloyar/elevate/submission/config"
-	httpsubmission "github.com/aakashloyar/elevate/submission/internal/adapter/in/http/submission"
+	httpsubmission "github.com/aakashloyar/elevate/submission/internal/adapter/in/http"
 	postgres "github.com/aakashloyar/elevate/submission/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out/system"
 	submissionservice "github.com/aakashloyar/elevate/submission/internal/application/service"
@@ -42,11 +42,13 @@ func main() {
 	idGen := system.UUIDGenerator{}
 
 	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, idGen, clock)
+	startSubmissionService := submissionservice.NewStartSubmissionService(submissionRepo, clock)
 	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, clock)
 	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(saveAnswerService)
 	getSubmissionService := submissionservice.NewGetSubmissionService(submissionRepo)
+	submitSubmissionService := submissionservice.NewSubmitSubmissionService(submissionRepo, clock)
 
-	handler := httpsubmission.NewHandler(createSubmissionService, saveAnswerService, saveAnswerBatchService, getSubmissionService)
+	handler := httpsubmission.NewHandler(createSubmissionService, startSubmissionService, saveAnswerService, saveAnswerBatchService, getSubmissionService, submitSubmissionService)
 
 	mux := http.NewServeMux()
 	httpsubmission.RegisterRoutes(mux, handler)

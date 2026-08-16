@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in/submission"
+	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
@@ -34,7 +34,7 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 		ID:           s.idGen.NewID(),
 		AssessmentID: input.AssessmentID,
 		UserID:       input.UserID,
-		Status:       "IN_PROGRESS",
+		Status:       domain.SubmissionStatusCreated,
 		StartedAt:    now,
 		CreatedAt:    now,
 		UpdatedAt:    now,

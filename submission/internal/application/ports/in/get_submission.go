@@ -3,6 +3,8 @@ package submission
 import (
 	"context"
 	"time"
+
+	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 type GetSubmissionInput struct {
@@ -13,7 +15,7 @@ type GetSubmissionOutput struct {
 	ID           string
 	AssessmentID string
 	UserID       string
-	Status       string
+	Status       domain.SubmissionStatus
 	StartedAt    time.Time
 	SubmittedAt  *time.Time
 	Answers      []SubmissionAnswerOutput

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in/submission"
+	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )

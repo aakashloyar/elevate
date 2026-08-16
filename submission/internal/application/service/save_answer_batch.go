@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in/submission"
+	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 )
 
 type SaveAnswerBatchService struct {
