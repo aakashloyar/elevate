@@ -5,21 +5,18 @@ import (
 	"net/http"
 
 	"github.com/aakashloyar/elevate/assessment_runner/config"
-	httpRunner "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/in/http/runner"
-	client "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/out/http"
-	service "github.com/aakashloyar/elevate/assessment_runner/internal/application/service/runner"
+	httpapi "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/in/http"
+	assessmenthttp "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/out/assessmenthttp"
+	problemhttp "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/out/problemhttp"
+	submissionhttp "github.com/aakashloyar/elevate/assessment_runner/internal/adapter/out/submissionhttp"
+	"github.com/aakashloyar/elevate/assessment_runner/internal/application/service"
 )
 
 func main() {
-	clientFactory := client.NewClientFactory(config.App.Services)
-	orchestrator := service.NewRunnerService(clientFactory)
-	handler := httpRunner.NewHandler(orchestrator)
-
+	cfg := config.Load()
+	service := service.NewGetAttemptProblemsService(submissionhttp.NewClient(cfg.SubmissionServiceURL), assessmenthttp.NewClient(cfg.AssessmentServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL))
 	mux := http.NewServeMux()
-	httpRunner.RegisterRoutes(mux, handler)
-
-	log.Printf("assessment runner starting on :%s", config.App.Server.Port)
-	if err := http.ListenAndServe(":"+config.App.Server.Port, mux); err != nil {
-		log.Fatal(err)
-	}
+	httpapi.NewHandler(service).Register(mux)
+	log.Printf("assessment runner starting on :%s", cfg.HTTPPort)
+	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, mux))
 }
