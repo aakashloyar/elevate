@@ -10,6 +10,7 @@ import (
 
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
 	outports "github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
+	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 )
 
 type CreateAssessmentRequest struct {
@@ -34,20 +35,26 @@ type GetAssessmentResponse struct {
 }
 
 type Handler struct {
-	createAssessmentService in.CreateAssessmentService
-	listAssessmentsService  in.ListAssessmentsService
-	getAssessmentService    in.GetAssessmentService
-	deleteAssessmentService in.DeleteAssessmentService
-	createProblemService    in.CreateAssessmentProblemService
+	createAssessmentService    in.CreateAssessmentService
+	listAssessmentsService     in.ListAssessmentsService
+	getAssessmentService       in.GetAssessmentService
+	deleteAssessmentService    in.DeleteAssessmentService
+	createProblemService       in.CreateAssessmentProblemService
+	getMarkingSchemeService    in.GetAssessmentMarkingSchemeService
+	upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService
+	createMarkingSchemeService in.CreateAssessmentMarkingSchemeService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, createProblemService in.CreateAssessmentProblemService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, createProblemService in.CreateAssessmentProblemService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
 	return &Handler{
-		createAssessmentService: createAssessmentService,
-		listAssessmentsService:  listAssessmentsService,
-		getAssessmentService:    getAssessmentService,
-		deleteAssessmentService: deleteAssessmentService,
-		createProblemService:    createProblemService,
+		createAssessmentService:    createAssessmentService,
+		listAssessmentsService:     listAssessmentsService,
+		getAssessmentService:       getAssessmentService,
+		deleteAssessmentService:    deleteAssessmentService,
+		createProblemService:       createProblemService,
+		getMarkingSchemeService:    getMarkingSchemeService,
+		upsertMarkingSchemeService: upsertMarkingSchemeService,
+		createMarkingSchemeService: createMarkingSchemeService,
 	}
 }
 
@@ -73,6 +80,25 @@ type CreateAssessmentProblemOptionInput struct {
 
 type CreateAssessmentProblemResponse struct {
 	ProblemID string `json:"problem_id"`
+}
+
+// AssessmentMarkingSchemeRequest intentionally uses explicit fields so a PUT
+// replaces the complete scheme and cannot leave stale mark values behind.
+type AssessmentMarkingSchemeRequest struct {
+	SingleCorrectMarks      float64 `json:"single_correct_marks"`
+	SingleIncorrectMarks    float64 `json:"single_incorrect_marks"`
+	SingleSkippedMarks      float64 `json:"single_skipped_marks"`
+	MultipleCorrectMarks    float64 `json:"multiple_correct_marks"`
+	MultipleIncorrectMarks  float64 `json:"multiple_incorrect_marks"`
+	MultipleSkippedMarks    float64 `json:"multiple_skipped_marks"`
+	NumericalCorrectMarks   float64 `json:"numerical_correct_marks"`
+	NumericalIncorrectMarks float64 `json:"numerical_incorrect_marks"`
+	NumericalSkippedMarks   float64 `json:"numerical_skipped_marks"`
+}
+
+type AssessmentMarkingSchemeResponse struct {
+	AssessmentID string `json:"assessment_id"`
+	AssessmentMarkingSchemeRequest
 }
 
 func (h *Handler) CreateAssessment(w http.ResponseWriter, r *http.Request) {
@@ -178,6 +204,93 @@ func (h *Handler) DeleteAssessment(w http.ResponseWriter, r *http.Request, asses
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) GetAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
+	markingScheme, err := h.getMarkingSchemeService.Execute(r.Context(), in.GetAssessmentMarkingSchemeInput{AssessmentID: assessmentID})
+	if err != nil {
+		http.Error(w, "assessment marking scheme not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(markingScheme.AssessmentID, AssessmentMarkingSchemeRequest{
+		SingleCorrectMarks:      markingScheme.SingleCorrectMarks,
+		SingleIncorrectMarks:    markingScheme.SingleIncorrectMarks,
+		SingleSkippedMarks:      markingScheme.SingleSkippedMarks,
+		MultipleCorrectMarks:    markingScheme.MultipleCorrectMarks,
+		MultipleIncorrectMarks:  markingScheme.MultipleIncorrectMarks,
+		MultipleSkippedMarks:    markingScheme.MultipleSkippedMarks,
+		NumericalCorrectMarks:   markingScheme.NumericalCorrectMarks,
+		NumericalIncorrectMarks: markingScheme.NumericalIncorrectMarks,
+		NumericalSkippedMarks:   markingScheme.NumericalSkippedMarks,
+	}))
+}
+
+func (h *Handler) PutAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
+	var req AssessmentMarkingSchemeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err := h.upsertMarkingSchemeService.Execute(r.Context(), toUpsertAssessmentMarkingSchemeInput(assessmentID, req))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "assessment not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(assessmentID, req))
+}
+
+func (h *Handler) CreateAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
+	var req AssessmentMarkingSchemeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err := h.createMarkingSchemeService.Execute(r.Context(), toUpsertAssessmentMarkingSchemeInput(assessmentID, req))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "assessment not found", http.StatusNotFound)
+			return
+		}
+		if errors.Is(err, assessmentsvc.ErrAssessmentMarkingSchemeAlreadyExists) {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(assessmentID, req))
+}
+
+func toUpsertAssessmentMarkingSchemeInput(assessmentID string, req AssessmentMarkingSchemeRequest) in.UpsertAssessmentMarkingSchemeInput {
+	return in.UpsertAssessmentMarkingSchemeInput{
+		AssessmentID:            assessmentID,
+		SingleCorrectMarks:      req.SingleCorrectMarks,
+		SingleIncorrectMarks:    req.SingleIncorrectMarks,
+		SingleSkippedMarks:      req.SingleSkippedMarks,
+		MultipleCorrectMarks:    req.MultipleCorrectMarks,
+		MultipleIncorrectMarks:  req.MultipleIncorrectMarks,
+		MultipleSkippedMarks:    req.MultipleSkippedMarks,
+		NumericalCorrectMarks:   req.NumericalCorrectMarks,
+		NumericalIncorrectMarks: req.NumericalIncorrectMarks,
+		NumericalSkippedMarks:   req.NumericalSkippedMarks,
+	}
+}
+
+func toAssessmentMarkingSchemeResponse(assessmentID string, req AssessmentMarkingSchemeRequest) AssessmentMarkingSchemeResponse {
+	return AssessmentMarkingSchemeResponse{AssessmentID: assessmentID, AssessmentMarkingSchemeRequest: req}
 }
 
 func (h *Handler) CreateAssessmentProblem(w http.ResponseWriter, r *http.Request, assessmentID string) {

@@ -154,3 +154,103 @@ func (r *AssessmentRepository) AddProblems(assessmentID string, problemIDs []str
 
 	return tx.Commit()
 }
+
+func (r *AssessmentRepository) FindMarkingScheme(assessmentID string) (domain.AssessmentMarkingScheme, error) {
+	row := r.db.QueryRow(`
+		SELECT
+			assessment_id,
+			single_correct_marks,
+			single_incorrect_marks,
+			single_skipped_marks,
+			multiple_correct_marks,
+			multiple_incorrect_marks,
+			multiple_skipped_marks,
+			numerical_correct_marks,
+			numerical_incorrect_marks,
+			numerical_skipped_marks
+		FROM assessment_marking_schemes
+		WHERE assessment_id = $1`, assessmentID)
+
+	var markingScheme domain.AssessmentMarkingScheme
+	err := row.Scan(
+		&markingScheme.AssessmentID,
+		&markingScheme.SingleCorrectMarks,
+		&markingScheme.SingleIncorrectMarks,
+		&markingScheme.SingleSkippedMarks,
+		&markingScheme.MultipleCorrectMarks,
+		&markingScheme.MultipleIncorrectMarks,
+		&markingScheme.MultipleSkippedMarks,
+		&markingScheme.NumericalCorrectMarks,
+		&markingScheme.NumericalIncorrectMarks,
+		&markingScheme.NumericalSkippedMarks,
+	)
+	return markingScheme, err
+}
+
+func (r *AssessmentRepository) UpsertMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error {
+	_, err := r.db.Exec(`
+		INSERT INTO assessment_marking_schemes (
+			assessment_id,
+			single_correct_marks,
+			single_incorrect_marks,
+			single_skipped_marks,
+			multiple_correct_marks,
+			multiple_incorrect_marks,
+			multiple_skipped_marks,
+			numerical_correct_marks,
+			numerical_incorrect_marks,
+			numerical_skipped_marks
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		ON CONFLICT (assessment_id) DO UPDATE SET
+			single_correct_marks = EXCLUDED.single_correct_marks,
+			single_incorrect_marks = EXCLUDED.single_incorrect_marks,
+			single_skipped_marks = EXCLUDED.single_skipped_marks,
+			multiple_correct_marks = EXCLUDED.multiple_correct_marks,
+			multiple_incorrect_marks = EXCLUDED.multiple_incorrect_marks,
+			multiple_skipped_marks = EXCLUDED.multiple_skipped_marks,
+			numerical_correct_marks = EXCLUDED.numerical_correct_marks,
+			numerical_incorrect_marks = EXCLUDED.numerical_incorrect_marks,
+			numerical_skipped_marks = EXCLUDED.numerical_skipped_marks`,
+		markingScheme.AssessmentID,
+		markingScheme.SingleCorrectMarks,
+		markingScheme.SingleIncorrectMarks,
+		markingScheme.SingleSkippedMarks,
+		markingScheme.MultipleCorrectMarks,
+		markingScheme.MultipleIncorrectMarks,
+		markingScheme.MultipleSkippedMarks,
+		markingScheme.NumericalCorrectMarks,
+		markingScheme.NumericalIncorrectMarks,
+		markingScheme.NumericalSkippedMarks,
+	)
+	return err
+}
+
+func (r *AssessmentRepository) CreateMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error {
+	_, err := r.db.Exec(`
+		INSERT INTO assessment_marking_schemes (
+			assessment_id,
+			single_correct_marks,
+			single_incorrect_marks,
+			single_skipped_marks,
+			multiple_correct_marks,
+			multiple_incorrect_marks,
+			multiple_skipped_marks,
+			numerical_correct_marks,
+			numerical_incorrect_marks,
+			numerical_skipped_marks
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+		markingScheme.AssessmentID,
+		markingScheme.SingleCorrectMarks,
+		markingScheme.SingleIncorrectMarks,
+		markingScheme.SingleSkippedMarks,
+		markingScheme.MultipleCorrectMarks,
+		markingScheme.MultipleIncorrectMarks,
+		markingScheme.MultipleSkippedMarks,
+		markingScheme.NumericalCorrectMarks,
+		markingScheme.NumericalIncorrectMarks,
+		markingScheme.NumericalSkippedMarks,
+	)
+	return err
+}

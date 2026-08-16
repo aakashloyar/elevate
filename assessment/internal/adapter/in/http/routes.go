@@ -55,6 +55,20 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "marking-scheme" {
+			switch r.Method {
+			case http.MethodPost:
+				h.CreateAssessmentMarkingScheme(w, r, assessmentID)
+			case http.MethodGet:
+				h.GetAssessmentMarkingScheme(w, r, assessmentID)
+			case http.MethodPut:
+				h.PutAssessmentMarkingScheme(w, r, assessmentID)
+			default:
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			}
+			return
+		}
+
 		http.NotFound(w, r)
 	})
 }
