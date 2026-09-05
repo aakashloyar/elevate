@@ -3,7 +3,7 @@ package submission
 import (
 	"context"
 	"errors"
-	"log"
+	"fmt"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
@@ -39,7 +39,7 @@ func (s *SubmitSubmissionService) Execute(ctx context.Context, input in.SubmitSu
 		return err
 	}
 	if err := s.publisher.PublishSubmissionSubmitted(ctx, newSubmissionSubmittedMessage(s.topic, submission, answers)); err != nil {
-		log.Printf("failed to publish submitted submission %s: %v", submission.ID, err)
+		return fmt.Errorf("publish submitted submission %s: %w", submission.ID, err)
 	}
 
 	return nil
