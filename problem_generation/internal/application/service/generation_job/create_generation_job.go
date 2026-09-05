@@ -64,7 +64,21 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 	}
 
 	prompt := buildPrompt(job)
-	if err := s.eventPublisher.PublishGenerationRequested(ctx, job, prompt); err != nil {
+	if err := s.eventPublisher.PublishGenerationRequested(ctx, out.GenerationRequestedMessage{
+		Event: out.GenerationRequestedEvent{
+			JobID:              job.ID,
+			UserID:             job.UserID,
+			AssessmentID:       job.AssessmentID,
+			SingleCorrectCount: job.SingleCorrectCount,
+			MultiCorrectCount:  job.MultiCorrectCount,
+			NumericalCount:     job.NumericalCount,
+			DocumentID:         job.DocumentID,
+			Level:              job.Level,
+			Description:        job.Description,
+			TopicIDs:           job.TopicIDs,
+			Prompt:             prompt,
+		},
+	}); err != nil {
 		return in.CreateGenerationJobOutput{}, fmt.Errorf("publish generation request: %w", err)
 	}
 
