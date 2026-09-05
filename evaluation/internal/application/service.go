@@ -67,7 +67,11 @@ func (s *Service) Get(ctx context.Context, submissionID string) (domain.Evaluati
 }
 
 func EvaluateAnswer(problem domain.Problem, answer []string, scheme domain.MarkingScheme) domain.QuestionResult {
-	result := domain.QuestionResult{ProblemID: problem.ID, Type: problem.Type}
+	result := domain.QuestionResult{
+		ProblemID:       problem.ID,
+		Type:            problem.Type,
+		SelectedOptions: selectedOptions(problem.Type, problem.Options, answer),
+	}
 	correct, incorrect, skipped := marks(problem.Type, scheme)
 	if len(answer) == 0 {
 		result.Status, result.Marks = "skipped", skipped
@@ -82,6 +86,39 @@ func EvaluateAnswer(problem domain.Problem, answer []string, scheme domain.Marki
 		result.Status, result.Marks = "incorrect", incorrect
 	}
 	return result
+}
+
+func selectedOptions(problemType domain.ProblemType, options []domain.Option, answer []string) []domain.SelectedOption {
+	if len(answer) == 0 {
+		return []domain.SelectedOption{}
+	}
+
+	if problemType == domain.ProblemTypeNumerical {
+		selected := make([]domain.SelectedOption, 0, len(answer))
+		for _, value := range answer {
+			selected = append(selected, domain.SelectedOption{Text: value})
+		}
+		return selected
+	}
+
+	optionByID := make(map[string]domain.Option, len(options))
+	for _, option := range options {
+		optionByID[option.ID] = option
+	}
+
+	selected := make([]domain.SelectedOption, 0, len(answer))
+	for _, optionID := range answer {
+		option, ok := optionByID[optionID]
+		if !ok {
+			continue
+		}
+		selected = append(selected, domain.SelectedOption{
+			ID:        option.ID,
+			Text:      option.Text,
+			IsCorrect: option.IsCorrect,
+		})
+	}
+	return selected
 }
 
 // evaluateMultipleAnswer gives proportional marks only when every selected

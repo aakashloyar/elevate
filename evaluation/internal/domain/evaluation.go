@@ -44,10 +44,17 @@ type MarkingScheme struct {
 	NumericalSkippedMarks   float64 `json:"numerical_skipped_marks"`
 }
 type QuestionResult struct {
-	ProblemID string      `json:"problem_id"`
-	Type      ProblemType `json:"type"`
-	Status    string      `json:"status"`
-	Marks     float64     `json:"marks"`
+	ProblemID       string           `json:"problem_id"`
+	Type            ProblemType      `json:"type"`
+	Status          string           `json:"status"`
+	Marks           float64          `json:"marks"`
+	SelectedOptions []SelectedOption `json:"selected_options"`
+}
+
+type SelectedOption struct {
+	ID        string `json:"id"`
+	Text      string `json:"text"`
+	IsCorrect bool   `json:"is_correct"`
 }
 type Evaluation struct {
 	SubmissionID string           `json:"submission_id"`
