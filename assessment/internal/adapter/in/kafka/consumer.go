@@ -29,17 +29,26 @@ func (c *Consumer) Start(ctx context.Context) error {
 			var batch problemCreatedBatch
 			if err := json.Unmarshal(record.Value, &batch); err != nil {
 				log.Printf("invalid kafka message payload: %v", err)
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected message failed: %v", commitErr)
+				}
 				continue
 			}
 
 			if batch.AssessmentID == "" || len(batch.ProblemIDs) == 0 {
 				log.Printf("empty or invalid batch: %+v", batch)
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected message failed: %v", commitErr)
+				}
 				continue
 			}
 
 			if len(batch.ProblemIDs) > c.maxPerBatch {
-				log.Printf("batch size %d exceeds max %d; trimming to max", len(batch.ProblemIDs), c.maxPerBatch)
-				batch.ProblemIDs = batch.ProblemIDs[:c.maxPerBatch]
+				log.Printf("batch size %d exceeds max %d; rejecting", len(batch.ProblemIDs), c.maxPerBatch)
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected message failed: %v", commitErr)
+				}
+				continue
 			}
 
 			if _, err := c.addProblemsSvc.Execute(ctx, in.AddProblemsBatchInput{AssessmentID: batch.AssessmentID, ProblemIDs: batch.ProblemIDs}); err != nil {
