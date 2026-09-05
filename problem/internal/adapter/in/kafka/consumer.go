@@ -36,7 +36,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 			return ctx.Err()
 		}
 
-		fetches := c.kafkaClient.client.PollFetches(ctx)
+		fetches := c.client.PollFetches(ctx)
 		if errs := fetches.Errors(); len(errs) > 0 {
 			for _, err := range errs {
 				log.Printf("fetch error: %v", err)
@@ -51,7 +51,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 			var batch generationProblemInput
 			if err := json.Unmarshal(record.Value, &batch); err != nil {
 				log.Printf("invalid kafka message payload: %v", err)
-				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+				if commitErr := c.client.CommitRecords(ctx, record); commitErr != nil {
 					log.Printf("commit rejected message failed: %v", commitErr)
 				}
 				continue
@@ -59,7 +59,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 
 			if batch.AssessmentID == "" {
 				log.Printf("message missing assessment_id; skipping")
-				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+				if commitErr := c.client.CommitRecords(ctx, record); commitErr != nil {
 					log.Printf("commit rejected message failed: %v", commitErr)
 				}
 				continue
@@ -67,7 +67,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 
 			if len(batch.Problems) == 0 {
 				log.Printf("empty problem batch for assessment %s; skipping", batch.AssessmentID)
-				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+				if commitErr := c.client.CommitRecords(ctx, record); commitErr != nil {
 					log.Printf("commit rejected message failed: %v", commitErr)
 				}
 				continue
@@ -75,7 +75,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 
 			if len(batch.Problems) > c.maxPerBatch {
 				log.Printf("batch size %d exceeds max %d; rejecting", len(batch.Problems), c.maxPerBatch)
-				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+				if commitErr := c.client.CommitRecords(ctx, record); commitErr != nil {
 					log.Printf("commit rejected message failed: %v", commitErr)
 				}
 				continue
@@ -105,7 +105,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 				continue
 			}
 
-			if err := c.kafkaClient.client.CommitRecords(ctx, record); err != nil {
+			if err := c.client.CommitRecords(ctx, record); err != nil {
 				log.Printf("commit failed: %v", err)
 			}
 		}
@@ -113,5 +113,5 @@ func (c *Consumer) Start(ctx context.Context) error {
 }
 
 func (c *Consumer) Close() {
-	c.kafkaClient.client.Close()
+	c.client.Close()
 }

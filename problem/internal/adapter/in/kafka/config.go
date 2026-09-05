@@ -19,7 +19,8 @@ type Config struct {
 }
 
 type Consumer struct {
-	kafkaClient *KafkaConsumerClient
+	client      *kgo.Client
+	topic       []string 
 	createSvc   in.CreateProblemBatchService
 	maxPerBatch int
 }
@@ -50,7 +51,8 @@ func (cfg Config) NewConsumer(createSvc in.CreateProblemBatchService) (*Consumer
 	}
 
 	return &Consumer{
-		kafkaClient: &KafkaConsumerClient{client: client, topic: cfg.Topics},
+		client:      client,
+		topic:       cfg.Topics,
 		createSvc:   createSvc,
 		maxPerBatch: 50,
 	}, nil
