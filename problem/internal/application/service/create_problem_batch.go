@@ -2,6 +2,7 @@ package problem
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/aakashloyar/elevate/problem/config"
@@ -50,7 +51,7 @@ func (s *CreateProblemBatchService) Execute(ctx context.Context, input in.Create
 				ProblemIDs:   createdIDs,
 			},
 		}); err != nil {
-			log.Printf("failed to write problem-created message: %v", err)
+			return in.CreateProblemBatchOutput{}, fmt.Errorf("publish created problem batch: %w", err)
 		}
 	}
 	return in.CreateProblemBatchOutput{}, nil
