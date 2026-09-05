@@ -5,13 +5,13 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/users
+  url: http://ec2-43-204-230-140.ap-south-1.compute.amazonaws.com:8080/users
   body:
     type: json
     data: |-
       {
-        "username": "aakashloyar",
-        "email": "aakashloyar@gmail.com"
+        "username": "krishanloyar",
+        "email": "krishanloyar@gmail.com"
       }
   auth: inherit
 
