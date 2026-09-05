@@ -23,6 +23,16 @@ func (c *Consumer) Start(ctx context.Context) error {
 			var event domain.SubmissionSubmitted
 			if err := json.Unmarshal(record.Value, &event); err != nil {
 				log.Printf("invalid submission-submitted event: %v", err)
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected event failed: %v", commitErr)
+				}
+				continue
+			}
+			if event.SubmissionID == "" || event.AssessmentID == "" {
+				log.Printf("submission-submitted event missing required IDs")
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected event failed: %v", commitErr)
+				}
 				continue
 			}
 			if _, err := c.service.Evaluate(ctx, event); err != nil {
