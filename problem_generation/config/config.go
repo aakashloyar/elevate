@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -21,8 +22,11 @@ type ServerConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers string
-	Topic   string
+	Brokers   []string
+	Topic     string
+	ClientID  string
+	APIKey    string
+	APISecret string
 }
 
 type Config struct {
@@ -52,8 +56,11 @@ func load() Config {
 	}
 
 	kafka := KafkaConfig{
-		Brokers: os.Getenv("KAFKA_BROKERS"),
-		Topic:   os.Getenv("KAFKA_GENERATION_REQUESTS_TOPIC"),
+		Brokers:   strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		Topic:     os.Getenv("KAFKA_GENERATION_REQUESTS_TOPIC"),
+		ClientID:  os.Getenv("KAFKA_CLIENT_ID"),
+		APIKey:    os.Getenv("KAFKA_API_KEY"),
+		APISecret: os.Getenv("KAFKA_API_SECRET"),
 	}
 	if kafka.Topic == "" {
 		kafka.Topic = "generation-requests"

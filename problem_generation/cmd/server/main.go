@@ -7,13 +7,14 @@ import (
 
 	"github.com/aakashloyar/elevate/problem_generation/config"
 	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http/generation_job"
+	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
-	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/publisher"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out/system"
 	generationjobsvc "github.com/aakashloyar/elevate/problem_generation/internal/application/service/generation_job"
 )
 
 func main() {
+
 	port, err := strconv.Atoi(config.App.Postgres.Port)
 	if err != nil {
 		log.Fatalf("invalid POSTGRES_PORT: %v", err)
@@ -41,7 +42,17 @@ func main() {
 
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
-	eventPublisher := publisher.NewPublisher(config.App.Kafka.Topic)
+	eventPublisher, err := kafkaproducer.NewProducer(kafkaproducer.Config{
+		Brokers:   config.App.Kafka.Brokers,
+		Topic:     config.App.Kafka.Topic,
+		ClientID:  config.App.Kafka.ClientID,
+		APIKey:    config.App.Kafka.APIKey,
+		APISecret: config.App.Kafka.APISecret,
+	})
+	if err != nil {
+		log.Fatalf("failed to create Kafka producer: %v", err)
+	}
+	defer eventPublisher.Close()
 
 	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, idGen, clock)
 	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo)
