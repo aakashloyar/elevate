@@ -19,8 +19,9 @@ func (p *Producer) PublishCreatedBatch(ctx context.Context, message out.CreatedB
 
 	record := &kgo.Record{
 		Topic:     message.Topic,
+		Key:       []byte(message.Event.AssessmentID),
 		Value:     bytes,
-		Timestamp: time.Now(),
+		Timestamp: time.Now().UTC(),
 	}
 
 	done := make(chan error, 1)
