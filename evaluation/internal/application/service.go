@@ -26,9 +26,6 @@ func (s *Service) Evaluate(ctx context.Context, submission domain.SubmissionSubm
 	if submission.SubmissionID == "" || submission.AssessmentID == "" {
 		return domain.Evaluation{}, errors.New("submission_id and assessment_id are required")
 	}
-	if submission.Status != "SUBMITTED" {
-		return domain.Evaluation{}, fmt.Errorf("cannot evaluate submission with status %q", submission.Status)
-	}
 	if existing, err := s.repository.FindBySubmissionID(ctx, submission.SubmissionID); err == nil {
 		return existing, nil
 	} else if !errors.Is(err, ErrEvaluationNotFound) {
@@ -46,7 +43,16 @@ func (s *Service) Evaluate(ctx context.Context, submission domain.SubmissionSubm
 	for _, answer := range submission.Answers {
 		answers[answer.ProblemID] = answer.Answer
 	}
-	result := domain.Evaluation{SubmissionID: submission.SubmissionID, AssessmentID: submission.AssessmentID, UserID: submission.UserID, Questions: make([]domain.QuestionResult, 0, len(problemIDs)), EvaluatedAt: s.now()}
+	result := domain.Evaluation{
+		SubmissionID:    submission.SubmissionID,
+		AssessmentID:    submission.AssessmentID,
+		UserID:          submission.UserID,
+		StartedAt:       submission.StartedAt,
+		DurationSeconds: submission.DurationSeconds,
+		SubmittedAt:     submission.SubmittedAt,
+		Questions:       make([]domain.QuestionResult, 0, len(problemIDs)),
+		EvaluatedAt:     s.now(),
+	}
 	for _, problemID := range problemIDs {
 		problem, err := s.problems.Problem(ctx, problemID)
 		if err != nil {

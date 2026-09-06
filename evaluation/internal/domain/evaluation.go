@@ -11,15 +11,19 @@ const (
 )
 
 type SubmissionSubmitted struct {
-	SubmissionID string   `json:"submission_id"`
-	AssessmentID string   `json:"assessment_id"`
-	UserID       string   `json:"user_id"`
-	Status       string   `json:"status"`
-	Answers      []Answer `json:"answers"`
+	SubmissionID    string     `json:"submission_id"`
+	AssessmentID    string     `json:"assessment_id"`
+	UserID          string     `json:"user_id"`
+	StartedAt       time.Time  `json:"started_at"`
+	DurationSeconds int        `json:"duration_seconds"`
+	SubmittedAt     *time.Time `json:"submitted_at,omitempty"`
+	Answers         []Answer   `json:"answers"`
 }
 type Answer struct {
-	ProblemID string   `json:"problem_id"`
-	Answer    []string `json:"answer"`
+	ProblemID string    `json:"problem_id"`
+	Answer    []string  `json:"answer"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 type Problem struct {
 	ID      string      `json:"id"`
@@ -57,10 +61,13 @@ type SelectedOption struct {
 	IsCorrect bool   `json:"is_correct"`
 }
 type Evaluation struct {
-	SubmissionID string           `json:"submission_id"`
-	AssessmentID string           `json:"assessment_id"`
-	UserID       string           `json:"user_id"`
-	Score        float64          `json:"score"`
-	Questions    []QuestionResult `json:"questions"`
-	EvaluatedAt  time.Time        `json:"evaluated_at"`
+	SubmissionID    string           `json:"submission_id"`
+	AssessmentID    string           `json:"assessment_id"`
+	UserID          string           `json:"user_id"`
+	StartedAt       time.Time        `json:"started_at"`
+	DurationSeconds int              `json:"duration_seconds"`
+	SubmittedAt     *time.Time       `json:"submitted_at,omitempty"`
+	Score           float64          `json:"score"`
+	Questions       []QuestionResult `json:"questions"`
+	EvaluatedAt     time.Time        `json:"evaluated_at"`
 }
