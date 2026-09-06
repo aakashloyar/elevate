@@ -22,13 +22,9 @@ func newSubmissionSubmittedMessage(topic string, submission domain.Submission, a
 			SubmissionID:    submission.ID,
 			AssessmentID:    submission.AssessmentID,
 			UserID:          submission.UserID,
-			Status:          submission.Status,
 			StartedAt:       submission.StartedAt,
 			DurationSeconds: submission.DurationSeconds,
-			ExpiresAt:       submission.ExpiresAt,
 			SubmittedAt:     submission.SubmittedAt,
-			CreatedAt:       submission.CreatedAt,
-			UpdatedAt:       submission.UpdatedAt,
 			Answers:         eventAnswers,
 		},
 	}
