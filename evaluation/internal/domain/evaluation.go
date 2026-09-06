@@ -3,11 +3,16 @@ package domain
 import "time"
 
 type ProblemType string
+type SubmissionStatus string
 
 const (
 	ProblemTypeSingle    ProblemType = "single"
 	ProblemTypeMultiple  ProblemType = "multiple"
 	ProblemTypeNumerical ProblemType = "numerical"
+
+	SubmissionStatusUnderEvaluation  SubmissionStatus = "UNDER_EVALUATION"
+	SubmissionStatusEvaluated        SubmissionStatus = "EVALUATED"
+	SubmissionStatusEvaluationFailed SubmissionStatus = "EVALUATION_FAILED"
 )
 
 type SubmissionSubmitted struct {

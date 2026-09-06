@@ -14,12 +14,13 @@ var ErrEvaluationNotFound = errors.New("evaluation not found")
 type Service struct {
 	assessments AssessmentClient
 	problems    ProblemClient
+	submissions SubmissionClient
 	repository  Repository
 	now         func() time.Time
 }
 
-func NewService(assessments AssessmentClient, problems ProblemClient, repository Repository) *Service {
-	return &Service{assessments: assessments, problems: problems, repository: repository, now: func() time.Time { return time.Now().UTC() }}
+func NewService(assessments AssessmentClient, problems ProblemClient, submissions SubmissionClient, repository Repository) *Service {
+	return &Service{assessments: assessments, problems: problems, submissions: submissions, repository: repository, now: func() time.Time { return time.Now().UTC() }}
 }
 
 func (s *Service) Evaluate(ctx context.Context, submission domain.SubmissionSubmitted) (domain.Evaluation, error) {
@@ -27,10 +28,32 @@ func (s *Service) Evaluate(ctx context.Context, submission domain.SubmissionSubm
 		return domain.Evaluation{}, errors.New("submission_id and assessment_id are required")
 	}
 	if existing, err := s.repository.FindBySubmissionID(ctx, submission.SubmissionID); err == nil {
+		if err := s.submissions.UpdateStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluated); err != nil {
+			return domain.Evaluation{}, fmt.Errorf("mark submission evaluated: %w", err)
+		}
 		return existing, nil
 	} else if !errors.Is(err, ErrEvaluationNotFound) {
 		return domain.Evaluation{}, err
 	}
+
+	if err := s.submissions.UpdateStatus(ctx, submission.SubmissionID, domain.SubmissionStatusUnderEvaluation); err != nil {
+		return domain.Evaluation{}, fmt.Errorf("mark submission under evaluation: %w", err)
+	}
+
+	evaluation, err := s.evaluateSubmission(ctx, submission)
+	if err != nil {
+		if statusErr := s.submissions.UpdateStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluationFailed); statusErr != nil {
+			return domain.Evaluation{}, fmt.Errorf("%w; additionally failed to mark submission evaluation failed: %v", err, statusErr)
+		}
+		return domain.Evaluation{}, err
+	}
+	if err := s.submissions.UpdateStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluated); err != nil {
+		return domain.Evaluation{}, fmt.Errorf("mark submission evaluated: %w", err)
+	}
+	return evaluation, nil
+}
+
+func (s *Service) evaluateSubmission(ctx context.Context, submission domain.SubmissionSubmitted) (domain.Evaluation, error) {
 	scheme, err := s.assessments.MarkingScheme(ctx, submission.AssessmentID)
 	if err != nil {
 		return domain.Evaluation{}, fmt.Errorf("get marking scheme: %w", err)

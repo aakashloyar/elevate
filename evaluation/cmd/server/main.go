@@ -10,6 +10,7 @@ import (
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/in/kafka"
 	httpclient "github.com/aakashloyar/elevate/evaluation/internal/adapter/out/http"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/postgres"
+	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/submissionhttp"
 	"github.com/aakashloyar/elevate/evaluation/internal/application"
 )
 
@@ -20,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	service := application.NewService(httpclient.New(cfg.AssessmentServiceURL), httpclient.New(cfg.ProblemServiceURL), postgres.New(db))
+	service := application.NewService(httpclient.New(cfg.AssessmentServiceURL), httpclient.New(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), postgres.New(db))
 	consumerConfig := kafka.Config{Brokers: cfg.Kafka.Brokers, Topics: []string{cfg.Kafka.Topic}, ClientID: cfg.Kafka.ClientID, GroupID: cfg.Kafka.GroupID, APIKey: cfg.Kafka.APIKey, APISecret: cfg.Kafka.APISecret}
 	consumer, err := consumerConfig.NewConsumer(service)
 	if err != nil {

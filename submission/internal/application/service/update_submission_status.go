@@ -42,6 +42,10 @@ func (s *UpdateSubmissionStatusService) Execute(_ context.Context, input in.Upda
 }
 
 func canUpdateSubmissionStatus(currentStatus, nextStatus domain.SubmissionStatus) bool {
+	if currentStatus == nextStatus {
+		return true
+	}
+
 	allowedTransitions := map[domain.SubmissionStatus][]domain.SubmissionStatus{
 		domain.SubmissionStatusSubmitted: {
 			domain.SubmissionStatusUnderEvaluation,

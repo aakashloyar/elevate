@@ -12,6 +12,7 @@ type Config struct {
 	HTTPPort             string
 	AssessmentServiceURL string
 	ProblemServiceURL    string
+	SubmissionServiceURL string
 	Postgres             PostgresConfig
 	Kafka                KafkaConfig
 }
@@ -30,6 +31,7 @@ func Load() Config {
 		HTTPPort:             os.Getenv("HTTP_PORT"),
 		AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"),
 		ProblemServiceURL:    os.Getenv("PROBLEM_SERVICE_URL"),
+		SubmissionServiceURL: os.Getenv("SUBMISSION_SERVICE_URL"),
 		Postgres:             PostgresConfig{Host: os.Getenv("POSTGRES_HOST"), Port: os.Getenv("POSTGRES_PORT"), User: os.Getenv("POSTGRES_USER"), Password: os.Getenv("POSTGRES_PASSWORD"), DBName: os.Getenv("POSTGRES_DB"), SSLMode: os.Getenv("POSTGRES_SSLMODE")},
 		Kafka:                KafkaConfig{Brokers: split(os.Getenv("KAFKA_BROKERS")), Topic: os.Getenv("KAFKA_SUBMISSION_SUBMITTED_TOPIC"), ClientID: os.Getenv("KAFKA_CLIENT_ID"), GroupID: os.Getenv("KAFKA_GROUP_ID"), APIKey: os.Getenv("KAFKA_API_KEY"), APISecret: os.Getenv("KAFKA_API_SECRET")},
 	}
@@ -41,6 +43,9 @@ func Load() Config {
 	}
 	if cfg.ProblemServiceURL == "" {
 		cfg.ProblemServiceURL = "http://localhost:8081"
+	}
+	if cfg.SubmissionServiceURL == "" {
+		cfg.SubmissionServiceURL = "http://localhost:8083"
 	}
 	if cfg.Kafka.Topic == "" {
 		cfg.Kafka.Topic = "submission-submitted"
