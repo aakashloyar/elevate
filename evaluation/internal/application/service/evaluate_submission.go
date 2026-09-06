@@ -29,10 +29,12 @@ func NewEvaluateSubmissionService(assessments out.AssessmentClient, problems out
 }
 
 func (s *EvaluateSubmissionService) Execute(ctx context.Context, submission domain.SubmissionSubmitted) (domain.Evaluation, error) {
+	//first fo all check if submission id is not empty and assessment id is not empty
 	if submission.SubmissionID == "" || submission.AssessmentID == "" {
 		return domain.Evaluation{}, errors.New("submission_id and assessment_id are required")
 	}
 
+	//check if evaluation already exists for this submission id 
 	if existing, err := s.repository.FindBySubmissionID(ctx, submission.SubmissionID); err == nil {
 		if err := s.submissions.UpdateSubmissionStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluated); err != nil {
 			return domain.Evaluation{}, fmt.Errorf("mark submission evaluated: %w", err)
@@ -42,18 +44,22 @@ func (s *EvaluateSubmissionService) Execute(ctx context.Context, submission doma
 		return domain.Evaluation{}, err
 	}
 
+	//mark submission as under evaluation
 	if err := s.submissions.UpdateSubmissionStatus(ctx, submission.SubmissionID, domain.SubmissionStatusUnderEvaluation); err != nil {
 		return domain.Evaluation{}, fmt.Errorf("mark submission under evaluation: %w", err)
 	}
 
+	// evaluate the submission
 	evaluation, err := s.evaluateSubmission(ctx, submission)
 	if err != nil {
+		// if evaluation fails, mark submission as evaluation failed
 		if statusErr := s.submissions.UpdateSubmissionStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluationFailed); statusErr != nil {
 			return domain.Evaluation{}, fmt.Errorf("%w; additionally failed to mark submission evaluation failed: %v", err, statusErr)
 		}
 		return domain.Evaluation{}, err
 	}
 
+	//update submission status to evaluated
 	if err := s.submissions.UpdateSubmissionStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluated); err != nil {
 		return domain.Evaluation{}, fmt.Errorf("mark submission evaluated: %w", err)
 	}
