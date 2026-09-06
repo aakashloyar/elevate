@@ -77,9 +77,9 @@ func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, subm
 		return domain.Evaluation{}, fmt.Errorf("get assessment problems: %w", err)
 	}
 
-	answers := make(map[string][]string, len(submission.Answers))
+	selectedOptions := make(map[string][]string, len(submission.Answers))
 	for _, answer := range submission.Answers {
-		answers[answer.ProblemID] = answer.Answer
+		selectedOptions[answer.ProblemID] = answer.Answer
 	}
 
 	result := domain.Evaluation{
@@ -98,7 +98,7 @@ func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, subm
 		if err != nil {
 			return domain.Evaluation{}, fmt.Errorf("get problem %s: %w", problemID, err)
 		}
-		question := EvaluateAnswer(problem, answers[problemID], scheme)
+		question := EvaluateAnswer(problem, selectedOptions[problemID], scheme)
 		result.Questions = append(result.Questions, question)
 		result.Score += question.Marks
 	}

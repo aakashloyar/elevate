@@ -2,95 +2,104 @@ package evaluation
 
 import "github.com/aakashloyar/elevate/evaluation/internal/domain"
 
-func EvaluateAnswer(problem domain.Problem, answer []string, scheme domain.MarkingScheme) domain.QuestionResult {
+
+func EvaluateAnswer(problem domain.Problem, selectedOptions []string, scheme domain.MarkingScheme) domain.QuestionResult {
 	result := domain.QuestionResult{
 		ProblemID:       problem.ID,
-		Type:            problem.Type,
-		SelectedOptions: selectedOptions(problem.Type, problem.Options, answer),
+		Type: 		     problem.Type,
+		SelectedOptions: evaluateOptions(problem, selectedOptions),
 	}
-	correct, incorrect, skipped := marks(problem.Type, scheme)
-	if len(answer) == 0 {
-		result.Status, result.Marks = domain.QuestionResultStatusSkipped, skipped
-		return result
-	}
-	if problem.Type == domain.ProblemTypeMultiple {
-		return evaluateMultipleAnswer(result, answer, correctOptionIDs(problem.Options), correct, incorrect)
-	}
-	if sameSet(answer, correctOptionIDs(problem.Options)) {
-		result.Status, result.Marks = domain.QuestionResultStatusCorrect, correct
-	} else {
-		result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrect
-	}
+	updateProblemResult(problem,result, scheme)
 	return result
 }
 
-func selectedOptions(problemType domain.ProblemType, options []domain.Option, answer []string) []domain.SelectedOption {
-	if len(answer) == 0 {
+func evaluateOptions(problem domain.Problem, selectedOptions []string) []domain.SelectedOption {
+	if len(selectedOptions) == 0 {
 		return []domain.SelectedOption{}
 	}
-
-	if problemType == domain.ProblemTypeNumerical {
-		selected := make([]domain.SelectedOption, 0, len(answer))
-		for _, value := range answer {
-			selected = append(selected, domain.SelectedOption{Text: value})
+	options := problem.Options
+	if problem.Type == domain.ProblemTypeNumerical {
+		return []domain.SelectedOption {
+			{
+				ID: "",
+				Text: selectedOptions[0],
+				IsCorrect: options[0].Text == selectedOptions[0],
+			},
 		}
-		return selected
-	}
-
-	optionByID := make(map[string]domain.Option, len(options))
-	for _, option := range options {
-		optionByID[option.ID] = option
-	}
-
-	selected := make([]domain.SelectedOption, 0, len(answer))
-	for _, optionID := range answer {
-		option, ok := optionByID[optionID]
-		if !ok {
-			continue
+	} else if problem.Type == domain.ProblemTypeSingle {
+		isCorrect := false
+		for _, option := range options {
+			if option.ID == selectedOptions[0] {
+				isCorrect = option.IsCorrect
+				break
+			}
 		}
-		selected = append(selected, domain.SelectedOption{
-			ID:        option.ID,
-			Text:      option.Text,
-			IsCorrect: option.IsCorrect,
-		})
+		return []domain.SelectedOption{
+			{
+				ID:        selectedOptions[0],
+				Text:      "",
+				IsCorrect: isCorrect,
+			},
+		}
+	} else{
+		res := make([]domain.SelectedOption, 0, len(selectedOptions))
+		for _, option := range selectedOptions {
+			for _, opt := range options {
+				if opt.ID == option {
+					res = append(res, domain.SelectedOption{
+						ID:        opt.ID,
+						Text:      opt.Text,
+						IsCorrect: opt.IsCorrect,
+					})
+				}
+			}
+		}
+		return res
 	}
-	return selected
 }
 
-func evaluateMultipleAnswer(result domain.QuestionResult, answer, correctOptionIDs []string, correctMarks, incorrectMarks float64) domain.QuestionResult {
-	correctOptions := make(map[string]struct{}, len(correctOptionIDs))
-	for _, optionID := range correctOptionIDs {
-		correctOptions[optionID] = struct{}{}
-	}
-	if len(correctOptions) == 0 {
-		result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
-		return result
-	}
-
-	selected := make(map[string]struct{}, len(answer))
-	for _, optionID := range answer {
-		if optionID == "" {
-			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
-			return result
+func updateProblemResult(problem domain.Problem, result domain.QuestionResult, scheme domain.MarkingScheme) {
+	correct, incorrect, skipped := marks(result.Type, scheme)
+	if problem.Type != domain.ProblemTypeMultiple {
+		if len(result.SelectedOptions) == 0 {
+			result.Status = domain.QuestionResultStatusSkipped
+			result.Marks = skipped
+		} else if result.SelectedOptions[0].IsCorrect {
+			result.Status = domain.QuestionResultStatusCorrect
+			result.Marks = correct
+		} else {
+			result.Status = domain.QuestionResultStatusIncorrect
+			result.Marks = incorrect
 		}
-		if _, alreadySelected := selected[optionID]; alreadySelected {
-			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
-			return result
-		}
-		selected[optionID] = struct{}{}
-		if _, isCorrect := correctOptions[optionID]; !isCorrect {
-			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
-			return result
+	} else {
+		if len(result.SelectedOptions) == 0 {
+			result.Status = domain.QuestionResultStatusSkipped
+			result.Marks = skipped
+		} else {
+			selectedCorrectOptionCount := 0
+			for _, option := range result.SelectedOptions {
+				if !option.IsCorrect {
+					result.Status = domain.QuestionResultStatusIncorrect
+					result.Marks = incorrect
+					return
+				}
+				selectedCorrectOptionCount++
+			}
+			totalCorrectOptionCount := 0
+			for _, option := range problem.Options {
+				if option.IsCorrect {
+					totalCorrectOptionCount++
+				}
+			}
+			if selectedCorrectOptionCount == totalCorrectOptionCount {
+				result.Status = domain.QuestionResultStatusCorrect
+				result.Marks = correct
+			} else {
+				result.Status = domain.QuestionResultStatusPartiallyCorrect
+				result.Marks = float64(selectedCorrectOptionCount) / float64(totalCorrectOptionCount) * correct
+			}
 		}
 	}
-
-	if len(selected) == len(correctOptions) {
-		result.Status, result.Marks = domain.QuestionResultStatusCorrect, correctMarks
-		return result
-	}
-	result.Status = domain.QuestionResultStatusPartiallyCorrect
-	result.Marks = float64(len(selected)) * correctMarks / float64(len(correctOptions))
-	return result
 }
 
 func marks(kind domain.ProblemType, s domain.MarkingScheme) (float64, float64, float64) {
@@ -104,36 +113,4 @@ func marks(kind domain.ProblemType, s domain.MarkingScheme) (float64, float64, f
 	default:
 		return 0, 0, 0
 	}
-}
-
-func correctOptionIDs(options []domain.Option) []string {
-	ids := make([]string, 0)
-	for _, option := range options {
-		if option.IsCorrect {
-			ids = append(ids, option.ID)
-		}
-	}
-	return ids
-}
-
-func sameSet(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	values := make(map[string]struct{}, len(a))
-	for _, v := range a {
-		if v == "" {
-			return false
-		}
-		values[v] = struct{}{}
-	}
-	if len(values) != len(a) {
-		return false
-	}
-	for _, v := range b {
-		if _, ok := values[v]; !ok {
-			return false
-		}
-	}
-	return true
 }
