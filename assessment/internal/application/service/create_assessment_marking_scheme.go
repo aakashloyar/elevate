@@ -43,9 +43,9 @@ func (s *CreateAssessmentMarkingSchemeService) Execute(ctx context.Context, inpu
 
 func validateMarkValues(input in.UpsertAssessmentMarkingSchemeInput) error {
 	marks := []float64{
-		input.SingleCorrectMarks, input.SingleIncorrectMarks, input.SingleSkippedMarks,
-		input.MultipleCorrectMarks, input.MultipleIncorrectMarks, input.MultipleSkippedMarks,
-		input.NumericalCorrectMarks, input.NumericalIncorrectMarks, input.NumericalSkippedMarks,
+		input.Single.Correct, input.Single.Incorrect, input.Single.Skipped,
+		input.Multiple.Correct, input.Multiple.Incorrect, input.Multiple.Skipped,
+		input.Numerical.Correct, input.Numerical.Incorrect, input.Numerical.Skipped,
 	}
 	for _, mark := range marks {
 		if math.IsNaN(mark) || math.IsInf(mark, 0) {
@@ -57,15 +57,21 @@ func validateMarkValues(input in.UpsertAssessmentMarkingSchemeInput) error {
 
 func toAssessmentMarkingScheme(input in.UpsertAssessmentMarkingSchemeInput) domain.AssessmentMarkingScheme {
 	return domain.AssessmentMarkingScheme{
-		AssessmentID:            input.AssessmentID,
-		SingleCorrectMarks:      input.SingleCorrectMarks,
-		SingleIncorrectMarks:    input.SingleIncorrectMarks,
-		SingleSkippedMarks:      input.SingleSkippedMarks,
-		MultipleCorrectMarks:    input.MultipleCorrectMarks,
-		MultipleIncorrectMarks:  input.MultipleIncorrectMarks,
-		MultipleSkippedMarks:    input.MultipleSkippedMarks,
-		NumericalCorrectMarks:   input.NumericalCorrectMarks,
-		NumericalIncorrectMarks: input.NumericalIncorrectMarks,
-		NumericalSkippedMarks:   input.NumericalSkippedMarks,
+		AssessmentID: input.AssessmentID,
+		Single: domain.Marks{
+			Correct:   input.Single.Correct,
+			Incorrect: input.Single.Incorrect,
+			Skipped:   input.Single.Skipped,
+		},
+		Multiple: domain.Marks{
+			Correct:   input.Multiple.Correct,
+			Incorrect: input.Multiple.Incorrect,
+			Skipped:   input.Multiple.Skipped,
+		},
+		Numerical: domain.Marks{
+			Correct:   input.Numerical.Correct,
+			Incorrect: input.Numerical.Incorrect,
+			Skipped:   input.Numerical.Skipped,
+		},
 	}
 }

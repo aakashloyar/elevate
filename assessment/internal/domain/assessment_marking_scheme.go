@@ -2,16 +2,13 @@ package domain
 
 type AssessmentMarkingScheme struct {
 	AssessmentID string
+	Single       Marks
+	Multiple     Marks
+	Numerical    Marks
+}
 
-	SingleCorrectMarks   float64
-	SingleIncorrectMarks float64
-	SingleSkippedMarks   float64
-
-	MultipleCorrectMarks   float64
-	MultipleIncorrectMarks float64
-	MultipleSkippedMarks   float64
-
-	NumericalCorrectMarks   float64
-	NumericalIncorrectMarks float64
-	NumericalSkippedMarks   float64
+type Marks struct {
+	Correct   float64
+	Incorrect float64
+	Skipped   float64
 }

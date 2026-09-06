@@ -11,6 +11,7 @@ import (
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
 	outports "github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
 	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
+	"github.com/aakashloyar/elevate/assessment/internal/domain"
 )
 
 type CreateAssessmentRequest struct {
@@ -88,18 +89,16 @@ type CreateAssessmentProblemResponse struct {
 	ProblemID string `json:"problem_id"`
 }
 
-// AssessmentMarkingSchemeRequest intentionally uses explicit fields so a PUT
-// replaces the complete scheme and cannot leave stale mark values behind.
 type AssessmentMarkingSchemeRequest struct {
-	SingleCorrectMarks      float64 `json:"single_correct_marks"`
-	SingleIncorrectMarks    float64 `json:"single_incorrect_marks"`
-	SingleSkippedMarks      float64 `json:"single_skipped_marks"`
-	MultipleCorrectMarks    float64 `json:"multiple_correct_marks"`
-	MultipleIncorrectMarks  float64 `json:"multiple_incorrect_marks"`
-	MultipleSkippedMarks    float64 `json:"multiple_skipped_marks"`
-	NumericalCorrectMarks   float64 `json:"numerical_correct_marks"`
-	NumericalIncorrectMarks float64 `json:"numerical_incorrect_marks"`
-	NumericalSkippedMarks   float64 `json:"numerical_skipped_marks"`
+	Single    MarksRequest `json:"single"`
+	Multiple  MarksRequest `json:"multiple"`
+	Numerical MarksRequest `json:"numerical"`
+}
+
+type MarksRequest struct {
+	Correct   float64 `json:"correct"`
+	Incorrect float64 `json:"incorrect"`
+	Skipped   float64 `json:"skipped"`
 }
 
 type AssessmentMarkingSchemeResponse struct {
@@ -220,17 +219,7 @@ func (h *Handler) GetAssessmentMarkingScheme(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(markingScheme.AssessmentID, AssessmentMarkingSchemeRequest{
-		SingleCorrectMarks:      markingScheme.SingleCorrectMarks,
-		SingleIncorrectMarks:    markingScheme.SingleIncorrectMarks,
-		SingleSkippedMarks:      markingScheme.SingleSkippedMarks,
-		MultipleCorrectMarks:    markingScheme.MultipleCorrectMarks,
-		MultipleIncorrectMarks:  markingScheme.MultipleIncorrectMarks,
-		MultipleSkippedMarks:    markingScheme.MultipleSkippedMarks,
-		NumericalCorrectMarks:   markingScheme.NumericalCorrectMarks,
-		NumericalIncorrectMarks: markingScheme.NumericalIncorrectMarks,
-		NumericalSkippedMarks:   markingScheme.NumericalSkippedMarks,
-	}))
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(markingScheme))
 }
 
 func (h *Handler) GetAssessmentProblems(w http.ResponseWriter, r *http.Request, assessmentID string) {
@@ -261,7 +250,7 @@ func (h *Handler) PutAssessmentMarkingScheme(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(assessmentID, req))
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponseFromRequest(assessmentID, req))
 }
 
 func (h *Handler) CreateAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
@@ -287,26 +276,47 @@ func (h *Handler) CreateAssessmentMarkingScheme(w http.ResponseWriter, r *http.R
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponse(assessmentID, req))
+	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponseFromRequest(assessmentID, req))
 }
 
 func toUpsertAssessmentMarkingSchemeInput(assessmentID string, req AssessmentMarkingSchemeRequest) in.UpsertAssessmentMarkingSchemeInput {
 	return in.UpsertAssessmentMarkingSchemeInput{
-		AssessmentID:            assessmentID,
-		SingleCorrectMarks:      req.SingleCorrectMarks,
-		SingleIncorrectMarks:    req.SingleIncorrectMarks,
-		SingleSkippedMarks:      req.SingleSkippedMarks,
-		MultipleCorrectMarks:    req.MultipleCorrectMarks,
-		MultipleIncorrectMarks:  req.MultipleIncorrectMarks,
-		MultipleSkippedMarks:    req.MultipleSkippedMarks,
-		NumericalCorrectMarks:   req.NumericalCorrectMarks,
-		NumericalIncorrectMarks: req.NumericalIncorrectMarks,
-		NumericalSkippedMarks:   req.NumericalSkippedMarks,
+		AssessmentID: assessmentID,
+		Single:       toMarksInput(req.Single),
+		Multiple:     toMarksInput(req.Multiple),
+		Numerical:    toMarksInput(req.Numerical),
 	}
 }
 
-func toAssessmentMarkingSchemeResponse(assessmentID string, req AssessmentMarkingSchemeRequest) AssessmentMarkingSchemeResponse {
+func toMarksInput(req MarksRequest) in.MarksInput {
+	return in.MarksInput{
+		Correct:   req.Correct,
+		Incorrect: req.Incorrect,
+		Skipped:   req.Skipped,
+	}
+}
+
+func toAssessmentMarkingSchemeResponse(markingScheme domain.AssessmentMarkingScheme) AssessmentMarkingSchemeResponse {
+	return AssessmentMarkingSchemeResponse{
+		AssessmentID: markingScheme.AssessmentID,
+		AssessmentMarkingSchemeRequest: AssessmentMarkingSchemeRequest{
+			Single:    toMarksRequest(markingScheme.Single),
+			Multiple:  toMarksRequest(markingScheme.Multiple),
+			Numerical: toMarksRequest(markingScheme.Numerical),
+		},
+	}
+}
+
+func toAssessmentMarkingSchemeResponseFromRequest(assessmentID string, req AssessmentMarkingSchemeRequest) AssessmentMarkingSchemeResponse {
 	return AssessmentMarkingSchemeResponse{AssessmentID: assessmentID, AssessmentMarkingSchemeRequest: req}
+}
+
+func toMarksRequest(marks domain.Marks) MarksRequest {
+	return MarksRequest{
+		Correct:   marks.Correct,
+		Incorrect: marks.Incorrect,
+		Skipped:   marks.Skipped,
+	}
 }
 
 func (h *Handler) CreateAssessmentProblem(w http.ResponseWriter, r *http.Request, assessmentID string) {

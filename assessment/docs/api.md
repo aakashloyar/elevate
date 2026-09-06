@@ -19,15 +19,20 @@ Description -> Creates or replaces the complete marking scheme for an assessment
 Request body:
 ```json
 {
-  "single_correct_marks": 4,
-  "single_incorrect_marks": -1,
-  "single_skipped_marks": 0,
-  "multiple_correct_marks": 4,
-  "multiple_incorrect_marks": -1,
-  "multiple_skipped_marks": 0,
-  "numerical_correct_marks": 4,
-  "numerical_incorrect_marks": 0,
-  "numerical_skipped_marks": 0
+  "single": {
+    "correct": 4,
+    "incorrect": -1,
+    "skipped": 0
+  },
+  "multiple": {
+    "correct": 4,
+    "incorrect": -1,
+    "skipped": 0
+  },
+  "numerical": {
+    "correct": 4,
+    "incorrect": 0,
+    "skipped": 0
+  }
 }
 ```
-

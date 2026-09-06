@@ -192,15 +192,15 @@ func (r *AssessmentRepository) FindMarkingScheme(assessmentID string) (domain.As
 	var markingScheme domain.AssessmentMarkingScheme
 	err := row.Scan(
 		&markingScheme.AssessmentID,
-		&markingScheme.SingleCorrectMarks,
-		&markingScheme.SingleIncorrectMarks,
-		&markingScheme.SingleSkippedMarks,
-		&markingScheme.MultipleCorrectMarks,
-		&markingScheme.MultipleIncorrectMarks,
-		&markingScheme.MultipleSkippedMarks,
-		&markingScheme.NumericalCorrectMarks,
-		&markingScheme.NumericalIncorrectMarks,
-		&markingScheme.NumericalSkippedMarks,
+		&markingScheme.Single.Correct,
+		&markingScheme.Single.Incorrect,
+		&markingScheme.Single.Skipped,
+		&markingScheme.Multiple.Correct,
+		&markingScheme.Multiple.Incorrect,
+		&markingScheme.Multiple.Skipped,
+		&markingScheme.Numerical.Correct,
+		&markingScheme.Numerical.Incorrect,
+		&markingScheme.Numerical.Skipped,
 	)
 	return markingScheme, err
 }
@@ -231,15 +231,15 @@ func (r *AssessmentRepository) UpsertMarkingScheme(markingScheme domain.Assessme
 			numerical_incorrect_marks = EXCLUDED.numerical_incorrect_marks,
 			numerical_skipped_marks = EXCLUDED.numerical_skipped_marks`,
 		markingScheme.AssessmentID,
-		markingScheme.SingleCorrectMarks,
-		markingScheme.SingleIncorrectMarks,
-		markingScheme.SingleSkippedMarks,
-		markingScheme.MultipleCorrectMarks,
-		markingScheme.MultipleIncorrectMarks,
-		markingScheme.MultipleSkippedMarks,
-		markingScheme.NumericalCorrectMarks,
-		markingScheme.NumericalIncorrectMarks,
-		markingScheme.NumericalSkippedMarks,
+		markingScheme.Single.Correct,
+		markingScheme.Single.Incorrect,
+		markingScheme.Single.Skipped,
+		markingScheme.Multiple.Correct,
+		markingScheme.Multiple.Incorrect,
+		markingScheme.Multiple.Skipped,
+		markingScheme.Numerical.Correct,
+		markingScheme.Numerical.Incorrect,
+		markingScheme.Numerical.Skipped,
 	)
 	return err
 }
@@ -260,15 +260,15 @@ func (r *AssessmentRepository) CreateMarkingScheme(markingScheme domain.Assessme
 		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 		markingScheme.AssessmentID,
-		markingScheme.SingleCorrectMarks,
-		markingScheme.SingleIncorrectMarks,
-		markingScheme.SingleSkippedMarks,
-		markingScheme.MultipleCorrectMarks,
-		markingScheme.MultipleIncorrectMarks,
-		markingScheme.MultipleSkippedMarks,
-		markingScheme.NumericalCorrectMarks,
-		markingScheme.NumericalIncorrectMarks,
-		markingScheme.NumericalSkippedMarks,
+		markingScheme.Single.Correct,
+		markingScheme.Single.Incorrect,
+		markingScheme.Single.Skipped,
+		markingScheme.Multiple.Correct,
+		markingScheme.Multiple.Incorrect,
+		markingScheme.Multiple.Skipped,
+		markingScheme.Numerical.Correct,
+		markingScheme.Numerical.Incorrect,
+		markingScheme.Numerical.Skipped,
 	)
 	return err
 }
