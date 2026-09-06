@@ -16,7 +16,7 @@ func main() {
 	cfg := config.Load()
 	service := service.NewGetAttemptProblemsService(submissionhttp.NewClient(cfg.SubmissionServiceURL), assessmenthttp.NewClient(cfg.AssessmentServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL))
 	mux := http.NewServeMux()
-	httpapi.NewHandler(service).Register(mux)
+	httpapi.RegisterRoutes(mux, httpapi.NewHandler(service))
 	log.Printf("assessment runner starting on :%s", cfg.HTTPPort)
 	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, mux))
 }

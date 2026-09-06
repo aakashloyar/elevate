@@ -25,7 +25,7 @@ type GetAssessmentProblemsResponse struct {
 	ProblemIDs []string `json:"problem_ids"`
 }
 
-func NewClient(baseURL string) out.AssessmentGateway {
+func NewClient(baseURL string) out.AssessmentClient {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
 }
 

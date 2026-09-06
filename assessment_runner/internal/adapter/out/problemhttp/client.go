@@ -36,7 +36,7 @@ type GetProblemOptionResponse struct {
 	Text string `json:"text"`
 }
 
-func NewClient(baseURL string) out.ProblemGateway {
+func NewClient(baseURL string) out.ProblemClient {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
 }
 

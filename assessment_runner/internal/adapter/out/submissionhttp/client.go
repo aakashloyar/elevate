@@ -25,7 +25,7 @@ type GetSubmissionResponse struct {
 	AssessmentID string `json:"assessment_id"`
 }
 
-func NewClient(baseURL string) out.SubmissionGateway {
+func NewClient(baseURL string) out.SubmissionClient {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
 }
 

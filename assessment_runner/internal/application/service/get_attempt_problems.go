@@ -9,12 +9,12 @@ import (
 )
 
 type GetAttemptProblemsService struct {
-	submissions out.SubmissionGateway
-	assessments out.AssessmentGateway
-	problems    out.ProblemGateway
+	submissions out.SubmissionClient
+	assessments out.AssessmentClient
+	problems    out.ProblemClient
 }
 
-func NewGetAttemptProblemsService(submissions out.SubmissionGateway, assessments out.AssessmentGateway, problems out.ProblemGateway) in.GetAttemptProblemsService {
+func NewGetAttemptProblemsService(submissions out.SubmissionClient, assessments out.AssessmentClient, problems out.ProblemClient) in.GetAttemptProblemsService {
 	return &GetAttemptProblemsService{submissions: submissions, assessments: assessments, problems: problems}
 }
 

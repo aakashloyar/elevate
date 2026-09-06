@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	in "github.com/aakashloyar/elevate/assessment_runner/internal/application/ports/in"
 )
@@ -13,33 +12,18 @@ type Handler struct{ service in.GetAttemptProblemsService }
 
 func NewHandler(service in.GetAttemptProblemsService) *Handler { return &Handler{service: service} }
 
-func (h *Handler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("/assessment-runner/health", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		_, _ = w.Write([]byte("ok"))
-	})
-	mux.HandleFunc("/attempts/", h.getAttemptProblems)
+func (h *Handler) Health(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ok"))
 }
 
-func (h *Handler) getAttemptProblems(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	parts := strings.Split(strings.Trim(strings.TrimPrefix(r.URL.Path, "/attempts/"), "/"), "/")
-	if len(parts) != 2 || parts[0] == "" || parts[1] != "problems" {
-		http.NotFound(w, r)
-		return
-	}
+func (h *Handler) GetAttemptProblems(w http.ResponseWriter, r *http.Request, attemptID string) {
 	offset, limit, err := pagination(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	out, err := h.service.Execute(r.Context(), in.GetAttemptProblemsInput{AttemptID: parts[0], Offset: offset, Limit: limit})
+	out, err := h.service.Execute(r.Context(), in.GetAttemptProblemsInput{AttemptID: attemptID, Offset: offset, Limit: limit})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
