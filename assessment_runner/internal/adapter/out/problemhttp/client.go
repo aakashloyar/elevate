@@ -26,7 +26,7 @@ type GetProblemResponse struct {
 	ID         string                     `json:"id"`
 	Title      string                     `json:"title"`
 	Statement  string                     `json:"statement"`
-	Type       string                     `json:"type"`
+	Type       in.ProblemType             `json:"type"`
 	Difficulty string                     `json:"difficulty"`
 	Options    []GetProblemOptionResponse `json:"options"`
 }
