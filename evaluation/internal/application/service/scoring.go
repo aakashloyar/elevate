@@ -96,11 +96,11 @@ func evaluateMultipleAnswer(result domain.QuestionResult, answer, correctOptionI
 func marks(kind domain.ProblemType, s domain.MarkingScheme) (float64, float64, float64) {
 	switch kind {
 	case domain.ProblemTypeSingle:
-		return s.SingleCorrectMarks, s.SingleIncorrectMarks, s.SingleSkippedMarks
+		return s.Single.Correct, s.Single.Incorrect, s.Single.Skipped
 	case domain.ProblemTypeMultiple:
-		return s.MultipleCorrectMarks, s.MultipleIncorrectMarks, s.MultipleSkippedMarks
+		return s.Multiple.Correct, s.Multiple.Incorrect, s.Multiple.Skipped
 	case domain.ProblemTypeNumerical:
-		return s.NumericalCorrectMarks, s.NumericalIncorrectMarks, s.NumericalSkippedMarks
+		return s.Numerical.Correct, s.Numerical.Incorrect, s.Numerical.Skipped
 	default:
 		return 0, 0, 0
 	}

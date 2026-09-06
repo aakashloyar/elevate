@@ -41,16 +41,16 @@ type Option struct {
 	IsCorrect bool   `json:"is_correct"`
 }
 type MarkingScheme struct {
-	AssessmentID            string  `json:"assessment_id"`
-	SingleCorrectMarks      float64 `json:"single_correct_marks"`
-	SingleIncorrectMarks    float64 `json:"single_incorrect_marks"`
-	SingleSkippedMarks      float64 `json:"single_skipped_marks"`
-	MultipleCorrectMarks    float64 `json:"multiple_correct_marks"`
-	MultipleIncorrectMarks  float64 `json:"multiple_incorrect_marks"`
-	MultipleSkippedMarks    float64 `json:"multiple_skipped_marks"`
-	NumericalCorrectMarks   float64 `json:"numerical_correct_marks"`
-	NumericalIncorrectMarks float64 `json:"numerical_incorrect_marks"`
-	NumericalSkippedMarks   float64 `json:"numerical_skipped_marks"`
+	AssessmentID string `json:"assessment_id"`
+	Single       Marks  `json:"single"`
+	Multiple     Marks  `json:"multiple"`
+	Numerical    Marks  `json:"numerical"`
+}
+
+type Marks struct {
+	Correct   float64 `json:"correct"`
+	Incorrect float64 `json:"incorrect"`
+	Skipped   float64 `json:"skipped"`
 }
 type QuestionResult struct {
 	ProblemID       string           `json:"problem_id"`
