@@ -4,6 +4,7 @@ import "time"
 
 type ProblemType string
 type SubmissionStatus string
+type QuestionResultStatus string
 
 const (
 	ProblemTypeSingle    ProblemType = "single"
@@ -13,9 +14,14 @@ const (
 	SubmissionStatusUnderEvaluation  SubmissionStatus = "UNDER_EVALUATION"
 	SubmissionStatusEvaluated        SubmissionStatus = "EVALUATED"
 	SubmissionStatusEvaluationFailed SubmissionStatus = "EVALUATION_FAILED"
+
+	QuestionResultStatusCorrect          QuestionResultStatus = "correct"
+	QuestionResultStatusPartiallyCorrect QuestionResultStatus = "partially_correct"
+	QuestionResultStatusIncorrect        QuestionResultStatus = "incorrect"
+	QuestionResultStatusSkipped          QuestionResultStatus = "skipped"
 )
 
-//submission submitted event
+// submission submitted event
 type SubmissionSubmitted struct {
 	SubmissionID    string     `json:"submission_id"`
 	AssessmentID    string     `json:"assessment_id"`
@@ -42,7 +48,7 @@ type Option struct {
 	IsCorrect bool   `json:"is_correct"`
 }
 
-//evaluation result
+// evaluation result
 type Evaluation struct {
 	SubmissionID    string           `json:"submission_id"`
 	AssessmentID    string           `json:"assessment_id"`
@@ -56,11 +62,11 @@ type Evaluation struct {
 }
 
 type QuestionResult struct {
-	ProblemID       string           `json:"problem_id"`
-	Type            ProblemType      `json:"type"`
-	Status          string           `json:"status"`
-	Marks           float64          `json:"marks"`
-	SelectedOptions []SelectedOption `json:"selected_options"`
+	ProblemID       string               `json:"problem_id"`
+	Type            ProblemType          `json:"type"`
+	Status          QuestionResultStatus `json:"status"`
+	Marks           float64              `json:"marks"`
+	SelectedOptions []SelectedOption     `json:"selected_options"`
 }
 
 type SelectedOption struct {
@@ -69,7 +75,7 @@ type SelectedOption struct {
 	IsCorrect bool   `json:"is_correct"`
 }
 
-//marking scheme for an assessment
+// marking scheme for an assessment
 type MarkingScheme struct {
 	AssessmentID string `json:"assessment_id"`
 	Single       Marks  `json:"single"`

@@ -10,16 +10,16 @@ func EvaluateAnswer(problem domain.Problem, answer []string, scheme domain.Marki
 	}
 	correct, incorrect, skipped := marks(problem.Type, scheme)
 	if len(answer) == 0 {
-		result.Status, result.Marks = "skipped", skipped
+		result.Status, result.Marks = domain.QuestionResultStatusSkipped, skipped
 		return result
 	}
 	if problem.Type == domain.ProblemTypeMultiple {
 		return evaluateMultipleAnswer(result, answer, correctOptionIDs(problem.Options), correct, incorrect)
 	}
 	if sameSet(answer, correctOptionIDs(problem.Options)) {
-		result.Status, result.Marks = "correct", correct
+		result.Status, result.Marks = domain.QuestionResultStatusCorrect, correct
 	} else {
-		result.Status, result.Marks = "incorrect", incorrect
+		result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrect
 	}
 	return result
 }
@@ -63,32 +63,32 @@ func evaluateMultipleAnswer(result domain.QuestionResult, answer, correctOptionI
 		correctOptions[optionID] = struct{}{}
 	}
 	if len(correctOptions) == 0 {
-		result.Status, result.Marks = "incorrect", incorrectMarks
+		result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
 		return result
 	}
 
 	selected := make(map[string]struct{}, len(answer))
 	for _, optionID := range answer {
 		if optionID == "" {
-			result.Status, result.Marks = "incorrect", incorrectMarks
+			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
 			return result
 		}
 		if _, alreadySelected := selected[optionID]; alreadySelected {
-			result.Status, result.Marks = "incorrect", incorrectMarks
+			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
 			return result
 		}
 		selected[optionID] = struct{}{}
 		if _, isCorrect := correctOptions[optionID]; !isCorrect {
-			result.Status, result.Marks = "incorrect", incorrectMarks
+			result.Status, result.Marks = domain.QuestionResultStatusIncorrect, incorrectMarks
 			return result
 		}
 	}
 
 	if len(selected) == len(correctOptions) {
-		result.Status, result.Marks = "correct", correctMarks
+		result.Status, result.Marks = domain.QuestionResultStatusCorrect, correctMarks
 		return result
 	}
-	result.Status = "partially_correct"
+	result.Status = domain.QuestionResultStatusPartiallyCorrect
 	result.Marks = float64(len(selected)) * correctMarks / float64(len(correctOptions))
 	return result
 }
