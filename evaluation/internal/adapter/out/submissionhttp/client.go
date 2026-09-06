@@ -25,7 +25,7 @@ func NewClient(baseURL string) *Client {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
 }
 
-func (c *Client) UpdateStatus(ctx context.Context, submissionID string, status domain.SubmissionStatus) error {
+func (c *Client) UpdateSubmissionStatus(ctx context.Context, submissionID string, status domain.SubmissionStatus) error {
 	body, err := json.Marshal(UpdateSubmissionStatusRequest{Status: status})
 	if err != nil {
 		return err

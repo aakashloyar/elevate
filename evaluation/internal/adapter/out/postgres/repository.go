@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aakashloyar/elevate/evaluation/internal/application"
+	evaluationservice "github.com/aakashloyar/elevate/evaluation/internal/application/service"
 	"github.com/aakashloyar/elevate/evaluation/internal/domain"
 	_ "github.com/lib/pq"
 )
@@ -34,7 +34,7 @@ func (r *Repository) FindBySubmissionID(ctx context.Context, submissionID string
 	var questions []byte
 	err := r.db.QueryRowContext(ctx, `SELECT submission_id, assessment_id, user_id, started_at, duration_seconds, submitted_at, score, questions, evaluated_at FROM evaluations WHERE submission_id = $1`, submissionID).Scan(&result.SubmissionID, &result.AssessmentID, &result.UserID, &result.StartedAt, &result.DurationSeconds, &result.SubmittedAt, &result.Score, &questions, &result.EvaluatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
-		return domain.Evaluation{}, application.ErrEvaluationNotFound
+		return domain.Evaluation{}, evaluationservice.ErrEvaluationNotFound
 	}
 	if err != nil {
 		return domain.Evaluation{}, err

@@ -3,7 +3,7 @@ package kafka
 import (
 	"crypto/tls"
 
-	"github.com/aakashloyar/elevate/evaluation/internal/application"
+	in "github.com/aakashloyar/elevate/evaluation/internal/application/ports/in"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/twmb/franz-go/pkg/sasl/plain"
 )
@@ -19,7 +19,7 @@ type Config struct {
 
 type Consumer struct {
 	kafkaClient *KafkaConsumerClient
-	service     *application.Service
+	service     in.EvaluateSubmissionService
 }
 
 type KafkaConsumerClient struct {
@@ -27,7 +27,7 @@ type KafkaConsumerClient struct {
 	topics []string
 }
 
-func (cfg Config) NewConsumer(service *application.Service) (*Consumer, error) {
+func (cfg Config) NewConsumer(service in.EvaluateSubmissionService) (*Consumer, error) {
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),

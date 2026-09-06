@@ -8,10 +8,11 @@ import (
 	"github.com/aakashloyar/elevate/evaluation/config"
 	httpapi "github.com/aakashloyar/elevate/evaluation/internal/adapter/in/http"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/in/kafka"
-	httpclient "github.com/aakashloyar/elevate/evaluation/internal/adapter/out/http"
+	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/assessmenthttp"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/postgres"
+	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/problemhttp"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/submissionhttp"
-	"github.com/aakashloyar/elevate/evaluation/internal/application"
+	evaluationservice "github.com/aakashloyar/elevate/evaluation/internal/application/service"
 )
 
 func main() {
@@ -21,9 +22,11 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
-	service := application.NewService(httpclient.New(cfg.AssessmentServiceURL), httpclient.New(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), postgres.New(db))
+	repository := postgres.New(db)
+	evaluateSubmissionService := evaluationservice.NewEvaluateSubmissionService(assessmenthttp.NewClient(cfg.AssessmentServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), repository)
+	getEvaluationService := evaluationservice.NewGetEvaluationService(repository)
 	consumerConfig := kafka.Config{Brokers: cfg.Kafka.Brokers, Topics: []string{cfg.Kafka.Topic}, ClientID: cfg.Kafka.ClientID, GroupID: cfg.Kafka.GroupID, APIKey: cfg.Kafka.APIKey, APISecret: cfg.Kafka.APISecret}
-	consumer, err := consumerConfig.NewConsumer(service)
+	consumer, err := consumerConfig.NewConsumer(evaluateSubmissionService)
 	if err != nil {
 		log.Fatalf("create kafka consumer: %v", err)
 	}
@@ -34,7 +37,7 @@ func main() {
 		}
 	}()
 	mux := http.NewServeMux()
-	httpapi.New(service).Register(mux)
+	httpapi.RegisterRoutes(mux, httpapi.NewHandler(getEvaluationService))
 	log.Printf("evaluation service listening on :%s", cfg.HTTPPort)
 	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, mux))
 }

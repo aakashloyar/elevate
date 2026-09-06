@@ -35,7 +35,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 				}
 				continue
 			}
-			if _, err := c.service.Evaluate(ctx, event); err != nil {
+			if _, err := c.service.Execute(ctx, event); err != nil {
 				log.Printf("evaluation failed for submission %s: %v", event.SubmissionID, err)
 				continue
 			}
@@ -46,4 +46,6 @@ func (c *Consumer) Start(ctx context.Context) error {
 	}
 	return ctx.Err()
 }
-func (c *Consumer) Close() { c.kafkaClient.client.Close() }
+func (c *Consumer) Close() { 
+	c.kafkaClient.client.Close()
+}
