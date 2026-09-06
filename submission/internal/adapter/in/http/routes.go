@@ -36,7 +36,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 
 		if len(parts) == 1 {
 			switch r.Method {
-			//get submission by id route	
+			//get submission by id route
 			case http.MethodGet:
 				h.GetSubmissionByID(w, r, submissionID)
 			default:
@@ -47,7 +47,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 
 		if len(parts) == 2 && parts[1] == "save" {
 			switch r.Method {
-			//save answer route	
+			//save answer route
 			case http.MethodPost:
 				h.SaveAnswer(w, r, submissionID)
 			default:
@@ -58,9 +58,12 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 
 		if len(parts) == 2 && parts[1] == "status" {
 			switch r.Method {
-			//get submission status route	
+			//get submission status route
 			case http.MethodGet:
 				h.GetSubmissionStatus(w, r, submissionID)
+			//update submission status route
+			case http.MethodPatch:
+				h.UpdateSubmissionStatus(w, r, submissionID)
 			default:
 				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			}
@@ -91,7 +94,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 
 		if len(parts) == 3 && parts[1] == "save" && parts[2] == "batch" {
 			switch r.Method {
-			//save answer batch route	
+			//save answer batch route
 			case http.MethodPost:
 				h.SaveAnswerBatch(w, r, submissionID)
 			default:
@@ -104,8 +107,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 	})
 }
 
-
-//1. create submission route 
+//1. create submission route
 //2. get submission by id route
 //3. save answer route
 //4. get submission status route

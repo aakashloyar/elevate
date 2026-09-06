@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
+	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 type CreateSubmissionRequest struct {
@@ -51,6 +52,15 @@ type GetSubmissionStatusResponse struct {
 	ExpiresAt    *string `json:"expires_at"`
 }
 
+type UpdateSubmissionStatusRequest struct {
+	Status string `json:"status"`
+}
+
+type UpdateSubmissionStatusResponse struct {
+	SubmissionID string `json:"submission_id"`
+	Status       string `json:"status"`
+}
+
 type SubmissionAnswerResponse struct {
 	ProblemID string   `json:"problem_id"`
 	Answer    []string `json:"answer"`
@@ -59,24 +69,26 @@ type SubmissionAnswerResponse struct {
 }
 
 type Handler struct {
-	createSubmissionService    in.CreateSubmissionService
-	startSubmissionService     in.StartSubmissionService
-	saveAnswerService          in.SaveAnswerService
-	saveAnswerBatchService     in.SaveAnswerBatchService
-	getSubmissionService       in.GetSubmissionService
-	getSubmissionStatusService in.GetSubmissionStatusService
-	submitSubmissionService    in.SubmitSubmissionService
+	createSubmissionService       in.CreateSubmissionService
+	startSubmissionService        in.StartSubmissionService
+	saveAnswerService             in.SaveAnswerService
+	saveAnswerBatchService        in.SaveAnswerBatchService
+	getSubmissionService          in.GetSubmissionService
+	getSubmissionStatusService    in.GetSubmissionStatusService
+	submitSubmissionService       in.SubmitSubmissionService
+	updateSubmissionStatusService in.UpdateSubmissionStatusService
 }
 
-func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, getSubmissionStatusService in.GetSubmissionStatusService, submitSubmissionService in.SubmitSubmissionService) *Handler {
+func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, getSubmissionStatusService in.GetSubmissionStatusService, submitSubmissionService in.SubmitSubmissionService, updateSubmissionStatusService in.UpdateSubmissionStatusService) *Handler {
 	return &Handler{
-		createSubmissionService:    createSubmissionService,
-		startSubmissionService:     startSubmissionService,
-		saveAnswerService:          saveAnswerService,
-		saveAnswerBatchService:     saveAnswerBatchService,
-		getSubmissionService:       getSubmissionService,
-		getSubmissionStatusService: getSubmissionStatusService,
-		submitSubmissionService:    submitSubmissionService,
+		createSubmissionService:       createSubmissionService,
+		startSubmissionService:        startSubmissionService,
+		saveAnswerService:             saveAnswerService,
+		saveAnswerBatchService:        saveAnswerBatchService,
+		getSubmissionService:          getSubmissionService,
+		getSubmissionStatusService:    getSubmissionStatusService,
+		submitSubmissionService:       submitSubmissionService,
+		updateSubmissionStatusService: updateSubmissionStatusService,
 	}
 }
 
@@ -196,6 +208,30 @@ func (h *Handler) GetSubmissionStatus(w http.ResponseWriter, r *http.Request, su
 		SubmissionID: out.SubmissionID,
 		Status:       string(out.Status),
 		ExpiresAt:    expiresAt,
+	})
+}
+
+func (h *Handler) UpdateSubmissionStatus(w http.ResponseWriter, r *http.Request, submissionID string) {
+	var req UpdateSubmissionStatusRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	out, err := h.updateSubmissionStatusService.Execute(r.Context(), in.UpdateSubmissionStatusInput{
+		SubmissionID: submissionID,
+		Status:       domain.SubmissionStatus(req.Status),
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(UpdateSubmissionStatusResponse{
+		SubmissionID: out.SubmissionID,
+		Status:       string(out.Status),
 	})
 }
 

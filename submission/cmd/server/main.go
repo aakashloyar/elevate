@@ -61,9 +61,10 @@ func main() {
 	getSubmissionService := submissionservice.NewGetSubmissionService(submissionRepo)
 	getSubmissionStatusService := submissionservice.NewGetSubmissionStatusService(submissionRepo)
 	submitSubmissionService := submissionservice.NewSubmitSubmissionService(submissionRepo, clock, producer, config.App.Kafka.SubmissionSubmittedTopic)
+	updateSubmissionStatusService := submissionservice.NewUpdateSubmissionStatusService(submissionRepo)
 	expireSubmissionsService := submissionservice.NewExpireSubmissionsService(submissionRepo, clock, producer, config.App.Kafka.SubmissionSubmittedTopic)
 
-	handler := httpsubmission.NewHandler(createSubmissionService, startSubmissionService, saveAnswerService, saveAnswerBatchService, getSubmissionService, getSubmissionStatusService, submitSubmissionService)
+	handler := httpsubmission.NewHandler(createSubmissionService, startSubmissionService, saveAnswerService, saveAnswerBatchService, getSubmissionService, getSubmissionStatusService, submitSubmissionService, updateSubmissionStatusService)
 	expirationWorker := worker.NewExpirationWorker(expireSubmissionsService)
 	workerContext, stopWorker := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stopWorker()

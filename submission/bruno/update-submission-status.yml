@@ -1,0 +1,21 @@
+info:
+  name: update-submission-status
+  type: http
+  seq: 9
+
+http:
+  method: PATCH
+  url: http://localhost:8082/submissions/0eef0286-f9ae-4851-a24b-3c617a943b71/status
+  body:
+    type: json
+    data: |-
+      {
+        "status": "UNDER_EVALUATION"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

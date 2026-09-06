@@ -17,3 +17,23 @@ Response
   "expires_at": "2026-08-16T22:30:00Z"
 }
 ```
+
+4. Patch /submissions/{submissionId}/status
+-> updates the submission lifecycle status. This is intended for internal service-to-service calls, for example evaluation service marking a submission as under evaluation or evaluated.
+
+Request
+
+```json
+{
+  "status": "UNDER_EVALUATION"
+}
+```
+
+Response
+
+```json
+{
+  "submission_id": "S123",
+  "status": "UNDER_EVALUATION"
+}
+```
