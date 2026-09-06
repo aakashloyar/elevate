@@ -5,9 +5,12 @@ import "time"
 type SubmissionStatus string
 
 const (
-	SubmissionStatusCreated    SubmissionStatus = "CREATED"
-	SubmissionStatusInProgress SubmissionStatus = "IN_PROGRESS"
-	SubmissionStatusSubmitted  SubmissionStatus = "SUBMITTED"
+	SubmissionStatusCreated          SubmissionStatus = "CREATED"
+	SubmissionStatusInProgress       SubmissionStatus = "IN_PROGRESS"
+	SubmissionStatusSubmitted        SubmissionStatus = "SUBMITTED"
+	SubmissionStatusUnderEvaluation  SubmissionStatus = "UNDER_EVALUATION"
+	SubmissionStatusEvaluated        SubmissionStatus = "EVALUATED"
+	SubmissionStatusEvaluationFailed SubmissionStatus = "EVALUATION_FAILED"
 )
 
 func (s SubmissionStatus) IsStartable() bool {
