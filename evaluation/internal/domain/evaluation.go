@@ -15,6 +15,7 @@ const (
 	SubmissionStatusEvaluationFailed SubmissionStatus = "EVALUATION_FAILED"
 )
 
+//submission submitted event
 type SubmissionSubmitted struct {
 	SubmissionID    string     `json:"submission_id"`
 	AssessmentID    string     `json:"assessment_id"`
@@ -40,18 +41,20 @@ type Option struct {
 	Text      string `json:"text"`
 	IsCorrect bool   `json:"is_correct"`
 }
-type MarkingScheme struct {
-	AssessmentID string `json:"assessment_id"`
-	Single       Marks  `json:"single"`
-	Multiple     Marks  `json:"multiple"`
-	Numerical    Marks  `json:"numerical"`
+
+//evaluation result
+type Evaluation struct {
+	SubmissionID    string           `json:"submission_id"`
+	AssessmentID    string           `json:"assessment_id"`
+	UserID          string           `json:"user_id"`
+	StartedAt       time.Time        `json:"started_at"`
+	DurationSeconds int              `json:"duration_seconds"`
+	SubmittedAt     *time.Time       `json:"submitted_at,omitempty"`
+	Score           float64          `json:"score"`
+	Questions       []QuestionResult `json:"questions"`
+	EvaluatedAt     time.Time        `json:"evaluated_at"`
 }
 
-type Marks struct {
-	Correct   float64 `json:"correct"`
-	Incorrect float64 `json:"incorrect"`
-	Skipped   float64 `json:"skipped"`
-}
 type QuestionResult struct {
 	ProblemID       string           `json:"problem_id"`
 	Type            ProblemType      `json:"type"`
@@ -65,14 +68,17 @@ type SelectedOption struct {
 	Text      string `json:"text"`
 	IsCorrect bool   `json:"is_correct"`
 }
-type Evaluation struct {
-	SubmissionID    string           `json:"submission_id"`
-	AssessmentID    string           `json:"assessment_id"`
-	UserID          string           `json:"user_id"`
-	StartedAt       time.Time        `json:"started_at"`
-	DurationSeconds int              `json:"duration_seconds"`
-	SubmittedAt     *time.Time       `json:"submitted_at,omitempty"`
-	Score           float64          `json:"score"`
-	Questions       []QuestionResult `json:"questions"`
-	EvaluatedAt     time.Time        `json:"evaluated_at"`
+
+//marking scheme for an assessment
+type MarkingScheme struct {
+	AssessmentID string `json:"assessment_id"`
+	Single       Marks  `json:"single"`
+	Multiple     Marks  `json:"multiple"`
+	Numerical    Marks  `json:"numerical"`
+}
+
+type Marks struct {
+	Correct   float64 `json:"correct"`
+	Incorrect float64 `json:"incorrect"`
+	Skipped   float64 `json:"skipped"`
 }
