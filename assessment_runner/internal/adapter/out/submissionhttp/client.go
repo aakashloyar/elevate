@@ -22,23 +22,36 @@ type GetSubmissionRequest struct {
 }
 
 type GetSubmissionResponse struct {
-	AssessmentID string `json:"assessment_id"`
+	AssessmentID string                        `json:"assessment_id"`
+	Answers      []GetSubmissionAnswerResponse `json:"answers"`
+}
+
+type GetSubmissionAnswerResponse struct {
+	ProblemID string   `json:"problem_id"`
+	Answer    []string `json:"answer"`
 }
 
 func NewClient(baseURL string) out.SubmissionClient {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
 }
 
-func (c *Client) GetAttemptAssessmentID(ctx context.Context, attemptID string) (string, error) {
+func (c *Client) GetAttemptDraft(ctx context.Context, attemptID string) (out.AttemptDraft, error) {
 	request := GetSubmissionRequest{SubmissionID: attemptID}
 	var response GetSubmissionResponse
 	if err := c.doGetRequest(ctx, "/submissions/"+url.PathEscape(request.SubmissionID), &response); err != nil {
-		return "", err
+		return out.AttemptDraft{}, err
 	}
 	if response.AssessmentID == "" {
-		return "", fmt.Errorf("submission response has no assessment_id")
+		return out.AttemptDraft{}, fmt.Errorf("submission response has no assessment_id")
 	}
-	return response.AssessmentID, nil
+	answers := make([]out.DraftAnswer, 0, len(response.Answers))
+	for _, answer := range response.Answers {
+		answers = append(answers, out.DraftAnswer{
+			ProblemID: answer.ProblemID,
+			Answer:    answer.Answer,
+		})
+	}
+	return out.AttemptDraft{AssessmentID: response.AssessmentID, Answers: answers}, nil
 }
 
 func (c *Client) doGetRequest(ctx context.Context, path string, output any) error {

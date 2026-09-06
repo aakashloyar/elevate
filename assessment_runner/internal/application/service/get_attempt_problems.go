@@ -26,11 +26,11 @@ func (s *GetAttemptProblemsService) Execute(ctx context.Context, input in.GetAtt
 		return in.GetAttemptProblemsOutput{}, fmt.Errorf("invalid pagination")
 	}
 
-	assessmentID, err := s.submissions.GetAttemptAssessmentID(ctx, input.AttemptID)
+	attempt, err := s.submissions.GetAttemptDraft(ctx, input.AttemptID)
 	if err != nil {
 		return in.GetAttemptProblemsOutput{}, fmt.Errorf("resolve attempt: %w", err)
 	}
-	problemIDs, err := s.assessments.GetAssessmentProblemIDs(ctx, assessmentID)
+	problemIDs, err := s.assessments.GetAssessmentProblemIDs(ctx, attempt.AssessmentID)
 	if err != nil {
 		return in.GetAttemptProblemsOutput{}, fmt.Errorf("get assessment problems: %w", err)
 	}
@@ -42,13 +42,23 @@ func (s *GetAttemptProblemsService) Execute(ctx context.Context, input in.GetAtt
 	if end > len(problemIDs) {
 		end = len(problemIDs)
 	}
+	draftAnswers := draftAnswerByProblemID(attempt.Answers)
 	problems := make([]in.ProblemView, 0, end-input.Offset)
 	for _, problemID := range problemIDs[input.Offset:end] {
 		problem, err := s.problems.GetProblemByID(ctx, problemID)
 		if err != nil {
 			return in.GetAttemptProblemsOutput{}, fmt.Errorf("get problem %s: %w", problemID, err)
 		}
+		problem.DraftAnswer = draftAnswers[problem.ID]
 		problems = append(problems, problem)
 	}
 	return in.GetAttemptProblemsOutput{Problems: problems}, nil
+}
+
+func draftAnswerByProblemID(answers []out.DraftAnswer) map[string][]string {
+	draftAnswers := make(map[string][]string, len(answers))
+	for _, answer := range answers {
+		draftAnswers[answer.ProblemID] = answer.Answer
+	}
+	return draftAnswers
 }

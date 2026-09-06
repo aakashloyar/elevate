@@ -2,6 +2,16 @@ package out
 
 import "context"
 
+type AttemptDraft struct {
+	AssessmentID string
+	Answers      []DraftAnswer
+}
+
+type DraftAnswer struct {
+	ProblemID string
+	Answer    []string
+}
+
 type SubmissionClient interface {
-	GetAttemptAssessmentID(ctx context.Context, attemptID string) (string, error)
+	GetAttemptDraft(ctx context.Context, attemptID string) (AttemptDraft, error)
 }
