@@ -135,8 +135,8 @@ func validateGeneratedProblems(problems []out.GeneratedProblem) error {
 				return fmt.Errorf("problem %d must have exactly one correct option", index)
 			}
 		case "multiple":
-			if correctCount < 2 {
-				return fmt.Errorf("problem %d must have at least two correct options", index)
+			if correctCount < 1 {
+				return fmt.Errorf("problem %d must have at least one correct option", index)
 			}
 		}
 	}
