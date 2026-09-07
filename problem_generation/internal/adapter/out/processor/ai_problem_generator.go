@@ -68,7 +68,7 @@ func systemPrompt() string {
 		"type must be one of: single, multiple, numerical.",
 		"difficulty must be one of: easy, medium, hard.",
 		"For single problems, exactly one option must be correct.",
-		"For multiple problems, at least two options must be correct.",
+		"For multiple problems, at least one option must be correct.",
 		"For numerical problems, include exactly one correct option whose text is the answer.",
 		"Do not include markdown fences or explanation.",
 	}, " ")
