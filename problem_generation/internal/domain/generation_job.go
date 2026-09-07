@@ -4,6 +4,7 @@ import "time"
 
 type GenerationJobStatus string
 type GenerationLevel string
+type GeneratedProblemType string
 
 const (
 	GenerationJobStatusPending    GenerationJobStatus = "pending"
@@ -14,10 +15,18 @@ const (
 	GenerationLevelEasy   GenerationLevel = "easy"
 	GenerationLevelMedium GenerationLevel = "medium"
 	GenerationLevelHard   GenerationLevel = "hard"
+
+	GeneratedProblemTypeSingle    GeneratedProblemType = "single"
+	GeneratedProblemTypeMultiple  GeneratedProblemType = "multiple"
+	GeneratedProblemTypeNumerical GeneratedProblemType = "numerical"
 )
 
 func (l GenerationLevel) IsValid() bool {
 	return l == GenerationLevelEasy || l == GenerationLevelMedium || l == GenerationLevelHard
+}
+
+func (t GeneratedProblemType) IsValid() bool {
+	return t == GeneratedProblemTypeSingle || t == GeneratedProblemTypeMultiple || t == GeneratedProblemTypeNumerical
 }
 
 type GenerationJob struct {
