@@ -1,0 +1,61 @@
+name: Problem Generation Service CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "problem_generation/**"
+      - ".github/workflows/problem-generation-service.yml"
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/problem-generation
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: problem_generation
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: problem_generation/go.mod
+          cache-dependency-path: problem_generation/go.sum
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('problem_generation/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - run: go mod download
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test ./...
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Image
+        run: |
+          docker build -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+      - uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.PROBLEM_GENERATION_EC2_HOST }}
+          username: ${{ secrets.PROBLEM_GENERATION_EC2_USER }}
+          key: ${{ secrets.PROBLEM_GENERATION_EC2_SSH_KEY }}
+          script: |
+            IMAGE=ghcr.io/${{ github.repository_owner }}/problem-generation:${{ github.sha }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            podman pull $IMAGE
+            podman stop problem-generation || true
+            podman rm problem-generation || true
+            podman run -d --name problem-generation --restart=always --env-file /home/ubuntu/problem-generation.env -p 8080:8080 $IMAGE
+            podman image prune -a -f

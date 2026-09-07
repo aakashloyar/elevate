@@ -1,0 +1,61 @@
+name: Submission Service CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "submission/**"
+      - ".github/workflows/submission-service.yml"
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/submission
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: submission
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: submission/go.mod
+          cache-dependency-path: submission/go.sum
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('submission/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - run: go mod download
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test ./...
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Image
+        run: |
+          docker build -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+      - uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SUBMISSION_EC2_HOST }}
+          username: ${{ secrets.SUBMISSION_EC2_USER }}
+          key: ${{ secrets.SUBMISSION_EC2_SSH_KEY }}
+          script: |
+            IMAGE=ghcr.io/${{ github.repository_owner }}/submission:${{ github.sha }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            podman pull $IMAGE
+            podman stop submission || true
+            podman rm submission || true
+            podman run -d --name submission --restart=always --env-file /home/ubuntu/submission.env -p 8080:8080 $IMAGE
+            podman image prune -a -f

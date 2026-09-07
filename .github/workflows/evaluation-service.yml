@@ -1,0 +1,61 @@
+name: Evaluation Service CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "evaluation/**"
+      - ".github/workflows/evaluation-service.yml"
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/evaluation
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: evaluation
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: evaluation/go.mod
+          cache-dependency-path: evaluation/go.sum
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('evaluation/go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+      - run: go mod download
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test ./...
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Image
+        run: |
+          docker build -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+      - uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EVALUATION_EC2_HOST }}
+          username: ${{ secrets.EVALUATION_EC2_USER }}
+          key: ${{ secrets.EVALUATION_EC2_SSH_KEY }}
+          script: |
+            IMAGE=ghcr.io/${{ github.repository_owner }}/evaluation:${{ github.sha }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            podman pull $IMAGE
+            podman stop evaluation || true
+            podman rm evaluation || true
+            podman run -d --name evaluation --restart=always --env-file /home/ubuntu/evaluation.env -p 8084:8084 $IMAGE
+            podman image prune -a -f

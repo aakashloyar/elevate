@@ -1,0 +1,72 @@
+name: Assessment Service CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "assessment/**"
+      - ".github/workflows/assessment-service.yml"
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/assessment
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: assessment
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: assessment/go.mod
+          cache-dependency-path: assessment/go.sum
+      - name: Cache Go Modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('assessment/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Download Dependencies
+        run: go mod download
+      - name: Verify Formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Run Go Vet
+        run: go vet ./...
+      - name: Run Unit Tests
+        run: go test ./...
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push Image
+        run: |
+          docker build -f Dockerfile -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ASSESSMENT_EC2_HOST }}
+          username: ${{ secrets.ASSESSMENT_EC2_USER }}
+          key: ${{ secrets.ASSESSMENT_EC2_SSH_KEY }}
+          script: |
+            IMAGE=ghcr.io/${{ github.repository_owner }}/assessment:${{ github.sha }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+            podman pull $IMAGE
+            podman stop assessment || true
+            podman rm assessment || true
+            podman run -d --name assessment --restart=always --env-file /home/ubuntu/assessment.env -p 8080:8080 $IMAGE
+            podman image prune -a -f
