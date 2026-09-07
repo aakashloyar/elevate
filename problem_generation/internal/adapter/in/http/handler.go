@@ -5,19 +5,20 @@ import (
 	"net/http"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in/generation_job"
+	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in"
+	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
 
 type CreateGenerationJobRequest struct {
-	UserID             string   `json:"user_id"`
-	SingleCorrectCount int      `json:"single_correct_count"`
-	MultiCorrectCount  int      `json:"multi_correct_count"`
-	NumericalCount     int      `json:"numerical_count"`
-	DocumentID         *string  `json:"document_id"`
-	AssessmentID       *string  `json:"assessment_id"`
-	Level              string   `json:"level"`
-	Description        string   `json:"description"`
-	TopicIDs           []string `json:"topic_ids"`
+	UserID             string                 `json:"user_id"`
+	SingleCorrectCount int                    `json:"single_correct_count"`
+	MultiCorrectCount  int                    `json:"multi_correct_count"`
+	NumericalCount     int                    `json:"numerical_count"`
+	DocumentID         *string                `json:"document_id"`
+	AssessmentID       *string                `json:"assessment_id"`
+	Level              domain.GenerationLevel `json:"level"`
+	Description        string                 `json:"description"`
+	TopicIDs           []string               `json:"topic_ids"`
 }
 
 type CreateGenerationJobResponse struct {
@@ -78,7 +79,7 @@ func (h *Handler) CreateGenerationJob(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(CreateGenerationJobResponse{JobID: out.JobID, Status: out.Status})
+	_ = json.NewEncoder(w).Encode(CreateGenerationJobResponse{JobID: out.JobID, Status: string(out.Status)})
 }
 
 func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, jobID string) {
@@ -98,9 +99,9 @@ func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, j
 		NumericalCount:     out.NumericalCount,
 		DocumentID:         out.DocumentID,
 		AssessmentID:       out.AssessmentID,
-		Level:              out.Level,
+		Level:              string(out.Level),
 		Description:        out.Description,
-		Status:             out.Status,
+		Status:             string(out.Status),
 		TopicIDs:           out.TopicIDs,
 		CreatedAt:          out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:          out.UpdatedAt.Format(http.TimeFormat),

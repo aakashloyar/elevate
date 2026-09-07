@@ -1,4 +1,4 @@
-package generation_job
+package service
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in/generation_job"
+	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
@@ -23,29 +23,19 @@ func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPub
 }
 
 func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.CreateGenerationJobInput) (in.CreateGenerationJobOutput, error) {
-	userID := strings.TrimSpace(input.UserID)
-	if userID == "" {
-		return in.CreateGenerationJobOutput{}, errors.New("user id is required")
+	err:= validateInput(input)
+	if err != nil {
+		return in.CreateGenerationJobOutput{}, err
 	}
 
-	level := strings.TrimSpace(input.Level)
-	if level == "" {
-		return in.CreateGenerationJobOutput{}, errors.New("level is required")
-	}
+	level := domain.GenerationLevel(strings.ToLower(strings.TrimSpace(string(input.Level))))
 
 	description := strings.TrimSpace(input.Description)
-	if input.SingleCorrectCount < 0 || input.MultiCorrectCount < 0 || input.NumericalCount < 0 {
-		return in.CreateGenerationJobOutput{}, errors.New("question counts cannot be negative")
-	}
-
-	if input.SingleCorrectCount+input.MultiCorrectCount+input.NumericalCount == 0 {
-		return in.CreateGenerationJobOutput{}, errors.New("at least one question must be requested")
-	}
 
 	now := s.clock.Now()
 	job := domain.GenerationJob{
 		ID:                 s.idGen.NewID(),
-		UserID:             userID,
+		UserID:             input.UserID,
 		SingleCorrectCount: input.SingleCorrectCount,
 		MultiCorrectCount:  input.MultiCorrectCount,
 		NumericalCount:     input.NumericalCount,
@@ -53,7 +43,7 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 		AssessmentID:       normalizeOptional(input.AssessmentID),
 		Level:              level,
 		Description:        description,
-		Status:             "pending",
+		Status:             domain.GenerationJobStatusPending,
 		TopicIDs:           normalizeTopicIDs(input.TopicIDs),
 		CreatedAt:          now,
 		UpdatedAt:          now,
@@ -83,6 +73,26 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 	}
 
 	return in.CreateGenerationJobOutput{JobID: job.ID, Status: job.Status}, nil
+}
+
+func validateInput(input in.CreateGenerationJobInput) error {
+	if input.UserID == "" {
+		return errors.New("user id is required")
+	}
+
+	if input.SingleCorrectCount < 0 || input.MultiCorrectCount < 0 || input.NumericalCount < 0 {
+		return errors.New("question counts cannot be negative")
+	}
+
+	if input.SingleCorrectCount+input.MultiCorrectCount+input.NumericalCount == 0 {
+		return errors.New("at least one question must be requested")
+	}
+
+	normalized := domain.GenerationLevel(strings.ToLower(strings.TrimSpace(string(input.Level))))
+	if !normalized.IsValid() {
+		return errors.New("level must be easy, medium, or hard")
+	}
+	return nil
 }
 
 func normalizeOptional(value *string) *string {

@@ -1,8 +1,10 @@
-package generation_job
+package in
 
 import (
 	"context"
 	"time"
+
+	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
 
 type GetGenerationJobInput struct {
@@ -17,9 +19,9 @@ type GetGenerationJobOutput struct {
 	NumericalCount     int
 	DocumentID         *string
 	AssessmentID       *string
-	Level              string
+	Level              domain.GenerationLevel
 	Description        string
-	Status             string
+	Status             domain.GenerationJobStatus
 	TopicIDs           []string
 	CreatedAt          time.Time
 	UpdatedAt          time.Time

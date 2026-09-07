@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/aakashloyar/elevate/problem_generation/config"
-	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http/generation_job"
+	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http"
 	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out/system"
-	generationjobsvc "github.com/aakashloyar/elevate/problem_generation/internal/application/service/generation_job"
+	generationjobsvc "github.com/aakashloyar/elevate/problem_generation/internal/application/service"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 	defer db.Close()
 
 	jobRepo := postgres.NewGenerationJobRepository(db)
-	if err := jobRepo.(*postgres.GenerationJobRepository).Migrate(); err != nil {
+	if err := jobRepo.Migrate(); err != nil {
 		log.Fatalf("failed to migrate generation jobs tables: %v", err)
 	}
 

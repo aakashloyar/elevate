@@ -1,10 +1,10 @@
-package generation_job
+package service
 
 import (
 	"context"
 	"errors"
 
-	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in/generation_job"
+	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
 )
 

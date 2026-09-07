@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
 
@@ -12,7 +11,7 @@ type GenerationJobRepository struct {
 	db *sql.DB
 }
 
-func NewGenerationJobRepository(db *sql.DB) out.GenerationJobRepository {
+func NewGenerationJobRepository(db *sql.DB) *GenerationJobRepository {
 	return &GenerationJobRepository{db: db}
 }
 
@@ -167,7 +166,7 @@ func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, 
 	return job, nil
 }
 
-func (r *GenerationJobRepository) UpdateStatus(jobID string, status string) error {
+func (r *GenerationJobRepository) UpdateStatus(jobID string, status domain.GenerationJobStatus) error {
 	result, err := r.db.Exec(`
 		UPDATE generation_jobs
 		SET status = $2, updated_at = NOW()
