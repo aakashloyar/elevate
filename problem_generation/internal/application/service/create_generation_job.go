@@ -23,7 +23,7 @@ func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPub
 }
 
 func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.CreateGenerationJobInput) (in.CreateGenerationJobOutput, error) {
-	err:= validateInput(input)
+	err := validateInput(input)
 	if err != nil {
 		return in.CreateGenerationJobOutput{}, err
 	}

@@ -3,7 +3,6 @@ package kafkaproducer
 import (
 	"crypto/tls"
 
-	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/twmb/franz-go/pkg/sasl/plain"
 )
@@ -21,7 +20,7 @@ type Producer struct {
 	topic  string
 }
 
-func NewProducer(cfg Config) (out.EventPublisher, error) {
+func NewProducer(cfg Config) (*Producer, error) {
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ClientID(cfg.ClientID),
