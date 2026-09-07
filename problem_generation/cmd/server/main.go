@@ -2,13 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 
 	"github.com/aakashloyar/elevate/problem_generation/config"
 	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http"
@@ -17,15 +13,11 @@ import (
 	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/processor"
-	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out/system"
 	generationjobsvc "github.com/aakashloyar/elevate/problem_generation/internal/application/service"
 )
 
 func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
 	port, err := strconv.Atoi(config.App.Postgres.Port)
 	if err != nil {
 		log.Fatalf("invalid POSTGRES_PORT: %v", err)
@@ -69,10 +61,11 @@ func main() {
 	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo)
 
 	if config.App.Worker.Enabled {
-		aiClient, err := newAITextGenerator()
-		if err != nil {
-			log.Fatalf("failed to create AI client: %v", err)
-		}
+		aiClient := gemini.Config{
+			BaseURL: config.App.AI.BaseURL,
+			APIKey:  config.App.AI.APIKey,
+			Model:   config.App.AI.Model,
+		}.NewClient()
 		generationProcessor := processor.NewAIProblemGenerator(aiClient, eventPublisher, config.App.Kafka.GeneratedProblemsTopic)
 		processJobService := generationjobsvc.NewProcessGenerationJobService(jobRepo, generationProcessor)
 
@@ -90,7 +83,7 @@ func main() {
 		defer consumer.Close()
 
 		go func() {
-			if err := consumer.Start(ctx); err != nil && err != context.Canceled {
+			if err := consumer.Start(context.Background()); err != nil {
 				log.Printf("generation worker stopped: %v", err)
 			}
 		}()
@@ -108,18 +101,5 @@ func main() {
 	log.Printf("problem_generation service starting on :%s", serverPort)
 	if err := http.ListenAndServe(":"+serverPort, mux); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func newAITextGenerator() (out.AITextGenerator, error) {
-	switch config.App.AI.Provider {
-	case "gemini":
-		return gemini.Config{
-			BaseURL: config.App.AI.BaseURL,
-			APIKey:  config.App.AI.APIKey,
-			Model:   config.App.AI.Model,
-		}.NewClient(), nil
-	default:
-		return nil, fmt.Errorf("unsupported AI provider %q", config.App.AI.Provider)
 	}
 }
