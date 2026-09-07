@@ -21,6 +21,34 @@ type Client struct {
 	httpClient *http.Client
 }
 
+type generateContentRequest struct {
+	SystemInstruction content          `json:"system_instruction,omitempty"`
+	Contents          []content        `json:"contents"`
+	GenerationConfig  generationConfig `json:"generationConfig,omitempty"`
+}
+
+type generationConfig struct {
+	ResponseMimeType string   `json:"responseMimeType,omitempty"`
+	Temperature      *float64 `json:"temperature,omitempty"`
+}
+
+type content struct {
+	Role  string `json:"role,omitempty"`
+	Parts []part `json:"parts"`
+}
+
+type part struct {
+	Text string `json:"text"`
+}
+
+type generateContentResponse struct {
+	Candidates []candidate `json:"candidates"`
+}
+
+type candidate struct {
+	Content content `json:"content"`
+}
+
 func (c *Client) GenerateText(ctx context.Context, request out.GenerateTextRequest) (out.GenerateTextResponse, error) {
 	if c.apiKey == "" {
 		return out.GenerateTextResponse{}, errors.New("gemini api key is required")
@@ -84,34 +112,6 @@ func (c *Client) GenerateText(ctx context.Context, request out.GenerateTextReque
 	}
 
 	return out.GenerateTextResponse{Text: text}, nil
-}
-
-type generateContentRequest struct {
-	SystemInstruction content          `json:"system_instruction,omitempty"`
-	Contents          []content        `json:"contents"`
-	GenerationConfig  generationConfig `json:"generationConfig,omitempty"`
-}
-
-type generationConfig struct {
-	ResponseMimeType string   `json:"responseMimeType,omitempty"`
-	Temperature      *float64 `json:"temperature,omitempty"`
-}
-
-type content struct {
-	Role  string `json:"role,omitempty"`
-	Parts []part `json:"parts"`
-}
-
-type part struct {
-	Text string `json:"text"`
-}
-
-type generateContentResponse struct {
-	Candidates []candidate `json:"candidates"`
-}
-
-type candidate struct {
-	Content content `json:"content"`
 }
 
 func (r generateContentResponse) Text() string {
