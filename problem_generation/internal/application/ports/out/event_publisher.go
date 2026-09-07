@@ -17,7 +17,6 @@ type GenerationRequestedEvent struct {
 	Level              domain.GenerationLevel `json:"level"`
 	Description        string                 `json:"description"`
 	TopicIDs           []string               `json:"topic_ids"`
-	Prompt             string                 `json:"prompt"`
 }
 
 type GenerationRequestedMessage struct {

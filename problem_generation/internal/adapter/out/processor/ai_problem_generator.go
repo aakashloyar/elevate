@@ -76,14 +76,13 @@ func systemPrompt() string {
 
 func userPrompt(event out.GenerationRequestedEvent) string {
 	return fmt.Sprintf(
-		"Create %d single-correct, %d multiple-correct, and %d numerical problems. Level: %s. Description: %s. Topic IDs: %s. Extra prompt: %s.",
+		"Create %d single-correct, %d multiple-correct, and %d numerical problems. Level: %s. Description: %s. Topic IDs: %s.",
 		event.SingleCorrectCount,
 		event.MultiCorrectCount,
 		event.NumericalCount,
 		event.Level,
 		event.Description,
 		strings.Join(event.TopicIDs, ", "),
-		event.Prompt,
 	)
 }
 

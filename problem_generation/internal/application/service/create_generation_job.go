@@ -53,7 +53,6 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 		return in.CreateGenerationJobOutput{}, err
 	}
 
-	prompt := buildPrompt(job)
 	if err := s.eventPublisher.PublishGenerationRequested(ctx, out.GenerationRequestedMessage{
 		Event: out.GenerationRequestedEvent{
 			JobID:              job.ID,
@@ -66,7 +65,6 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 			Level:              job.Level,
 			Description:        job.Description,
 			TopicIDs:           job.TopicIDs,
-			Prompt:             prompt,
 		},
 	}); err != nil {
 		return in.CreateGenerationJobOutput{}, fmt.Errorf("publish generation request: %w", err)
@@ -117,31 +115,4 @@ func normalizeTopicIDs(topicIDs []string) []string {
 		}
 	}
 	return normalized
-}
-
-func buildPrompt(job domain.GenerationJob) string {
-	parts := []string{
-		fmt.Sprintf("Generate %d single-correct questions", job.SingleCorrectCount),
-		fmt.Sprintf("%d multi-correct questions", job.MultiCorrectCount),
-		fmt.Sprintf("%d numerical questions", job.NumericalCount),
-		fmt.Sprintf("for level %s", job.Level),
-	}
-
-	if job.Description != "" {
-		parts = append(parts, fmt.Sprintf("based on: %s", job.Description))
-	}
-
-	if job.DocumentID != nil {
-		parts = append(parts, fmt.Sprintf("using document %s", *job.DocumentID))
-	}
-
-	if job.AssessmentID != nil {
-		parts = append(parts, fmt.Sprintf("for assessment %s", *job.AssessmentID))
-	}
-
-	if len(job.TopicIDs) > 0 {
-		parts = append(parts, fmt.Sprintf("topics: %s", strings.Join(job.TopicIDs, ", ")))
-	}
-
-	return strings.Join(parts, "; ")
 }
