@@ -62,7 +62,7 @@ func main() {
 		APISecret: config.App.Kafka.APISecret,
 	})
 
-	createProblemBatchService := problemservice.NewCreateProblemBatchService(createProblemService, producer, idGen, clock)
+	createProblemBatchService := problemservice.NewCreateProblemBatchService(createProblemService, producer, config.App.Kafka.ProblemCreatedBatchTopic, idGen, clock)
 
 	if err != nil {
 		log.Fatalf("failed to create kafka producer: %v", err)
@@ -70,12 +70,12 @@ func main() {
 	defer producer.Close()
 
 	consumerConfig := kafkaconsumer.Config{
-		Brokers:   config.App.Kafka.Brokers,
-		Topics:    config.App.Kafka.Topics,
-		ClientID:  config.App.Kafka.ClientID,
-		GroupID:   config.App.Kafka.GroupID,
-		APIKey:    config.App.Kafka.APIKey,
-		APISecret: config.App.Kafka.APISecret,
+		Brokers:                config.App.Kafka.Brokers,
+		GeneratedProblemsTopic: config.App.Kafka.GeneratedProblemsTopic,
+		ClientID:               config.App.Kafka.ClientID,
+		GroupID:                config.App.Kafka.GroupID,
+		APIKey:                 config.App.Kafka.APIKey,
+		APISecret:              config.App.Kafka.APISecret,
 	}
 	consumer, err := consumerConfig.NewConsumer(createProblemBatchService)
 	if err != nil {

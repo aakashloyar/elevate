@@ -25,7 +25,7 @@ func main() {
 	repository := postgres.New(db)
 	evaluateSubmissionService := evaluationservice.NewEvaluateSubmissionService(assessmenthttp.NewClient(cfg.AssessmentServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), repository)
 	getEvaluationService := evaluationservice.NewGetEvaluationService(repository)
-	consumerConfig := kafka.Config{Brokers: cfg.Kafka.Brokers, Topics: []string{cfg.Kafka.Topic}, ClientID: cfg.Kafka.ClientID, GroupID: cfg.Kafka.GroupID, APIKey: cfg.Kafka.APIKey, APISecret: cfg.Kafka.APISecret}
+	consumerConfig := kafka.Config{Brokers: cfg.Kafka.Brokers, SubmissionSubmittedTopic: cfg.Kafka.SubmissionSubmittedTopic, ClientID: cfg.Kafka.ClientID, GroupID: cfg.Kafka.GroupID, APIKey: cfg.Kafka.APIKey, APISecret: cfg.Kafka.APISecret}
 	consumer, err := consumerConfig.NewConsumer(evaluateSubmissionService)
 	if err != nil {
 		log.Fatalf("create kafka consumer: %v", err)

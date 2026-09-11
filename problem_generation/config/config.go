@@ -23,13 +23,13 @@ type ServerConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers                []string
-	Topic                  string
-	GeneratedProblemsTopic string
-	ClientID               string
-	GroupID                string
-	APIKey                 string
-	APISecret              string
+	Brokers                 []string
+	GenerationRequestsTopic string
+	GeneratedProblemsTopic  string
+	ClientID                string
+	GroupID                 string
+	APIKey                  string
+	APISecret               string
 }
 
 type WorkerConfig struct {
@@ -72,19 +72,13 @@ func load() Config {
 	}
 
 	kafka := KafkaConfig{
-		Brokers:                strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
-		Topic:                  os.Getenv("KAFKA_GENERATION_REQUESTS_TOPIC"),
-		GeneratedProblemsTopic: os.Getenv("KAFKA_GENERATED_PROBLEMS_TOPIC"),
-		ClientID:               os.Getenv("KAFKA_CLIENT_ID"),
-		GroupID:                os.Getenv("KAFKA_GROUP_ID"),
-		APIKey:                 os.Getenv("KAFKA_API_KEY"),
-		APISecret:              os.Getenv("KAFKA_API_SECRET"),
-	}
-	if kafka.Topic == "" {
-		kafka.Topic = "generation-requests"
-	}
-	if kafka.GeneratedProblemsTopic == "" {
-		kafka.GeneratedProblemsTopic = "generated-problems"
+		Brokers:                 splitList(os.Getenv("KAFKA_BROKERS")),
+		GenerationRequestsTopic: os.Getenv("KAFKA_GENERATION_REQUESTS_TOPIC"),
+		GeneratedProblemsTopic:  os.Getenv("KAFKA_GENERATED_PROBLEMS_TOPIC"),
+		ClientID:                os.Getenv("KAFKA_CLIENT_ID"),
+		GroupID:                 os.Getenv("KAFKA_GROUP_ID"),
+		APIKey:                  os.Getenv("KAFKA_API_KEY"),
+		APISecret:               os.Getenv("KAFKA_API_SECRET"),
 	}
 	if kafka.GroupID == "" {
 		kafka.GroupID = "problem-generation-service"
@@ -130,4 +124,16 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
+}
+
+func splitList(value string) []string {
+	values := strings.Split(value, ",")
+	result := make([]string, 0, len(values))
+	for _, item := range values {
+		item = strings.TrimSpace(item)
+		if item != "" {
+			result = append(result, item)
+		}
+	}
+	return result
 }

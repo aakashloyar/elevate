@@ -46,11 +46,11 @@ func main() {
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
 	eventPublisher, err := kafkaproducer.NewProducer(kafkaproducer.Config{
-		Brokers:   config.App.Kafka.Brokers,
-		Topic:     config.App.Kafka.Topic,
-		ClientID:  config.App.Kafka.ClientID,
-		APIKey:    config.App.Kafka.APIKey,
-		APISecret: config.App.Kafka.APISecret,
+		Brokers:                 config.App.Kafka.Brokers,
+		GenerationRequestsTopic: config.App.Kafka.GenerationRequestsTopic,
+		ClientID:                config.App.Kafka.ClientID,
+		APIKey:                  config.App.Kafka.APIKey,
+		APISecret:               config.App.Kafka.APISecret,
 	})
 	if err != nil {
 		log.Fatalf("failed to create Kafka producer: %v", err)
@@ -70,12 +70,12 @@ func main() {
 		processJobService := generationjobsvc.NewProcessGenerationJobService(jobRepo, generationProcessor)
 
 		consumer, err := kafkaconsumer.Config{
-			Brokers:   config.App.Kafka.Brokers,
-			Topics:    []string{config.App.Kafka.Topic},
-			ClientID:  config.App.Kafka.ClientID,
-			GroupID:   config.App.Kafka.GroupID,
-			APIKey:    config.App.Kafka.APIKey,
-			APISecret: config.App.Kafka.APISecret,
+			Brokers:                 config.App.Kafka.Brokers,
+			GenerationRequestsTopic: config.App.Kafka.GenerationRequestsTopic,
+			ClientID:                config.App.Kafka.ClientID,
+			GroupID:                 config.App.Kafka.GroupID,
+			APIKey:                  config.App.Kafka.APIKey,
+			APISecret:               config.App.Kafka.APISecret,
 		}.NewConsumer(processJobService)
 		if err != nil {
 			log.Fatalf("failed to create Kafka consumer: %v", err)
@@ -87,7 +87,7 @@ func main() {
 				log.Printf("generation worker stopped: %v", err)
 			}
 		}()
-		log.Printf("generation worker enabled on topic %q with group %q", config.App.Kafka.Topic, config.App.Kafka.GroupID)
+		log.Printf("generation worker enabled on topic %q with group %q", config.App.Kafka.GenerationRequestsTopic, config.App.Kafka.GroupID)
 	} else {
 		log.Printf("generation worker disabled; set GENERATION_WORKER_ENABLED=true to consume generation requests")
 	}

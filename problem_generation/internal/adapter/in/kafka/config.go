@@ -9,12 +9,12 @@ import (
 )
 
 type Config struct {
-	Brokers   []string
-	Topics    []string
-	ClientID  string
-	GroupID   string
-	APIKey    string
-	APISecret string
+	Brokers                 []string
+	GenerationRequestsTopic string
+	ClientID                string
+	GroupID                 string
+	APIKey                  string
+	APISecret               string
 }
 
 type Consumer struct {
@@ -24,14 +24,14 @@ type Consumer struct {
 
 type KafkaConsumerClient struct {
 	client *kgo.Client
-	topics []string
+	topic  string
 }
 
 func (cfg Config) NewConsumer(service in.ProcessGenerationJobService) (*Consumer, error) {
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),
-		kgo.ConsumeTopics(cfg.Topics...),
+		kgo.ConsumeTopics(cfg.GenerationRequestsTopic),
 		kgo.ClientID(cfg.ClientID),
 		kgo.DialTLSConfig(&tls.Config{}),
 		kgo.SASL(plain.Auth{User: cfg.APIKey, Pass: cfg.APISecret}.AsMechanism()),
@@ -41,7 +41,7 @@ func (cfg Config) NewConsumer(service in.ProcessGenerationJobService) (*Consumer
 	}
 
 	return &Consumer{
-		kafkaClient: &KafkaConsumerClient{client: client, topics: cfg.Topics},
+		kafkaClient: &KafkaConsumerClient{client: client, topic: cfg.GenerationRequestsTopic},
 		service:     service,
 	}, nil
 }

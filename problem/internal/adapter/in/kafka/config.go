@@ -10,31 +10,31 @@ import (
 )
 
 type Config struct {
-	Brokers   []string
-	Topics    []string
-	ClientID  string
-	GroupID   string
-	APIKey    string
-	APISecret string
+	Brokers                []string
+	GeneratedProblemsTopic string
+	ClientID               string
+	GroupID                string
+	APIKey                 string
+	APISecret              string
 }
 
 type Consumer struct {
 	client      *kgo.Client
-	topic       []string 
+	topic       string
 	createSvc   in.CreateProblemBatchService
 	maxPerBatch int
 }
 
 type KafkaConsumerClient struct {
 	client *kgo.Client
-	topic  []string
+	topic  string
 }
 
 func (cfg Config) NewConsumer(createSvc in.CreateProblemBatchService) (*Consumer, error) {
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),
-		kgo.ConsumeTopics(cfg.Topics...),
+		kgo.ConsumeTopics(cfg.GeneratedProblemsTopic),
 		kgo.ClientID(cfg.ClientID),
 
 		kgo.DialTLSConfig(&tls.Config{}),
@@ -52,7 +52,7 @@ func (cfg Config) NewConsumer(createSvc in.CreateProblemBatchService) (*Consumer
 
 	return &Consumer{
 		client:      client,
-		topic:       cfg.Topics,
+		topic:       cfg.GeneratedProblemsTopic,
 		createSvc:   createSvc,
 		maxPerBatch: 50,
 	}, nil

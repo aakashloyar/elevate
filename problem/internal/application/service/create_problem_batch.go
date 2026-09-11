@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aakashloyar/elevate/problem/config"
 	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 )
@@ -13,12 +12,13 @@ import (
 type CreateProblemBatchService struct {
 	createProblemSvc in.CreateProblemService
 	producer         out.EventPublisher
+	createdTopic     string
 	idGen            out.IDGenerator
 	clock            out.Clock
 }
 
-func NewCreateProblemBatchService(createProblemSvc in.CreateProblemService, producer out.EventPublisher, idGen out.IDGenerator, clock out.Clock) in.CreateProblemBatchService {
-	return &CreateProblemBatchService{createProblemSvc: createProblemSvc, producer: producer, idGen: idGen, clock: clock}
+func NewCreateProblemBatchService(createProblemSvc in.CreateProblemService, producer out.EventPublisher, createdTopic string, idGen out.IDGenerator, clock out.Clock) in.CreateProblemBatchService {
+	return &CreateProblemBatchService{createProblemSvc: createProblemSvc, producer: producer, createdTopic: createdTopic, idGen: idGen, clock: clock}
 }
 
 func (s *CreateProblemBatchService) Execute(ctx context.Context, input in.CreateProblemBatchInput) (in.CreateProblemBatchOutput, error) {
@@ -45,7 +45,7 @@ func (s *CreateProblemBatchService) Execute(ctx context.Context, input in.Create
 	}
 	if input.AssessmentID != "" {
 		if err := s.producer.PublishCreatedBatch(ctx, out.CreatedBatchMessage{
-			Topic: config.CreatedProblemBatchTopic,
+			Topic: s.createdTopic,
 			Event: out.CreatedBatchEvent{
 				AssessmentID: input.AssessmentID,
 				ProblemIDs:   createdIDs,

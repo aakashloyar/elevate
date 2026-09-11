@@ -60,12 +60,12 @@ func main() {
 
 	// Start Kafka consumer for problem-created events
 	consumerConfig := kafkaconsumer.Config{
-		Brokers:   config.App.Kafka.Brokers,
-		Topics:    config.App.Kafka.Topics,
-		ClientID:  config.App.Kafka.ClientID,
-		GroupID:   config.App.Kafka.GroupID,
-		APIKey:    config.App.Kafka.APIKey,
-		APISecret: config.App.Kafka.APISecret,
+		Brokers:                  config.App.Kafka.Brokers,
+		ProblemCreatedBatchTopic: config.App.Kafka.ProblemCreatedBatchTopic,
+		ClientID:                 config.App.Kafka.ClientID,
+		GroupID:                  config.App.Kafka.GroupID,
+		APIKey:                   config.App.Kafka.APIKey,
+		APISecret:                config.App.Kafka.APISecret,
 	}
 	consumer, err := consumerConfig.NewConsumer(addProblemsBatchService)
 	if err != nil {

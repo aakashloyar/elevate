@@ -22,12 +22,13 @@ type ServerConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers   []string
-	Topics    []string
-	ClientID  string
-	GroupID   string
-	APIKey    string
-	APISecret string
+	Brokers                  []string
+	GeneratedProblemsTopic   string
+	ProblemCreatedBatchTopic string
+	ClientID                 string
+	GroupID                  string
+	APIKey                   string
+	APISecret                string
 }
 
 type Config struct {
@@ -35,7 +36,6 @@ type Config struct {
 	Server   ServerConfig
 	Kafka    KafkaConfig
 }
-
 
 func load() Config {
 	if err := godotenv.Load(); err != nil {
@@ -57,17 +57,27 @@ func load() Config {
 	}
 
 	kafka := KafkaConfig{
-		Brokers:   strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
-		Topics:    strings.Split(os.Getenv("KAFKA_TOPICS"), ","),
-		ClientID:  os.Getenv("KAFKA_CLIENT_ID"),
-		GroupID:   os.Getenv("KAFKA_GROUP_ID"),
-		APIKey:    os.Getenv("KAFKA_API_KEY"),
-		APISecret: os.Getenv("KAFKA_API_SECRET"),
+		Brokers:                  splitList(os.Getenv("KAFKA_BROKERS")),
+		GeneratedProblemsTopic:   os.Getenv("KAFKA_GENERATED_PROBLEMS_TOPIC"),
+		ProblemCreatedBatchTopic: os.Getenv("KAFKA_PROBLEM_CREATED_BATCH_TOPIC"),
+		ClientID:                 os.Getenv("KAFKA_CLIENT_ID"),
+		GroupID:                  os.Getenv("KAFKA_GROUP_ID"),
+		APIKey:                   os.Getenv("KAFKA_API_KEY"),
+		APISecret:                os.Getenv("KAFKA_API_SECRET"),
 	}
 	return Config{Postgres: postgres, Server: server, Kafka: kafka}
 }
 
-var (
-	App = load()
-	CreatedProblemBatchTopic = strings.Split(os.Getenv("KAFKA_TOPICS"), ",")[0]
-)
+var App = load()
+
+func splitList(value string) []string {
+	values := strings.Split(value, ",")
+	result := make([]string, 0, len(values))
+	for _, item := range values {
+		item = strings.TrimSpace(item)
+		if item != "" {
+			result = append(result, item)
+		}
+	}
+	return result
+}

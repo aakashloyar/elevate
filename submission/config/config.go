@@ -61,9 +61,6 @@ func load() Config {
 		APISecret:                os.Getenv("KAFKA_API_SECRET"),
 		SubmissionSubmittedTopic: os.Getenv("KAFKA_SUBMISSION_SUBMITTED_TOPIC"),
 	}
-	if kafka.SubmissionSubmittedTopic == "" {
-		kafka.SubmissionSubmittedTopic = "submission-submitted"
-	}
 
 	return Config{Postgres: postgres, Server: server, Kafka: kafka}
 }

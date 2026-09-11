@@ -8,11 +8,11 @@ import (
 )
 
 type Config struct {
-	Brokers   []string
-	Topic     string
-	ClientID  string
-	APIKey    string
-	APISecret string
+	Brokers                 []string
+	GenerationRequestsTopic string
+	ClientID                string
+	APIKey                  string
+	APISecret               string
 }
 
 type Producer struct {
@@ -31,5 +31,5 @@ func NewProducer(cfg Config) (*Producer, error) {
 		return nil, err
 	}
 
-	return &Producer{client: client, topic: cfg.Topic}, nil
+	return &Producer{client: client, topic: cfg.GenerationRequestsTopic}, nil
 }
