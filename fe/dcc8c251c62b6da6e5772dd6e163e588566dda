@@ -1,0 +1,61 @@
+problem_generation/internal/adapter/out/kafka/config.go
+  s_a0f5e61315c163::t_e1ccf7225029e3 11-15,34
+problem_generation/internal/adapter/in/kafka/config.go
+  s_a0f5e61315c163::t_e1ccf7225029e3 12-17,27,34,44
+problem/internal/adapter/in/kafka/config.go
+  s_a0f5e61315c163::t_ec63e470e35eee 13-18,23,30,37,55
+evaluation/internal/adapter/in/kafka/config.go
+  s_a0f5e61315c163::t_d98ad1b6ed780d 12-17,27,34,44
+problem/internal/application/service/create_problem_batch.go
+  s_a0f5e61315c163::t_8c7f21c6668b52 15,20-21,48
+assessment/internal/adapter/in/kafka/config.go
+  s_a0f5e61315c163::t_ec63e470e35eee 7,14-19,35,42,48-52,59
+assessment/cmd/server/main.go
+  s_a0f5e61315c163::t_ec63e470e35eee 63-68
+problem_generation/cmd/server/main.go
+  s_a0f5e61315c163::t_e1ccf7225029e3 49-53,73-78,90
+problem_generation/config/config.go
+  s_a0f5e61315c163::t_e1ccf7225029e3 26-28,75-77
+  s_a0f5e61315c163::t_89ef27c244dc68 29-32,78-81
+  s_a0f5e61315c163::t_8c7f21c6668b52 128-138
+  s_a0f5e61315c163::t_2ea6b894684dfe 139
+evaluation/config/config.go
+  s_a0f5e61315c163::t_d98ad1b6ed780d 22-27,40
+problem/config/config.go
+  s_a0f5e61315c163::t_8c7f21c6668b52 25-31,60,63-66,71
+  s_a0f5e61315c163::t_f5bf2ff6a411ee 61-62
+  s_1b0a928fcdb549::t_1f209bd5758d04 72-83
+assessment/config/config.go
+  s_a0f5e61315c163::t_f5bf2ff6a411ee 77
+  s_1b0a928fcdb549::t_1f209bd5758d04 87-98
+  s_a0f5e61315c163::t_8c7f21c6668b52 33-38,76,78-81
+problem/cmd/server/main.go
+  s_a0f5e61315c163::t_8c7f21c6668b52 65
+  s_a0f5e61315c163::t_ec63e470e35eee 73-78
+evaluation/cmd/server/main.go
+  s_a0f5e61315c163::t_d98ad1b6ed780d 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fedcc8c251c62b6da6e5772dd6e163e588566dda",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    },
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
