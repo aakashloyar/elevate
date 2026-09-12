@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
-	outports "github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
 	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 	"github.com/aakashloyar/elevate/assessment/internal/domain"
 )
@@ -40,20 +39,18 @@ type Handler struct {
 	listAssessmentsService       in.ListAssessmentsService
 	getAssessmentService         in.GetAssessmentService
 	deleteAssessmentService      in.DeleteAssessmentService
-	createProblemService         in.CreateAssessmentProblemService
 	getAssessmentProblemsService in.GetAssessmentProblemsService
 	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
 	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
 	createMarkingSchemeService   in.CreateAssessmentMarkingSchemeService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, createProblemService in.CreateAssessmentProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
 	return &Handler{
 		createAssessmentService:      createAssessmentService,
 		listAssessmentsService:       listAssessmentsService,
 		getAssessmentService:         getAssessmentService,
 		deleteAssessmentService:      deleteAssessmentService,
-		createProblemService:         createProblemService,
 		getAssessmentProblemsService: getAssessmentProblemsService,
 		getMarkingSchemeService:      getMarkingSchemeService,
 		upsertMarkingSchemeService:   upsertMarkingSchemeService,
@@ -67,26 +64,6 @@ type ListAssessmentsResponse struct {
 
 type GetAssessmentProblemsResponse struct {
 	ProblemIDs []string `json:"problem_ids"`
-}
-
-type CreateAssessmentProblemRequest struct {
-	CreatedBy  string                               `json:"created_by"`
-	Title      string                               `json:"title"`
-	Statement  string                               `json:"statement"`
-	Type       string                               `json:"type"`
-	Difficulty string                               `json:"difficulty"`
-	SourceType string                               `json:"source_type"`
-	Options    []CreateAssessmentProblemOptionInput `json:"options"`
-	Tags       []string                             `json:"tags"`
-}
-
-type CreateAssessmentProblemOptionInput struct {
-	Text      string `json:"text"`
-	IsCorrect bool   `json:"is_correct"`
-}
-
-type CreateAssessmentProblemResponse struct {
-	ProblemID string `json:"problem_id"`
 }
 
 type AssessmentMarkingSchemeRequest struct {
@@ -317,54 +294,6 @@ func toMarksRequest(marks domain.Marks) MarksRequest {
 		Incorrect: marks.Incorrect,
 		Skipped:   marks.Skipped,
 	}
-}
-
-func (h *Handler) CreateAssessmentProblem(w http.ResponseWriter, r *http.Request, assessmentID string) {
-	var req CreateAssessmentProblemRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	options := make([]in.CreateAssessmentProblemOptionInput, 0, len(req.Options))
-	for _, option := range req.Options {
-		options = append(options, in.CreateAssessmentProblemOptionInput{Text: option.Text, IsCorrect: option.IsCorrect})
-	}
-
-	out, err := h.createProblemService.Execute(r.Context(), in.CreateAssessmentProblemInput{
-		AssessmentID: assessmentID,
-		CreatedBy:    req.CreatedBy,
-		Title:        req.Title,
-		Statement:    req.Statement,
-		Type:         req.Type,
-		Difficulty:   req.Difficulty,
-		SourceType:   req.SourceType,
-		Options:      options,
-		Tags:         req.Tags,
-	})
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			http.Error(w, "assessment not found", http.StatusNotFound)
-			return
-		}
-
-		var problemErr *outports.ProblemClientError
-		if errors.As(err, &problemErr) {
-			if problemErr.StatusCode >= 400 && problemErr.StatusCode < 500 {
-				http.Error(w, problemErr.Message, http.StatusBadRequest)
-				return
-			}
-			http.Error(w, "problem service unavailable", http.StatusBadGateway)
-			return
-		}
-
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(CreateAssessmentProblemResponse{ProblemID: out.ProblemID})
 }
 
 func (h *Handler) IsAssessmentRoute(path string) bool {
