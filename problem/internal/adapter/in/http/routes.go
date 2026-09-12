@@ -14,6 +14,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
+
 	mux.HandleFunc("/problems", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

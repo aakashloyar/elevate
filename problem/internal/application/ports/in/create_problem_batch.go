@@ -7,7 +7,7 @@ type CreateProblemBatchInput struct {
 	AssessmentID string
 }
 
-type CreateProblemBatchOutput struct {}
+type CreateProblemBatchOutput struct{}
 
 type CreateProblemBatchService interface {
 	Execute(ctx context.Context, input CreateProblemBatchInput) (CreateProblemBatchOutput, error)

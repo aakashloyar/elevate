@@ -15,4 +15,3 @@
 
 5. Delete problem/id 
 -> deleting a specfic problem 
-
