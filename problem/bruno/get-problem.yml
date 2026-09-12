@@ -1,11 +1,11 @@
 info:
   name: get-problem
   type: http
-  seq: 6
+  seq: 3
 
 http:
   method: GET
-  url: http://localhost:8080/problems/e0560c45-5c54-4618-ae36-d2f83a0eee4a
+  url: http://localhost:8083/problems/35fd7cf2-2854-4624-89d4-c6da6965bce9
   auth: inherit
 
 settings:

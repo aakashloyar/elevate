@@ -1,0 +1,29 @@
+info:
+  name: create-generation-job
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8087/generation-jobs
+  body:
+    type: json
+    data: |-
+      {
+        "user_id": "",
+        "single_correct_count": 0,
+        "multi_correct_count": 0,
+        "numerical_count": 0,
+        "document_id": "",
+        "assessment_id": "",
+        "level": "",
+        "description": "",
+        "topic_ids": []
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

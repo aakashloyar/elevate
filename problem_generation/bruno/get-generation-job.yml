@@ -1,11 +1,11 @@
 info:
-  name: delete-problem
+  name: get-generation-job
   type: http
-  seq: 4
+  seq: 3
 
 http:
-  method: DELETE
-  url: http://localhost:8083/problems/019fd16d-8296-7039-949f-65044c31d28f
+  method: GET
+  url: http://localhost:8087/generation-jobs/
   auth: inherit
 
 settings:

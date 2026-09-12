@@ -1,24 +1,24 @@
 info:
   name: update-problem
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: PUT
-  url: http://localhost:8080/problems/e0560c45-5c54-4618-ae36-d2f83a0eee4a
+  url: http://localhost:8083/problems/35fd7cf2-2854-4624-89d4-c6da6965bce9
   body:
     type: json
     data: |-
       {
         "created_by": "019fd16d-8296-7039-949f-65044c31d28f",
         "title": "What is the time complexity of binary search?",
-        "statement": "What is the time complexity of searching for an element using binary search?",
+        "statement": "Given a sorted array of n elements, what is the time complexity of searching for an element using binary search?",
         "type": "single",
-        "difficulty": "easy",
+        "difficulty": "medium",
         "source_type": "manual",
         "options": [
           {
-            "text": "O(n)",
+            "text": "O(1)",
             "is_correct": false
           },
           {
@@ -26,7 +26,7 @@ http:
             "is_correct": true
           },
           {
-            "text": "O(n^2)",
+            "text": "O(n)",
             "is_correct": false
           },
           {

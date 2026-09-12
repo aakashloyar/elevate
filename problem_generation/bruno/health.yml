@@ -1,11 +1,11 @@
 info:
-  name: delete-problem
+  name: health
   type: http
-  seq: 4
+  seq: 1
 
 http:
-  method: DELETE
-  url: http://localhost:8083/problems/019fd16d-8296-7039-949f-65044c31d28f
+  method: GET
+  url: http://localhost:8087/problem-generation/health
   auth: inherit
 
 settings:
