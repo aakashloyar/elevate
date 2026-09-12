@@ -1,0 +1,44 @@
+submission/bruno/health.yml
+  s_1b0a928fcdb549::t_59a71a2e150cde 8
+submission/bruno/get-submission-status.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8
+submission/bruno/get-submission.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8
+submission/bruno/save-answer-batch.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8,15-25
+submission/bruno/save-answer.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8,13-16
+submission/bruno/submit-submission.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8
+submission/bruno/create-submission.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 13,15
+  s_1b0a928fcdb549::t_59a71a2e150cde 8
+submission/bruno/start-submission.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8
+submission/bruno/update-submission-status.yml
+  s_a0f5e61315c163::t_e9e5de8871ac28 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ffcdb09b795fc1a0521367801513dd813983a242",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    },
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
