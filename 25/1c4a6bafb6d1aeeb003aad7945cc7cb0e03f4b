@@ -1,0 +1,14 @@
+assessment_runner/config/config.go
+  h_2b74694ace7348 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "251c4a6bafb6d1aeeb003aad7945cc7cb0e03f4b",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
