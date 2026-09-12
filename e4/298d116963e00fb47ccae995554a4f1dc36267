@@ -1,0 +1,22 @@
+submission/bruno/create-submission.yml
+  h_2b74694ace7348 13
+submission/bruno/get-submission-status.yml
+  h_2b74694ace7348 8
+submission/bruno/get-submission.yml
+  h_2b74694ace7348 8
+submission/bruno/start-submission.yml
+  h_2b74694ace7348 8
+submission/bruno/submit-submission.yml
+  h_2b74694ace7348 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e4298d116963e00fb47ccae995554a4f1dc36267",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
