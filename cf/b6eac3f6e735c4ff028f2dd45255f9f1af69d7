@@ -1,0 +1,41 @@
+assessment_runner/bruno/get-attempt-problems.yml
+  s_1b0a928fcdb549::t_dc6debc4b38da6 1-15
+assessment_runner/bruno/health.yml
+  s_1b0a928fcdb549::t_1b53b906708828 1-15
+assessment/bruno/create-assessment.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8,13-14
+assessment/bruno/list-assessments.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+assessment_runner/bruno/opencollection.yml
+  s_1b0a928fcdb549::t_c90cdf50421814 1-10
+assessment/bruno/create-marking-scheme.yml
+  s_1b0a928fcdb549::t_8289db7f92355e 1-23
+assessment/bruno/get-assessment-problems.yml
+  s_1b0a928fcdb549::t_da269aaed3548c 1-15
+assessment/bruno/delete-assessment.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+assessment/bruno/get-marking-scheme.yml
+  s_1b0a928fcdb549::t_1da78c158f0060 1-15
+assessment/bruno/get-assessment.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+assessment/bruno/update-marking-scheme.yml
+  s_1b0a928fcdb549::t_36d9d94cd882ca 1-23
+assessment/bruno/health.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "cfb6eac3f6e735c4ff028f2dd45255f9f1af69d7",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
