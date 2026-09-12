@@ -45,7 +45,7 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			return
 		}
 
-		if len(parts) == 2 && parts[1] == "get-problems" {
+		if len(parts) == 2 && parts[1] == "problems" {
 			if r.Method != http.MethodGet {
 				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 				return
