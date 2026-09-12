@@ -1,0 +1,23 @@
+info:
+  name: create-marking-scheme
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://localhost:8082/assessments/f207db6a-c9bc-4743-96f3-56028ec6cfa2/marking-scheme
+  body:
+    type: json
+    data: |-
+      {
+        "single": {"correct": 0, "incorrect": 0, "skipped": 0},
+        "multiple": {"correct": 0, "incorrect": 0, "skipped": 0},
+        "numerical": {"correct": 0, "incorrect": 0, "skipped": 0}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

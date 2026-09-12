@@ -1,11 +1,11 @@
 info:
-  name: list-assessments
+  name: get-marking-scheme
   type: http
-  seq: 4
+  seq: 9
 
 http:
   method: GET
-  url: http://localhost:8082/assessments
+  url: http://localhost:8082/assessments/f207db6a-c9bc-4743-96f3-56028ec6cfa2/marking-scheme
   auth: inherit
 
 settings:

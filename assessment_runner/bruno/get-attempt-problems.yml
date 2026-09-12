@@ -1,11 +1,11 @@
 info:
-  name: delete-assessment
+  name: get-attempt-problems
   type: http
-  seq: 5
+  seq: 2
 
 http:
-  method: DELETE
-  url: http://localhost:8082/assessments/
+  method: GET
+  url: http://localhost:8086/attempts//problems
   auth: inherit
 
 settings:

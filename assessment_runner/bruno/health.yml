@@ -1,11 +1,11 @@
 info:
-  name: delete-assessment
+  name: health
   type: http
-  seq: 5
+  seq: 1
 
 http:
-  method: DELETE
-  url: http://localhost:8082/assessments/
+  method: GET
+  url: http://localhost:8086/assessment-runner/health
   auth: inherit
 
 settings:
