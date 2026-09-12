@@ -1,0 +1,36 @@
+assessment/internal/application/service/add_problem.go
+  s_a0f5e61315c163::t_19976715aa4e74 1-55
+assessment/internal/application/ports/out/problem_client.go
+  s_a0f5e61315c163::t_19976715aa4e74 1-42
+assessment/cmd/server/main.go
+  s_a0f5e61315c163::t_ee413e41e10693 13,48-49,56
+assessment/internal/adapter/out/problemhttp/client.go
+  s_a0f5e61315c163::t_19976715aa4e74 1-66
+assessment/config/config.go
+  s_a0f5e61315c163::t_ee413e41e10693 28-31,44,68-71,80
+assessment/bruno/add-problem.yml
+  s_a0f5e61315c163::t_255130073e4447 1-49
+assessment/internal/adapter/in/http/routes.go
+  s_a0f5e61315c163::t_9c0083aa4b8093 57-65
+assessment/internal/adapter/in/http/handler.go
+  s_a0f5e61315c163::t_9c0083aa4b8093 12,43,50,56,72-91,235-281
+  s_a0f5e61315c163::t_69f0184edca16c 282
+assessment/internal/application/ports/in/add_problem.go
+  s_a0f5e61315c163::t_19976715aa4e74 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4a50d05cc147e31ae36b787d0afc4250ea78213f",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
