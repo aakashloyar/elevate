@@ -25,6 +25,10 @@ type ServerConfig struct {
 	Port string
 }
 
+type ServiceConfig struct {
+	ProblemServiceURL string
+}
+
 type KafkaConfig struct {
 	Brokers                  []string
 	ProblemCreatedBatchTopic string
@@ -37,6 +41,7 @@ type KafkaConfig struct {
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Services ServiceConfig
 	Kafka    KafkaConfig
 }
 
@@ -60,6 +65,10 @@ func load() Config {
 		server.Port = "8080"
 	}
 
+	services := ServiceConfig{
+		ProblemServiceURL: os.Getenv("PROBLEM_SERVICE_URL"),
+	}
+
 	kafka := KafkaConfig{
 		Brokers:                  splitList(os.Getenv("KAFKA_BROKERS")),
 		ProblemCreatedBatchTopic: os.Getenv("KAFKA_PROBLEM_CREATED_BATCH_TOPIC"),
@@ -68,7 +77,7 @@ func load() Config {
 		APIKey:                   os.Getenv("KAFKA_API_KEY"),
 		APISecret:                os.Getenv("KAFKA_API_SECRET"),
 	}
-	return Config{Postgres: postgres, Server: server, Kafka: kafka}
+	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka}
 }
 
 var App = load()

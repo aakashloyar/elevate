@@ -54,6 +54,15 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			return
 		}
 
+		if len(parts) == 2 && parts[1] == "add-problem" {
+			if r.Method != http.MethodPost {
+				http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			h.AddProblem(w, r, assessmentID)
+			return
+		}
+
 		if len(parts) == 2 && parts[1] == "marking-scheme" {
 			switch r.Method {
 			case http.MethodPost:

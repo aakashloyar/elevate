@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
+	outports "github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
 	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 	"github.com/aakashloyar/elevate/assessment/internal/domain"
 )
@@ -39,18 +40,20 @@ type Handler struct {
 	listAssessmentsService       in.ListAssessmentsService
 	getAssessmentService         in.GetAssessmentService
 	deleteAssessmentService      in.DeleteAssessmentService
+	addProblemService            in.AddProblemService
 	getAssessmentProblemsService in.GetAssessmentProblemsService
 	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
 	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
 	createMarkingSchemeService   in.CreateAssessmentMarkingSchemeService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
 	return &Handler{
 		createAssessmentService:      createAssessmentService,
 		listAssessmentsService:       listAssessmentsService,
 		getAssessmentService:         getAssessmentService,
 		deleteAssessmentService:      deleteAssessmentService,
+		addProblemService:            addProblemService,
 		getAssessmentProblemsService: getAssessmentProblemsService,
 		getMarkingSchemeService:      getMarkingSchemeService,
 		upsertMarkingSchemeService:   upsertMarkingSchemeService,
@@ -64,6 +67,26 @@ type ListAssessmentsResponse struct {
 
 type GetAssessmentProblemsResponse struct {
 	ProblemIDs []string `json:"problem_ids"`
+}
+
+type AddProblemRequest struct {
+	CreatedBy  string                  `json:"created_by"`
+	Title      string                  `json:"title"`
+	Statement  string                  `json:"statement"`
+	Type       string                  `json:"type"`
+	Difficulty string                  `json:"difficulty"`
+	SourceType string                  `json:"source_type"`
+	Options    []AddProblemOptionInput `json:"options"`
+	Tags       []string                `json:"tags"`
+}
+
+type AddProblemOptionInput struct {
+	Text      string `json:"text"`
+	IsCorrect bool   `json:"is_correct"`
+}
+
+type AddProblemResponse struct {
+	ProblemID string `json:"problem_id"`
 }
 
 type AssessmentMarkingSchemeRequest struct {
@@ -207,6 +230,54 @@ func (h *Handler) GetAssessmentProblems(w http.ResponseWriter, r *http.Request, 
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(GetAssessmentProblemsResponse{ProblemIDs: out.ProblemIDs})
+}
+
+func (h *Handler) AddProblem(w http.ResponseWriter, r *http.Request, assessmentID string) {
+	var req AddProblemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	options := make([]in.AddProblemOptionInput, 0, len(req.Options))
+	for _, option := range req.Options {
+		options = append(options, in.AddProblemOptionInput{Text: option.Text, IsCorrect: option.IsCorrect})
+	}
+
+	out, err := h.addProblemService.Execute(r.Context(), in.AddProblemInput{
+		AssessmentID: assessmentID,
+		CreatedBy:    req.CreatedBy,
+		Title:        req.Title,
+		Statement:    req.Statement,
+		Type:         req.Type,
+		Difficulty:   req.Difficulty,
+		SourceType:   req.SourceType,
+		Options:      options,
+		Tags:         req.Tags,
+	})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "assessment not found", http.StatusNotFound)
+			return
+		}
+
+		var problemErr *outports.ProblemClientError
+		if errors.As(err, &problemErr) {
+			if problemErr.StatusCode >= http.StatusBadRequest && problemErr.StatusCode < http.StatusInternalServerError {
+				http.Error(w, problemErr.Message, http.StatusBadRequest)
+				return
+			}
+			http.Error(w, "problem service unavailable", http.StatusBadGateway)
+			return
+		}
+
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(AddProblemResponse{ProblemID: out.ProblemID})
 }
 
 func (h *Handler) PutAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
