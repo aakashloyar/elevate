@@ -1,0 +1,46 @@
+problem_generation/bruno/get-generation-job.yml
+  s_1b0a928fcdb549::t_bd22585e7d2a62 1-15
+problem_generation/bruno/opencollection.yml
+  s_1b0a928fcdb549::t_3d8d6efa7f3cc2 1-10
+problem/bruno/health.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+problem_generation/bruno/create-generation-job.yml
+  s_1b0a928fcdb549::t_629d88bcf5ee8b 1-29
+problem/bruno/delete-problem.yml
+  s_a0f5e61315c163::t_3e04041f76ab9d 8
+problem_generation/bruno/health.yml
+  s_1b0a928fcdb549::t_1dbaf1f8d0e06b 1-15
+problem/bruno/update-problem.yml
+  s_a0f5e61315c163::t_3e04041f76ab9d 8,15,17,21,29
+problem/bruno/list-problems.yml
+  s_a0f5e61315c163::t_3e04041f76ab9d 8,13-25,27
+  s_a0f5e61315c163::t_604bdeea2a21c5 26
+problem/bruno/create-problem.yml
+  s_1b0a928fcdb549::t_017b7ee70553c5 8
+problem/bruno/get-problem.yml
+  s_a0f5e61315c163::t_3e04041f76ab9d 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b42de3770f6fc0dd502e2b73826edcd34bde3bda",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    },
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
