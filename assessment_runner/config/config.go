@@ -17,7 +17,7 @@ func Load() Config {
 		SubmissionServiceURL: os.Getenv("SUBMISSION_SERVICE_URL"),
 	}
 	if cfg.HTTPPort == "" {
-		cfg.HTTPPort = "8084"
+		cfg.HTTPPort = "8086"
 	}
 	if cfg.AssessmentServiceURL == "" {
 		cfg.AssessmentServiceURL = "http://localhost:8082"
