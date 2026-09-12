@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8082/assessments/280e7a36-cfe5-44ee-bfaf-a6013486354b/get-problems
+  url: http://localhost:8082/assessments/f207db6a-c9bc-4743-96f3-56028ec6cfa2/problems
   auth: inherit
 
 settings:
