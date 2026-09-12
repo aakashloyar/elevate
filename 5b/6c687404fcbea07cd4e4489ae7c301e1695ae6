@@ -1,0 +1,14 @@
+assessment/bruno/get-assessment-problems.yml
+  h_2b74694ace7348 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5b6c687404fcbea07cd4e4489ae7c301e1695ae6",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
