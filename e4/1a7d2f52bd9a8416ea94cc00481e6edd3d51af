@@ -1,0 +1,14 @@
+assessment/internal/adapter/in/http/routes.go
+  h_2b74694ace7348 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e41a7d2f52bd9a8416ea94cc00481e6edd3d51af",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
