@@ -38,7 +38,6 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 		AssessmentID:    input.AssessmentID,
 		UserID:          input.UserID,
 		Status:          domain.SubmissionStatusCreated,
-		StartedAt:       now,
 		DurationSeconds: input.DurationSeconds,
 		CreatedAt:       now,
 		UpdatedAt:       now,
@@ -48,5 +47,5 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 		return in.CreateSubmissionOutput{}, err
 	}
 
-	return in.CreateSubmissionOutput{SubmissionID: submission.ID, StartedAt: now.Format(time.RFC3339)}, nil
+	return in.CreateSubmissionOutput{SubmissionID: submission.ID, CreatedAt: now.Format(time.RFC3339)}, nil
 }

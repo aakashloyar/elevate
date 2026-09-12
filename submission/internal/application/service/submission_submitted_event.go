@@ -1,11 +1,18 @@
 package submission
 
 import (
+	"time"
+
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 func newSubmissionSubmittedMessage(topic string, submission domain.Submission, answers []domain.SubmissionAnswer) out.SubmissionSubmittedMessage {
+	var startedAt time.Time
+	if submission.StartedAt != nil {
+		startedAt = *submission.StartedAt
+	}
+
 	eventAnswers := make([]out.SubmissionAnswerEvent, 0, len(answers))
 	for _, answer := range answers {
 		eventAnswers = append(eventAnswers, out.SubmissionAnswerEvent{
@@ -22,7 +29,7 @@ func newSubmissionSubmittedMessage(topic string, submission domain.Submission, a
 			SubmissionID:    submission.ID,
 			AssessmentID:    submission.AssessmentID,
 			UserID:          submission.UserID,
-			StartedAt:       submission.StartedAt,
+			StartedAt:       startedAt,
 			DurationSeconds: submission.DurationSeconds,
 			SubmittedAt:     submission.SubmittedAt,
 			Answers:         eventAnswers,

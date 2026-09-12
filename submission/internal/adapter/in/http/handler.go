@@ -17,7 +17,7 @@ type CreateSubmissionRequest struct {
 
 type CreateSubmissionResponse struct {
 	SubmissionID string `json:"submission_id"`
-	StartedAt    string `json:"started_at"`
+	CreatedAt    string `json:"created_at"`
 }
 
 type SaveAnswerRequest struct {
@@ -38,7 +38,7 @@ type GetSubmissionResponse struct {
 	AssessmentID string                     `json:"assessment_id"`
 	UserID       string                     `json:"user_id"`
 	Status       string                     `json:"status"`
-	StartedAt    string                     `json:"started_at"`
+	StartedAt    *string                    `json:"started_at,omitempty"`
 	ExpiresAt    *string                    `json:"expires_at,omitempty"`
 	SubmittedAt  *string                    `json:"submitted_at,omitempty"`
 	CreatedAt    string                     `json:"created_at"`
@@ -107,7 +107,7 @@ func (h *Handler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(CreateSubmissionResponse{SubmissionID: out.SubmissionID, StartedAt: out.StartedAt})
+	_ = json.NewEncoder(w).Encode(CreateSubmissionResponse{SubmissionID: out.SubmissionID, CreatedAt: out.CreatedAt})
 }
 
 func (h *Handler) SaveAnswer(w http.ResponseWriter, r *http.Request, submissionID string) {
@@ -157,6 +157,11 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		value := out.SubmittedAt.Format(http.TimeFormat)
 		submittedAt = &value
 	}
+	var startedAt *string
+	if out.StartedAt != nil {
+		value := out.StartedAt.Format(http.TimeFormat)
+		startedAt = &value
+	}
 	var expiresAt *string
 	if out.ExpiresAt != nil {
 		value := out.ExpiresAt.Format(http.TimeFormat)
@@ -180,7 +185,7 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		AssessmentID: out.AssessmentID,
 		UserID:       out.UserID,
 		Status:       string(out.Status),
-		StartedAt:    out.StartedAt.Format(http.TimeFormat),
+		StartedAt:    startedAt,
 		ExpiresAt:    expiresAt,
 		SubmittedAt:  submittedAt,
 		CreatedAt:    out.CreatedAt.Format(http.TimeFormat),

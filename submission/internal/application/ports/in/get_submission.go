@@ -16,7 +16,7 @@ type GetSubmissionOutput struct {
 	AssessmentID string
 	UserID       string
 	Status       domain.SubmissionStatus
-	StartedAt    time.Time
+	StartedAt    *time.Time
 	ExpiresAt    *time.Time
 	SubmittedAt  *time.Time
 	CreatedAt    time.Time

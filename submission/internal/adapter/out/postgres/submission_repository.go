@@ -91,10 +91,14 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	row := r.db.QueryRow(submissionQuery, submissionID)
 
 	var submission domain.Submission
+	var startedAt sql.NullTime
 	var submittedAt sql.NullTime
 	var expiresAt sql.NullTime
-	if err := row.Scan(&submission.ID, &submission.AssessmentID, &submission.UserID, &submission.Status, &submission.StartedAt, &submission.DurationSeconds, &expiresAt, &submittedAt, &submission.CreatedAt, &submission.UpdatedAt); err != nil {
+	if err := row.Scan(&submission.ID, &submission.AssessmentID, &submission.UserID, &submission.Status, &startedAt, &submission.DurationSeconds, &expiresAt, &submittedAt, &submission.CreatedAt, &submission.UpdatedAt); err != nil {
 		return domain.Submission{}, nil, err
+	}
+	if startedAt.Valid {
+		submission.StartedAt = &startedAt.Time
 	}
 	if expiresAt.Valid {
 		submission.ExpiresAt = &expiresAt.Time

@@ -10,7 +10,7 @@ type CreateSubmissionInput struct {
 
 type CreateSubmissionOutput struct {
 	SubmissionID string
-	StartedAt    string
+	CreatedAt    string
 }
 
 type CreateSubmissionService interface {

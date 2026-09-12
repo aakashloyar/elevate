@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS submissions (
     assessment_id TEXT NOT NULL,
     user_id TEXT NOT NULL,
     status TEXT NOT NULL,
-    started_at TIMESTAMP NOT NULL,
+    started_at TIMESTAMP,
     duration_seconds INTEGER NOT NULL CHECK (duration_seconds > 0),
     expires_at TIMESTAMP,
     submitted_at TIMESTAMP,

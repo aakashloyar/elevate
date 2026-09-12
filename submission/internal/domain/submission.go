@@ -26,7 +26,7 @@ type Submission struct {
 	AssessmentID    string
 	UserID          string
 	Status          SubmissionStatus
-	StartedAt       time.Time
+	StartedAt       *time.Time
 	DurationSeconds int
 	ExpiresAt       *time.Time
 	SubmittedAt     *time.Time
