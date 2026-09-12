@@ -1,0 +1,41 @@
+submission/internal/adapter/out/postgres/submission_repository.go
+  s_a0f5e61315c163::t_f3f0632131efb4 94,97,100-101
+  s_a0f5e61315c163::t_c862f1836df50b 102
+submission/internal/adapter/in/http/handler.go
+  s_a0f5e61315c163::t_f3f0632131efb4 41,160-164,188
+  s_a0f5e61315c163::t_dc68f649010ecf 20,110
+submission/internal/domain/submission.go
+  s_a0f5e61315c163::t_f3f0632131efb4 29
+submission/internal/application/ports/in/get_submission.go
+  s_a0f5e61315c163::t_f3f0632131efb4 19
+submission/migrations/000003_make_started_at_nullable.down.sql
+  s_a0f5e61315c163::t_f3f0632131efb4 5-6
+  s_a0f5e61315c163::t_552880794f6ca9 1-4
+submission/migrations/000003_make_started_at_nullable.up.sql
+  s_a0f5e61315c163::t_f3f0632131efb4 1-2
+submission/internal/application/ports/in/create_submission.go
+  s_a0f5e61315c163::t_dc68f649010ecf 13
+submission/internal/application/service/submission_submitted_event.go
+  s_a0f5e61315c163::t_f3f0632131efb4 11-15,32
+  s_a0f5e61315c163::t_6eb6d966362ce8 4-5
+submission/migrations/000001_create_submissions_table.up.sql
+  s_a0f5e61315c163::t_f3f0632131efb4 6
+submission/internal/application/service/create_submission.go
+  s_a0f5e61315c163::t_dc68f649010ecf 50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "aadb72ae1f2e2d44d40ef2e9c7cf2023b8274108",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
