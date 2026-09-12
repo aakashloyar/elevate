@@ -12,7 +12,7 @@ import (
 	"github.com/aakashloyar/elevate/evaluation/internal/domain"
 )
 
-const defaultTimeout = 5 * time.Second
+const defaultTimeout = 	10 * time.Second
 
 type Client struct {
 	baseURL string

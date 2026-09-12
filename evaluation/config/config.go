@@ -18,6 +18,7 @@ type Config struct {
 }
 
 type PostgresConfig struct{ Host, Port, User, Password, DBName, SSLMode string }
+
 type KafkaConfig struct {
 	Brokers                  []string
 	SubmissionSubmittedTopic string
@@ -40,16 +41,16 @@ func Load() Config {
 		Kafka:                KafkaConfig{Brokers: split(os.Getenv("KAFKA_BROKERS")), SubmissionSubmittedTopic: os.Getenv("KAFKA_SUBMISSION_SUBMITTED_TOPIC"), ClientID: os.Getenv("KAFKA_CLIENT_ID"), GroupID: os.Getenv("KAFKA_GROUP_ID"), APIKey: os.Getenv("KAFKA_API_KEY"), APISecret: os.Getenv("KAFKA_API_SECRET")},
 	}
 	if cfg.HTTPPort == "" {
-		cfg.HTTPPort = "8084"
+		cfg.HTTPPort = "8085"
 	}
 	if cfg.AssessmentServiceURL == "" {
 		cfg.AssessmentServiceURL = "http://localhost:8082"
 	}
 	if cfg.ProblemServiceURL == "" {
-		cfg.ProblemServiceURL = "http://localhost:8081"
+		cfg.ProblemServiceURL = "http://localhost:8083"
 	}
 	if cfg.SubmissionServiceURL == "" {
-		cfg.SubmissionServiceURL = "http://localhost:8083"
+		cfg.SubmissionServiceURL = "http://localhost:8084"
 	}
 	if cfg.Kafka.GroupID == "" {
 		cfg.Kafka.GroupID = "evaluation-service"
