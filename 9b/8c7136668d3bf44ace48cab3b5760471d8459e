@@ -1,0 +1,25 @@
+user/bruno/delete-user.yml
+  s_1b0a928fcdb549::t_59a71a2e150cde 8
+user/bruno/get_user.yml
+  s_1b0a928fcdb549::t_59a71a2e150cde 8
+user/bruno/create-user.yml
+  s_1b0a928fcdb549::t_59a71a2e150cde 8,13-14
+user/bruno/health.yml
+  s_1b0a928fcdb549::t_59a71a2e150cde 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9b8c7136668d3bf44ace48cab3b5760471d8459e",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
