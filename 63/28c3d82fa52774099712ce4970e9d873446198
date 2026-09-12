@@ -1,0 +1,14 @@
+evaluation/Makefile
+  h_2b74694ace7348 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6328c3d82fa52774099712ce4970e9d873446198",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
