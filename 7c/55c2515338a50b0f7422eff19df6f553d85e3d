@@ -1,0 +1,23 @@
+assessment/config/config.go
+  s_a0f5e61315c163::t_8cb39e4215f0bc 71
+assessment/internal/adapter/in/http/handler.go
+  s_a0f5e61315c163::t_8cb39e4215f0bc 48
+assessment/cmd/server/main.go
+  s_a0f5e61315c163::t_8cb39e4215f0bc 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7c55c2515338a50b0f7422eff19df6f553d85e3d",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
