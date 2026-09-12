@@ -1,0 +1,16 @@
+evaluation/config/config.go
+  h_2b74694ace7348 21,44,50,53
+evaluation/internal/adapter/out/assessmenthttp/client.go
+  h_2b74694ace7348 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c02ba95e5486f77c75a4bcd782571bfa38590418",
+  "prompts": {},
+  "humans": {
+    "h_2b74694ace7348": {
+      "author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
