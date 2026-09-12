@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://ec2-43-204-230-140.ap-south-1.compute.amazonaws.com:8080/users/019fd16d-8296-7039-949f-65044c31d28f
+  url: http://localhost:8081/users/
   auth: inherit
 
 settings:

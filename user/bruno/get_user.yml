@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://ec2-43-204-230-140.ap-south-1.compute.amazonaws.com:8080/users/019fd16d-8296-7039-949f-65044c31d28f
+  url: http://localhost:8081/users/01a09427-5792-7192-a6b6-d1fce684767d
   auth: inherit
 
 settings:
