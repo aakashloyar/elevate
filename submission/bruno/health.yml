@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8082/submissions/health
+  url: http://localhost:8084/submissions/health
   auth: inherit
 
 settings:
