@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -63,4 +64,20 @@ func (c *Client) CreateProblem(ctx context.Context, input out.CreateProblemInput
 		return out.CreateProblemOutput{}, &out.ProblemClientError{StatusCode: resp.StatusCode, Message: "missing problem_id in response"}
 	}
 	return output, nil
+}
+
+func (c *Client) Exists(ctx context.Context, problemID string) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/problems/"+problemID, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return fmt.Errorf("problem %s was not found: %s", problemID, resp.Status)
+	}
+	return nil
 }

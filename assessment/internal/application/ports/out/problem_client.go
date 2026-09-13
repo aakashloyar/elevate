@@ -39,4 +39,9 @@ func (e *ProblemClientError) Error() string {
 
 type ProblemClient interface {
 	CreateProblem(ctx context.Context, input CreateProblemInput) (CreateProblemOutput, error)
+	Exists(ctx context.Context, problemID string) error
+}
+
+type UserClient interface {
+	Exists(ctx context.Context, userID string) error
 }

@@ -3,6 +3,7 @@ package assessment
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
@@ -12,12 +13,13 @@ import (
 
 type CreateAssessmentService struct {
 	assessmentRepo out.AssessmentRepository
+	userClient     out.UserClient
 	idGen          out.IDGenerator
 	clock          out.Clock
 }
 
-func NewCreateAssessmentService(assessmentRepo out.AssessmentRepository, idGen out.IDGenerator, clock out.Clock) in.CreateAssessmentService {
-	return &CreateAssessmentService{assessmentRepo: assessmentRepo, idGen: idGen, clock: clock}
+func NewCreateAssessmentService(assessmentRepo out.AssessmentRepository, userClient out.UserClient, idGen out.IDGenerator, clock out.Clock) in.CreateAssessmentService {
+	return &CreateAssessmentService{assessmentRepo: assessmentRepo, userClient: userClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAssessmentInput) (in.CreateAssessmentOutput, error) {
@@ -34,6 +36,9 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 
 	if strings.TrimSpace(input.CreatedBy) == "" {
 		return in.CreateAssessmentOutput{}, errors.New("created by is required")
+	}
+	if err := s.userClient.Exists(ctx, input.CreatedBy); err != nil {
+		return in.CreateAssessmentOutput{}, fmt.Errorf("created by user is invalid: %w", err)
 	}
 
 	now := s.clock.Now()

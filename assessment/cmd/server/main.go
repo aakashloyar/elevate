@@ -11,6 +11,7 @@ import (
 	kafkaconsumer "github.com/aakashloyar/elevate/assessment/internal/adapter/in/kafka"
 	postgres "github.com/aakashloyar/elevate/assessment/internal/adapter/out/postgres"
 	problemhttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/problemhttp"
+	userhttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/userhttp"
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out/system"
 	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 )
@@ -41,14 +42,15 @@ func main() {
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
 
-	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, idGen, clock)
+	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
+	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, userClient, idGen, clock)
 	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo)
 	getAssessmentService := assessmentsvc.NewGetAssessmentService(assessmentRepo)
 	deleteAssessmentService := assessmentsvc.NewDeleteAssessmentService(assessmentRepo)
 	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)
 	addProblemService := assessmentsvc.NewAddProblemService(assessmentRepo, problemClient)
 	getAssessmentProblemsService := assessmentsvc.NewGetAssessmentProblemsService(assessmentRepo)
-	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo)
+	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo, problemClient)
 	getMarkingSchemeService := assessmentsvc.NewGetAssessmentMarkingSchemeService(assessmentRepo)
 	upsertMarkingSchemeService := assessmentsvc.NewUpsertAssessmentMarkingSchemeService(assessmentRepo)
 	createMarkingSchemeService := assessmentsvc.NewCreateAssessmentMarkingSchemeService(assessmentRepo)
