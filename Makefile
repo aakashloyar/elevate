@@ -6,6 +6,7 @@ PID_DIR := $(RUN_DIR)/pids
 LOG_DIR := $(RUN_DIR)/logs
 
 SERVICES := user assessment problem submission evaluation assessment_runner problem_generation
+PORTS := 8081 8082 8083 8084 8085 8086 8087
 
 .PHONY: run stop
 
@@ -30,6 +31,7 @@ stop:
 			pid="$$(cat "$$pid_file")"; \
 			if kill -0 "$$pid" 2>/dev/null; then \
 				echo "Stopping $$service with PID $$pid..."; \
+				pkill -TERM -P "$$pid" 2>/dev/null || true; \
 				kill "$$pid" 2>/dev/null || true; \
 			else \
 				echo "$$service is not running"; \
@@ -37,5 +39,13 @@ stop:
 			rm -f "$$pid_file"; \
 		else \
 			echo "$$service is not running"; \
+		fi; \
+	done
+	@sleep 1
+	@for port in $(PORTS); do \
+		pids="$$(lsof -ti tcp:$$port -sTCP:LISTEN 2>/dev/null || true)"; \
+		if [ -n "$$pids" ]; then \
+			echo "Stopping process on port $$port: $$pids"; \
+			kill $$pids 2>/dev/null || true; \
 		fi; \
 	done
