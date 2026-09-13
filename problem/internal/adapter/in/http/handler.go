@@ -55,10 +55,14 @@ type GetProblemsBatchRequest struct {
 }
 
 type ProblemSnapshotResponse struct {
-	ProblemID   string             `json:"problem_id"`
-	ProblemType domain.ProblemType `json:"problem_type"`
-	OptionIDs   []string           `json:"option_ids"`
-	OptionTexts []string           `json:"option_texts"`
+	ProblemID   string                          `json:"problem_id"`
+	ProblemType domain.ProblemType              `json:"problem_type"`
+	Options     []ProblemSnapshotOptionResponse `json:"options"`
+}
+
+type ProblemSnapshotOptionResponse struct {
+	ID   string `json:"id"`
+	Text string `json:"text"`
 }
 
 type ListProblemsResponse struct {
@@ -166,17 +170,17 @@ func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "problem "+problemID+" not found", http.StatusNotFound)
 			return
 		}
-		optionIDs := make([]string, 0, len(problem.Options))
-		optionTexts := make([]string, 0, len(problem.Options))
+		options := make([]ProblemSnapshotOptionResponse, 0, len(problem.Options))
 		for _, option := range problem.Options {
-			optionIDs = append(optionIDs, option.ID)
-			optionTexts = append(optionTexts, option.Text)
+			options = append(options, ProblemSnapshotOptionResponse{
+				ID:   option.ID,
+				Text: option.Text,
+			})
 		}
 		responses = append(responses, ProblemSnapshotResponse{
 			ProblemID:   problem.ID,
 			ProblemType: problem.Type,
-			OptionIDs:   optionIDs,
-			OptionTexts: optionTexts,
+			Options:     options,
 		})
 	}
 
