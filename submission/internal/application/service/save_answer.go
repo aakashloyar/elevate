@@ -3,6 +3,7 @@ package submission
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
@@ -12,11 +13,12 @@ import (
 
 type SaveAnswerService struct {
 	submissionRepo out.SubmissionRepository
+	problemClient  out.ProblemClient
 	clock          out.Clock
 }
 
-func NewSaveAnswerService(submissionRepo out.SubmissionRepository, clock out.Clock) in.SaveAnswerService {
-	return &SaveAnswerService{submissionRepo: submissionRepo, clock: clock}
+func NewSaveAnswerService(submissionRepo out.SubmissionRepository, problemClient out.ProblemClient, clock out.Clock) in.SaveAnswerService {
+	return &SaveAnswerService{submissionRepo: submissionRepo, problemClient: problemClient, clock: clock}
 }
 
 func (s *SaveAnswerService) Execute(ctx context.Context, input in.SaveAnswerInput) error {
@@ -25,6 +27,9 @@ func (s *SaveAnswerService) Execute(ctx context.Context, input in.SaveAnswerInpu
 	}
 	if strings.TrimSpace(input.ProblemID) == "" {
 		return errors.New("problem id is required")
+	}
+	if err := s.problemClient.Exists(ctx, input.ProblemID); err != nil {
+		return fmt.Errorf("problem id is invalid: %w", err)
 	}
 
 	answer := make([]string, 0, len(input.Answer))

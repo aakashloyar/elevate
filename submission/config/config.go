@@ -21,6 +21,12 @@ type ServerConfig struct {
 	Port string
 }
 
+type ServiceConfig struct {
+	AssessmentServiceURL string
+	ProblemServiceURL    string
+	UserServiceURL       string
+}
+
 type KafkaConfig struct {
 	Brokers                  []string
 	ClientID                 string
@@ -32,6 +38,7 @@ type KafkaConfig struct {
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Services ServiceConfig
 	Kafka    KafkaConfig
 }
 
@@ -62,7 +69,22 @@ func load() Config {
 		SubmissionSubmittedTopic: os.Getenv("KAFKA_SUBMISSION_SUBMITTED_TOPIC"),
 	}
 
-	return Config{Postgres: postgres, Server: server, Kafka: kafka}
+	services := ServiceConfig{
+		AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"),
+		ProblemServiceURL:    os.Getenv("PROBLEM_SERVICE_URL"),
+		UserServiceURL:       os.Getenv("USER_SERVICE_URL"),
+	}
+	if services.AssessmentServiceURL == "" {
+		services.AssessmentServiceURL = "http://localhost:8082"
+	}
+	if services.ProblemServiceURL == "" {
+		services.ProblemServiceURL = "http://localhost:8083"
+	}
+	if services.UserServiceURL == "" {
+		services.UserServiceURL = "http://localhost:8081"
+	}
+
+	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka}
 }
 
 var App = load()

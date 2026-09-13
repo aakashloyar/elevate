@@ -3,6 +3,7 @@ package submission
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -12,13 +13,15 @@ import (
 )
 
 type CreateSubmissionService struct {
-	submissionRepo out.SubmissionRepository
-	idGen          out.IDGenerator
-	clock          out.Clock
+	submissionRepo   out.SubmissionRepository
+	assessmentClient out.AssessmentClient
+	userClient       out.UserClient
+	idGen            out.IDGenerator
+	clock            out.Clock
 }
 
-func NewCreateSubmissionService(submissionRepo out.SubmissionRepository, idGen out.IDGenerator, clock out.Clock) in.CreateSubmissionService {
-	return &CreateSubmissionService{submissionRepo: submissionRepo, idGen: idGen, clock: clock}
+func NewCreateSubmissionService(submissionRepo out.SubmissionRepository, assessmentClient out.AssessmentClient, userClient out.UserClient, idGen out.IDGenerator, clock out.Clock) in.CreateSubmissionService {
+	return &CreateSubmissionService{submissionRepo: submissionRepo, assessmentClient: assessmentClient, userClient: userClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSubmissionInput) (in.CreateSubmissionOutput, error) {
@@ -30,6 +33,12 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 	}
 	if input.DurationSeconds <= 0 {
 		return in.CreateSubmissionOutput{}, errors.New("duration seconds must be greater than zero")
+	}
+	if err := s.assessmentClient.Exists(ctx, input.AssessmentID); err != nil {
+		return in.CreateSubmissionOutput{}, fmt.Errorf("assessment id is invalid: %w", err)
+	}
+	if err := s.userClient.Exists(ctx, input.UserID); err != nil {
+		return in.CreateSubmissionOutput{}, fmt.Errorf("user id is invalid: %w", err)
 	}
 
 	now := s.clock.Now()

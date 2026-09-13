@@ -12,8 +12,11 @@ import (
 	"github.com/aakashloyar/elevate/submission/config"
 	httpsubmission "github.com/aakashloyar/elevate/submission/internal/adapter/in/http"
 	"github.com/aakashloyar/elevate/submission/internal/adapter/in/worker"
+	assessmenthttp "github.com/aakashloyar/elevate/submission/internal/adapter/out/assessmenthttp"
 	kafkaproducer "github.com/aakashloyar/elevate/submission/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/submission/internal/adapter/out/postgres"
+	problemhttp "github.com/aakashloyar/elevate/submission/internal/adapter/out/problemhttp"
+	userhttp "github.com/aakashloyar/elevate/submission/internal/adapter/out/userhttp"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out/system"
 	submissionservice "github.com/aakashloyar/elevate/submission/internal/application/service"
 )
@@ -54,9 +57,12 @@ func main() {
 	}
 	defer producer.Close()
 
-	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, idGen, clock)
+	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
+	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
+	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)
+	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, assessmentClient, userClient, idGen, clock)
 	startSubmissionService := submissionservice.NewStartSubmissionService(submissionRepo, clock)
-	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, clock)
+	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, problemClient, clock)
 	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(saveAnswerService)
 	getSubmissionService := submissionservice.NewGetSubmissionService(submissionRepo)
 	getSubmissionStatusService := submissionservice.NewGetSubmissionStatusService(submissionRepo)
