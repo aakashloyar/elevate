@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS generation_jobs (
     level TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     status TEXT NOT NULL,
+    topic_ids TEXT[] NOT NULL DEFAULT '{}',
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );

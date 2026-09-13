@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/lib/pq"
+
 	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
 
@@ -29,22 +31,9 @@ func (r *GenerationJobRepository) Migrate() error {
 			level TEXT NOT NULL,
 			description TEXT NOT NULL DEFAULT '',
 			status TEXT NOT NULL,
+			topic_ids TEXT[] NOT NULL DEFAULT '{}',
 			created_at TIMESTAMP NOT NULL,
 			updated_at TIMESTAMP NOT NULL
-		)
-		`,
-		`
-		CREATE TABLE IF NOT EXISTS topics (
-			id TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			created_at TIMESTAMP NOT NULL
-		)
-		`,
-		`
-		CREATE TABLE IF NOT EXISTS generation_job_topics (
-			generation_job_id TEXT NOT NULL REFERENCES generation_jobs(id) ON DELETE CASCADE,
-			topic_id TEXT NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
-			PRIMARY KEY (generation_job_id, topic_id)
 		)
 		`,
 	}
@@ -81,30 +70,14 @@ func (r *GenerationJobRepository) Save(job domain.GenerationJob) error {
 			level,
 			description,
 			status,
+			topic_ids,
 			created_at,
 			updated_at
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-	`, job.ID, job.UserID, job.SingleCorrectCount, job.MultiCorrectCount, job.NumericalCount, job.DocumentID, job.AssessmentID, job.Level, job.Description, job.Status, job.CreatedAt, job.UpdatedAt)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+	`, job.ID, job.UserID, job.SingleCorrectCount, job.MultiCorrectCount, job.NumericalCount, job.DocumentID, job.AssessmentID, job.Level, job.Description, job.Status, pqStringArray(job.TopicIDs), job.CreatedAt, job.UpdatedAt)
 	if err != nil {
 		return err
-	}
-
-	if len(job.TopicIDs) > 0 {
-		stmt, stmtErr := tx.Prepare(`
-			INSERT INTO generation_job_topics (generation_job_id, topic_id)
-			VALUES ($1, $2)
-		`)
-		if stmtErr != nil {
-			return stmtErr
-		}
-		defer stmt.Close()
-
-		for _, topicID := range job.TopicIDs {
-			if _, err = stmt.Exec(job.ID, topicID); err != nil {
-				return err
-			}
-		}
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -127,6 +100,7 @@ func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, 
 			level,
 			description,
 			status,
+			topic_ids,
 			created_at,
 			updated_at
 		FROM generation_jobs
@@ -136,30 +110,7 @@ func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, 
 	row := r.db.QueryRow(query, jobID)
 
 	var job domain.GenerationJob
-	if err := row.Scan(&job.ID, &job.UserID, &job.SingleCorrectCount, &job.MultiCorrectCount, &job.NumericalCount, &job.DocumentID, &job.AssessmentID, &job.Level, &job.Description, &job.Status, &job.CreatedAt, &job.UpdatedAt); err != nil {
-		return domain.GenerationJob{}, err
-	}
-
-	topicRows, err := r.db.Query(`
-		SELECT topic_id
-		FROM generation_job_topics
-		WHERE generation_job_id = $1
-		ORDER BY topic_id
-	`, jobID)
-	if err != nil {
-		return domain.GenerationJob{}, err
-	}
-	defer topicRows.Close()
-
-	for topicRows.Next() {
-		var topicID string
-		if err := topicRows.Scan(&topicID); err != nil {
-			return domain.GenerationJob{}, err
-		}
-		job.TopicIDs = append(job.TopicIDs, topicID)
-	}
-
-	if err := topicRows.Err(); err != nil {
+	if err := row.Scan(&job.ID, &job.UserID, &job.SingleCorrectCount, &job.MultiCorrectCount, &job.NumericalCount, &job.DocumentID, &job.AssessmentID, &job.Level, &job.Description, &job.Status, pq.Array(&job.TopicIDs), &job.CreatedAt, &job.UpdatedAt); err != nil {
 		return domain.GenerationJob{}, err
 	}
 
@@ -185,4 +136,8 @@ func (r *GenerationJobRepository) UpdateStatus(jobID string, status domain.Gener
 	}
 
 	return nil
+}
+
+func pqStringArray(values []string) []string {
+	return values
 }

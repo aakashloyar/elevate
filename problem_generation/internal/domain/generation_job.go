@@ -44,9 +44,3 @@ type GenerationJob struct {
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
-
-type Topic struct {
-	ID        string
-	Name      string
-	CreatedAt time.Time
-}
