@@ -1,0 +1,20 @@
+Makefile
+  s_a0f5e61315c163::t_c848a87a650c80 1-7,9,11,13,24,26,28-38,40-41
+  s_a0f5e61315c163::t_536f15c612f8e5 8,10,12,14-23,25,27,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b770adc7129a89c4b67f85eec2355984f606fc3a",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
