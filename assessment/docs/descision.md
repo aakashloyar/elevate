@@ -1,0 +1,3 @@
+1. now there is a problem for asessment service suppose we are adding problems for specific assessment now if we will validate for each problems it is not a good idea
+because suppose 100 problems then 100 validation request is not good 
+also as this kafka event is publish by problem service only also if suppose after this event problem is deleted then we are also using consumer group so that that event will also come is same partition so will be consumed by same consumer after addition request so the validtion is not requied

@@ -50,7 +50,7 @@ func main() {
 	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)
 	addProblemService := assessmentsvc.NewAddProblemService(assessmentRepo, problemClient)
 	getAssessmentProblemsService := assessmentsvc.NewGetAssessmentProblemsService(assessmentRepo)
-	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo, problemClient)
+	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo)
 	getMarkingSchemeService := assessmentsvc.NewGetAssessmentMarkingSchemeService(assessmentRepo)
 	upsertMarkingSchemeService := assessmentsvc.NewUpsertAssessmentMarkingSchemeService(assessmentRepo)
 	createMarkingSchemeService := assessmentsvc.NewCreateAssessmentMarkingSchemeService(assessmentRepo)
