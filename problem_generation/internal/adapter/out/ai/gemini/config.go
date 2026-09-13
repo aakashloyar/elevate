@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const defaultBaseURL = "https://generativelanguage.googleapis.com"
+const defaultBaseURL = "https://generativelanguage.googleapis.com/v1beta"
 
 type Config struct {
 	BaseURL    string

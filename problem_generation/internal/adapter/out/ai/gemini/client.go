@@ -78,7 +78,7 @@ func (c *Client) GenerateText(ctx context.Context, request out.GenerateTextReque
 		return out.GenerateTextResponse{}, err
 	}
 
-	endpoint := fmt.Sprintf("%s/v1beta/models/%s:generateContent", c.baseURL, url.PathEscape(strings.TrimPrefix(c.model, "models/")))
+	endpoint := fmt.Sprintf("%s/models/%s:generateContent", c.baseURL, url.PathEscape(strings.TrimPrefix(c.model, "models/")))
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(body))
 	if err != nil {
 		return out.GenerateTextResponse{}, err
