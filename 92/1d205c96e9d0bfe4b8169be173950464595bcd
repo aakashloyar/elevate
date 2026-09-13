@@ -1,0 +1,32 @@
+problem_generation/internal/application/service/process_generation_job.go
+  s_a0f5e61315c163::t_e0c2ac14f4dc0b 22-24,28-33,37-38,44
+problem_generation/internal/adapter/in/kafka/consumer.go
+  s_a0f5e61315c163::t_fc77334449ba64 32-38
+  s_a0f5e61315c163::t_e0c2ac14f4dc0b 40
+problem_generation/internal/application/service/create_generation_job.go
+  s_a0f5e61315c163::t_e0c2ac14f4dc0b 58
+problem_generation/internal/application/ports/out/generation_processor.go
+  s_a0f5e61315c163::t_9e8970d21d8ea3 3-7,10
+problem_generation/internal/application/ports/out/event_publisher.go
+  s_a0f5e61315c163::t_e2c4cd6dd1efdb 3,6
+problem_generation/internal/adapter/out/processor/ai_problem_generator.go
+  s_a0f5e61315c163::t_44ecaba9a74054 11,26-27,33,46,54,78,81-86,147,150,153
+problem_generation/internal/application/ports/in/process_generation_job.go
+  s_a0f5e61315c163::t_e0c2ac14f4dc0b 3,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "921d205c96e9d0bfe4b8169be173950464595bcd",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyarjhs <aakash@jiostar.com>"
+    }
+  }
+}
