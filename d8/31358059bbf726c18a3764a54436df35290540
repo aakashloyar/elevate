@@ -1,0 +1,37 @@
+assessment/internal/application/service/add_problems_batch.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 16-17,24-27
+  s_1b0a928fcdb549::t_b8b8770232c15e 13
+  s_1b0a928fcdb549::t_e19dbcd91ccd5c 28
+assessment/internal/application/ports/out/problem_client.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 42-46
+assessment/internal/adapter/out/problemhttp/client.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 8,68-82
+  s_1b0a928fcdb549::t_3efad590331a56 83
+assessment/cmd/server/main.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 14,45-46,53
+assessment/internal/adapter/out/userhttp/client.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 1-34
+  s_1b0a928fcdb549::t_b8b8770232c15e 35
+assessment/internal/application/service/create_assessment.go
+  s_1b0a928fcdb549::t_efcb82f2bf90f5 6,21-22,40-41
+  s_1b0a928fcdb549::t_b8b8770232c15e 16
+  s_1b0a928fcdb549::t_a55d26e9e52b7d 42
+assessment/config/config.go
+  s_1b0a928fcdb549::t_b8b8770232c15e 30,71-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d831358059bbf726c18a3764a54436df35290540",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
