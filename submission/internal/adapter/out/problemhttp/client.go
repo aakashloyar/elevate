@@ -42,7 +42,7 @@ func (c *Client) GetProblemSnapshots(ctx context.Context, problemIDs []string) (
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/problems/snapshots", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/problems/batch", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}
