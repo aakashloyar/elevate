@@ -1,22 +1,9 @@
 package out
 
-import (
-	"context"
-
-	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
-)
+import "context"
 
 type GenerationRequestedEvent struct {
-	JobID              string                 `json:"job_id"`
-	UserID             string                 `json:"user_id"`
-	AssessmentID       *string                `json:"assessment_id,omitempty"`
-	SingleCorrectCount int                    `json:"single_correct_count"`
-	MultiCorrectCount  int                    `json:"multi_correct_count"`
-	NumericalCount     int                    `json:"numerical_count"`
-	DocumentID         *string                `json:"document_id,omitempty"`
-	Level              domain.GenerationLevel `json:"level"`
-	Description        string                 `json:"description"`
-	TopicIDs           []string               `json:"topic_ids"`
+	JobID string `json:"job_id"`
 }
 
 type GenerationRequestedMessage struct {

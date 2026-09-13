@@ -1,7 +1,11 @@
 package out
 
-import "context"
+import (
+	"context"
+
+	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
+)
 
 type GenerationProcessor interface {
-	ProcessGeneration(ctx context.Context, event GenerationRequestedEvent) error
+	ProcessGeneration(ctx context.Context, job domain.GenerationJob) error
 }

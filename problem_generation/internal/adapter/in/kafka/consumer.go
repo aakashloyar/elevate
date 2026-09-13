@@ -29,8 +29,15 @@ func (c *Consumer) Start(ctx context.Context) error {
 				}
 				continue
 			}
+			if event.JobID == "" {
+				log.Printf("generation-requested event missing job_id; skipping")
+				if commitErr := c.kafkaClient.client.CommitRecords(ctx, record); commitErr != nil {
+					log.Printf("commit rejected generation event failed: %v", commitErr)
+				}
+				continue
+			}
 
-			if err := c.service.Execute(ctx, event); err != nil {
+			if err := c.service.Execute(ctx, event.JobID); err != nil {
 				log.Printf("generation job failed for job %s: %v", event.JobID, err)
 				continue
 			}

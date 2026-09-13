@@ -1,11 +1,7 @@
 package in
 
-import (
-	"context"
-
-	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
-)
+import "context"
 
 type ProcessGenerationJobService interface {
-	Execute(ctx context.Context, event out.GenerationRequestedEvent) error
+	Execute(ctx context.Context, jobID string) error
 }

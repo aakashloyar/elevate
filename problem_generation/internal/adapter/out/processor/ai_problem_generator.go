@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/problem_generation/internal/domain"
 )
 
 const sourceTypeAI = "ai"
@@ -22,14 +23,14 @@ func NewAIProblemGenerator(ai out.AITextGenerator, publisher out.GeneratedProble
 	return &AIProblemGenerator{ai: ai, publisher: publisher, topic: topic}
 }
 
-func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, event out.GenerationRequestedEvent) error {
-	if event.AssessmentID == nil || strings.TrimSpace(*event.AssessmentID) == "" {
+func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.GenerationJob) error {
+	if job.AssessmentID == nil || strings.TrimSpace(*job.AssessmentID) == "" {
 		return errors.New("assessment id is required to publish generated problems")
 	}
 
 	response, err := p.ai.GenerateText(ctx, out.GenerateTextRequest{
 		SystemPrompt:     systemPrompt(),
-		UserPrompt:       userPrompt(event),
+		UserPrompt:       userPrompt(job),
 		ResponseMimeType: "application/json",
 		Temperature:      floatPtr(0.2),
 	})
@@ -42,7 +43,7 @@ func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, event out.Ge
 		return err
 	}
 
-	problems := normalizeGeneratedProblems(event, batch.Problems)
+	problems := normalizeGeneratedProblems(job, batch.Problems)
 	if err := validateGeneratedProblems(problems); err != nil {
 		return err
 	}
@@ -50,7 +51,7 @@ func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, event out.Ge
 	return p.publisher.PublishGeneratedProblems(ctx, out.GeneratedProblemBatchMessage{
 		Topic: p.topic,
 		Event: out.GeneratedProblemBatchEvent{
-			AssessmentID: strings.TrimSpace(*event.AssessmentID),
+			AssessmentID: strings.TrimSpace(*job.AssessmentID),
 			Problems:     problems,
 		},
 	})
@@ -74,15 +75,15 @@ func systemPrompt() string {
 	}, " ")
 }
 
-func userPrompt(event out.GenerationRequestedEvent) string {
+func userPrompt(job domain.GenerationJob) string {
 	return fmt.Sprintf(
 		"Create %d single-correct, %d multiple-correct, and %d numerical problems. Level: %s. Description: %s. Topic IDs: %s.",
-		event.SingleCorrectCount,
-		event.MultiCorrectCount,
-		event.NumericalCount,
-		event.Level,
-		event.Description,
-		strings.Join(event.TopicIDs, ", "),
+		job.SingleCorrectCount,
+		job.MultiCorrectCount,
+		job.NumericalCount,
+		job.Level,
+		job.Description,
+		strings.Join(job.TopicIDs, ", "),
 	)
 }
 
@@ -143,13 +144,13 @@ func validateGeneratedProblems(problems []out.GeneratedProblem) error {
 	return nil
 }
 
-func normalizeGeneratedProblems(event out.GenerationRequestedEvent, problems []out.GeneratedProblem) []out.GeneratedProblem {
+func normalizeGeneratedProblems(job domain.GenerationJob, problems []out.GeneratedProblem) []out.GeneratedProblem {
 	normalized := make([]out.GeneratedProblem, 0, len(problems))
 	for _, problem := range problems {
-		problem.CreatedBy = strings.TrimSpace(event.UserID)
+		problem.CreatedBy = strings.TrimSpace(job.UserID)
 		problem.SourceType = sourceTypeAI
 		if strings.TrimSpace(string(problem.Difficulty)) == "" {
-			problem.Difficulty = event.Level
+			problem.Difficulty = job.Level
 		}
 		normalized = append(normalized, problem)
 	}
