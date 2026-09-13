@@ -1,0 +1,41 @@
+submission/internal/application/service/create_submission.go
+  s_1b0a928fcdb549::t_d8048726e3d494 6,17,23-24,37-42
+  s_1b0a928fcdb549::t_a50a73237d41fe 16,18-20
+submission/internal/adapter/out/assessmenthttp/client.go
+  s_1b0a928fcdb549::t_0ff05fcb739ced 1-37
+  s_1b0a928fcdb549::t_22cae06422a958 38
+submission/cmd/server/main.go
+  s_1b0a928fcdb549::t_5dda1d1a5a46b8 15,18-19,60-61
+  s_1b0a928fcdb549::t_1fd067c2087786 62
+  s_1b0a928fcdb549::t_6614de7edccf5c 63
+submission/internal/application/service/save_answer.go
+  s_1b0a928fcdb549::t_a50a73237d41fe 16
+  s_1b0a928fcdb549::t_d8048726e3d494 6,20-21,31-32
+  s_1b0a928fcdb549::t_ca6de697be4791 33
+submission/internal/application/ports/out/reference_clients.go
+  s_1b0a928fcdb549::t_d5341205e726cc 1-15
+submission/config/config.go
+  s_1b0a928fcdb549::t_1fd067c2087786 24-29,41,72-87
+submission/internal/adapter/out/userhttp/client.go
+  s_1b0a928fcdb549::t_0ff05fcb739ced 1-37
+  s_1b0a928fcdb549::t_3bdf0eda3292fc 38
+submission/internal/adapter/out/problemhttp/client.go
+  s_1b0a928fcdb549::t_3bdf0eda3292fc 38
+  s_1b0a928fcdb549::t_0ff05fcb739ced 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "77ad4fd42ea7f127295feebeaf6f32cb20b5f4c5",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
