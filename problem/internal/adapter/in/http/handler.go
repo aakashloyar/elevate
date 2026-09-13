@@ -50,6 +50,17 @@ type ProblemOptionResponse struct {
 	IsCorrect bool   `json:"is_correct"`
 }
 
+type GetProblemsBatchRequest struct {
+	ProblemIDs []string `json:"problem_ids"`
+}
+
+type ProblemSnapshotResponse struct {
+	ProblemID   string             `json:"problem_id"`
+	ProblemType domain.ProblemType `json:"problem_type"`
+	OptionIDs   []string           `json:"option_ids"`
+	OptionTexts []string           `json:"option_texts"`
+}
+
 type ListProblemsResponse struct {
 	Problems []ListProblemItemResponse `json:"problems"`
 }
@@ -139,6 +150,38 @@ func (h *Handler) GetProblemByID(w http.ResponseWriter, r *http.Request, problem
 		CreatedAt:  out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:  out.UpdatedAt.Format(http.TimeFormat),
 	})
+}
+
+func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
+	var req GetProblemsBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req.ProblemIDs) == 0 {
+		http.Error(w, "problem_ids are required", http.StatusBadRequest)
+		return
+	}
+
+	responses := make([]ProblemSnapshotResponse, 0, len(req.ProblemIDs))
+	for _, problemID := range req.ProblemIDs {
+		problem, err := h.getProblemService.Execute(r.Context(), in.GetProblemInput{ProblemID: problemID})
+		if err != nil {
+			http.Error(w, "problem "+problemID+" not found", http.StatusNotFound)
+			return
+		}
+		optionIDs := make([]string, 0, len(problem.Options))
+		optionTexts := make([]string, 0, len(problem.Options))
+		for _, option := range problem.Options {
+			optionIDs = append(optionIDs, option.ID)
+			optionTexts = append(optionTexts, option.Text)
+		}
+		responses = append(responses, ProblemSnapshotResponse{
+			ProblemID:   problem.ID,
+			ProblemType: problem.Type,
+			OptionIDs:   optionIDs,
+			OptionTexts: optionTexts,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(responses)
 }
 
 func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
