@@ -1,0 +1,113 @@
+submission/internal/adapter/out/assessmenthttp/client.go
+  s_1b0a928fcdb549::t_a77ae6217ea8ed 5,19-22,27-28,30,34,38-42,44
+submission/internal/application/service/save_answer.go
+  s_1b0a928fcdb549::t_56b7f308e3feeb 19-20,82-83,92-93,97,101-102
+  s_a0f5e61315c163::t_3e6adee51ce099 88
+  s_1b0a928fcdb549::t_2b04e736a27ad8 49-50,54,74,79,96
+  s_1b0a928fcdb549::t_a53d3523e83512 38
+  s_1b0a928fcdb549::t_ff82625c294494 41-42
+  s_a0f5e61315c163::t_524d1f51d472c9 31-33,35-37,39-40,44-45,47,51-52,66-73,75-78,80-81,84-87,89-91,98-100,104
+  s_a0f5e61315c163::t_cef8149ed6889e 65
+  s_1b0a928fcdb549::t_dec433d21c049f 94-95
+submission/internal/application/service/submission_submitted_event.go
+  s_1b0a928fcdb549::t_46dd6b7aa244c5 16
+  s_1b0a928fcdb549::t_d7edf3aa112ae6 10,17-21,23-26
+submission/internal/application/ports/in/save_answer_batch.go
+  s_a0f5e61315c163::t_5c1c4bc034453b 15-23,26
+submission/internal/adapter/in/http/handler.go
+  s_a0f5e61315c163::t_5c1c4bc034453b 34-42,157-158,163-176
+  s_1b0a928fcdb549::t_7f9fd7b10d3588 55,80-87,211-218,223-225,240
+  s_1b0a928fcdb549::t_8d88da2d1f62fd 45-54,219,221-222
+  s_a0f5e61315c163::t_b5f487f9cbd60b 220
+submission/internal/application/service/get_submission.go
+  s_1b0a928fcdb549::t_7f9fd7b10d3588 32,45,58
+  s_1b0a928fcdb549::t_2b04e736a27ad8 19,24-25,29-31,33-37,40-44
+  s_1b0a928fcdb549::t_c2fd0f13ea5a57 26-28
+submission/migrations/000002_create_submission_answer_drafts_table.down.sql
+  s_a0f5e61315c163::t_0c75ff03c0a21f 1
+submission/internal/application/ports/out/reference_clients.go
+  s_1b0a928fcdb549::t_22df7ec362f874 25
+  s_a0f5e61315c163::t_3fce1d213f60da 12,15-17
+  s_1b0a928fcdb549::t_3dc04fcb3e4400 3-4,7-10
+  s_1b0a928fcdb549::t_1892dc7b002045 21
+  s_a0f5e61315c163::t_3e6adee51ce099 6,11
+  s_1b0a928fcdb549::t_8309b4c2d57535 22-24
+  s_1b0a928fcdb549::t_73ec09d6f223a5 26-28
+submission/internal/adapter/out/postgres/submission_repository.go
+  s_a0f5e61315c163::t_f559c87930253c 108-140,149-150,153,157-174,181,184,186-199,201,203-205,207-227
+  s_1b0a928fcdb549::t_fe9ff6b372328c 21,45,49-51
+  s_1b0a928fcdb549::t_fed1be37bfe328 22-26,42-44,53-56,98,274,276,278
+  s_1b0a928fcdb549::t_6b1f5351673886 59-62,64,99,228
+  s_a0f5e61315c163::t_3a7cfe5a7c1816 175-180,182-183,185,200,202,206
+  s_a0f5e61315c163::t_c48ac74fe22f93 52
+  s_1b0a928fcdb549::t_90e243245cc1e8 255-257,265-269,271,273,280
+  s_a0f5e61315c163::t_23f6a5b6129c45 141-148,151-152,154-156
+  s_1b0a928fcdb549::t_f4502d8f80c19e 259,272
+  s_a0f5e61315c163::t_61bd495ab55974 248,252-254,258,260,263-264,275,277
+  s_a0f5e61315c163::t_510701d6e73478 82-89,92-97
+  s_1b0a928fcdb549::t_a20cae1a6755cb 46-48
+  s_1b0a928fcdb549::t_dab70fc9749ea8 270
+submission/cmd/server/main.go
+  s_a0f5e61315c163::t_524d1f51d472c9 66
+  s_1b0a928fcdb549::t_3878c0e6b4181f 62-63
+  s_1b0a928fcdb549::t_56b7f308e3feeb 65
+  s_1b0a928fcdb549::t_b18d6164e9a4e1 61
+submission/internal/adapter/out/problemhttp/client.go
+  s_1b0a928fcdb549::t_ab2e29b1bb3a4f 4,6,21-25,29-30,40-45,47,49,52,56-63,77
+  s_a0f5e61315c163::t_3e6adee51ce099 13,73
+  s_a0f5e61315c163::t_3fce1d213f60da 26-28,31-35,64-72,74-75
+submission/bruno/create-submission.yml
+  s_1b0a928fcdb549::t_9d36acc218b6b7 15
+submission/internal/application/service/create_submission.go
+  s_1b0a928fcdb549::t_99c3b9af02a0b5 50-52,66,79-80
+  s_1b0a928fcdb549::t_cf3f2c3bdffd87 77
+  s_a0f5e61315c163::t_25a7cb8ee6ec64 78
+  s_a0f5e61315c163::t_3fce1d213f60da 67-72
+  s_1b0a928fcdb549::t_1892dc7b002045 17
+  s_1b0a928fcdb549::t_ddfcfd99e6ff0b 24-25,42-49
+  s_1b0a928fcdb549::t_2b04e736a27ad8 65,73-76,81
+  s_1b0a928fcdb549::t_361a803c45b312 53
+submission/internal/application/service/save_answer_batch.go
+  s_a0f5e61315c163::t_5c1c4bc034453b 22,24,27,32,42,46-50,54-58,62-66,76-79,82,85,88
+  s_a0f5e61315c163::t_524d1f51d472c9 9-10,14-15,18-19,30-31,33-41,44-45,51-53,59-61,68-75,80-81,83-84
+submission/internal/domain/submission.go
+  s_a0f5e61315c163::t_244ffd1ca10062 41
+  s_a0f5e61315c163::t_3e6adee51ce099 40,49-57
+  s_1b0a928fcdb549::t_aacef87ed57332 39
+  s_1b0a928fcdb549::t_f4502d8f80c19e 43
+  s_1b0a928fcdb549::t_3dff4d512303dd 37-38
+  s_a0f5e61315c163::t_89f3261e6c3195 46-48
+submission/migrations/000002_create_submission_answer_drafts_table.up.sql
+  s_a0f5e61315c163::t_0c75ff03c0a21f 1,4-9
+submission/internal/application/ports/in/get_submission.go
+  s_1b0a928fcdb549::t_7f9fd7b10d3588 25-28
+  s_1b0a928fcdb549::t_8d88da2d1f62fd 29,31-33
+  s_a0f5e61315c163::t_3e6adee51ce099 30
+submission/internal/application/ports/out/submission_repository.go
+  s_a0f5e61315c163::t_524d1f51d472c9 12-13
+  s_1b0a928fcdb549::t_2b04e736a27ad8 10-11,14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7921effefb277629d75802df97f1855a8a30bc4c",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    },
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
