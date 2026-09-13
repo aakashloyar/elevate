@@ -1,0 +1,14 @@
+problem_generation/Makefile
+  h_6fce61bebff0e2 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "020eb1fa7bac66821ed2358b8e50a07a932b536b",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
