@@ -1,0 +1,22 @@
+problem/internal/adapter/in/http/routes.go
+  s_1b0a928fcdb549::t_49452a101677f3 28-34
+problem/internal/adapter/in/http/handler.go
+  s_1b0a928fcdb549::t_49452a101677f3 53-63,155-185
+  s_1b0a928fcdb549::t_db5627f2513b25 186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3e00e0de91a37fd0abe31d65963914a1e03b2fa6",
+  "prompts": {},
+  "sessions": {
+    "s_1b0a928fcdb549": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a11e9f01-ff85-4256-97a6-b65e9c49634e",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
