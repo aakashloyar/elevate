@@ -10,9 +10,11 @@ import (
 	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http"
 	kafkaconsumer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/kafka"
 	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/ai/gemini"
+	assessmenthttp "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/assessmenthttp"
 	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/processor"
+	userhttp "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/userhttp"
 	"github.com/aakashloyar/elevate/problem_generation/internal/application/ports/out/system"
 	generationjobsvc "github.com/aakashloyar/elevate/problem_generation/internal/application/service"
 )
@@ -57,7 +59,9 @@ func main() {
 	}
 	defer eventPublisher.Close()
 
-	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, idGen, clock)
+	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
+	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
+	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, userClient, assessmentClient, idGen, clock)
 	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo)
 
 	if config.App.Worker.Enabled {

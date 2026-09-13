@@ -12,20 +12,30 @@ import (
 )
 
 type CreateGenerationJobService struct {
-	jobRepo        out.GenerationJobRepository
-	eventPublisher out.EventPublisher
-	idGen          out.IDGenerator
-	clock          out.Clock
+	jobRepo          out.GenerationJobRepository
+	eventPublisher   out.EventPublisher
+	userClient       out.UserClient
+	assessmentClient out.AssessmentClient
+	idGen            out.IDGenerator
+	clock            out.Clock
 }
 
-func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPublisher out.EventPublisher, idGen out.IDGenerator, clock out.Clock) in.CreateGenerationJobService {
-	return &CreateGenerationJobService{jobRepo: jobRepo, eventPublisher: eventPublisher, idGen: idGen, clock: clock}
+func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPublisher out.EventPublisher, userClient out.UserClient, assessmentClient out.AssessmentClient, idGen out.IDGenerator, clock out.Clock) in.CreateGenerationJobService {
+	return &CreateGenerationJobService{jobRepo: jobRepo, eventPublisher: eventPublisher, userClient: userClient, assessmentClient: assessmentClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.CreateGenerationJobInput) (in.CreateGenerationJobOutput, error) {
 	err := validateInput(input)
 	if err != nil {
 		return in.CreateGenerationJobOutput{}, err
+	}
+	if err := s.userClient.Exists(ctx, input.UserID); err != nil {
+		return in.CreateGenerationJobOutput{}, fmt.Errorf("user id is invalid: %w", err)
+	}
+	if input.AssessmentID != nil && strings.TrimSpace(*input.AssessmentID) != "" {
+		if err := s.assessmentClient.Exists(ctx, strings.TrimSpace(*input.AssessmentID)); err != nil {
+			return in.CreateGenerationJobOutput{}, fmt.Errorf("assessment id is invalid: %w", err)
+		}
 	}
 
 	level := domain.GenerationLevel(strings.ToLower(strings.TrimSpace(string(input.Level))))

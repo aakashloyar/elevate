@@ -22,6 +22,11 @@ type ServerConfig struct {
 	Port string
 }
 
+type ServiceConfig struct {
+	AssessmentServiceURL string
+	UserServiceURL       string
+}
+
 type KafkaConfig struct {
 	Brokers                 []string
 	GenerationRequestsTopic string
@@ -46,6 +51,7 @@ type AIConfig struct {
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Services ServiceConfig
 	Kafka    KafkaConfig
 	Worker   WorkerConfig
 	AI       AIConfig
@@ -98,7 +104,14 @@ func load() Config {
 		ai.Model = "gemini-flash-latest"
 	}
 
-	return Config{Postgres: postgres, Server: server, Kafka: kafka, Worker: worker, AI: ai}
+	services := ServiceConfig{AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"), UserServiceURL: os.Getenv("USER_SERVICE_URL")}
+	if services.AssessmentServiceURL == "" {
+		services.AssessmentServiceURL = "http://localhost:8082"
+	}
+	if services.UserServiceURL == "" {
+		services.UserServiceURL = "http://localhost:8081"
+	}
+	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka, Worker: worker, AI: ai}
 }
 
 var App = load()
