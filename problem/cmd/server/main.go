@@ -11,6 +11,7 @@ import (
 	kafkaconsumer "github.com/aakashloyar/elevate/problem/internal/adapter/in/kafka"
 	kafkaproducer "github.com/aakashloyar/elevate/problem/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem/internal/adapter/out/postgres"
+	userhttp "github.com/aakashloyar/elevate/problem/internal/adapter/out/userhttp"
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out/system"
 	problemservice "github.com/aakashloyar/elevate/problem/internal/application/service"
 )
@@ -41,10 +42,11 @@ func main() {
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
 
-	createProblemService := problemservice.NewCreateProblemService(problemRepo, idGen, clock)
+	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
+	createProblemService := problemservice.NewCreateProblemService(problemRepo, userClient, idGen, clock)
 	getProblemService := problemservice.NewGetProblemService(problemRepo)
 	listProblemsService := problemservice.NewListProblemsService(problemRepo)
-	updateProblemService := problemservice.NewUpdateProblemService(problemRepo, idGen, clock)
+	updateProblemService := problemservice.NewUpdateProblemService(problemRepo, userClient, idGen, clock)
 	deleteProblemService := problemservice.NewDeleteProblemService(problemRepo)
 
 	handler := httpproblem.NewHandler(createProblemService, getProblemService, listProblemsService, updateProblemService, deleteProblemService)

@@ -21,6 +21,10 @@ type ServerConfig struct {
 	Port string
 }
 
+type ServiceConfig struct {
+	UserServiceURL string
+}
+
 type KafkaConfig struct {
 	Brokers                  []string
 	GeneratedProblemsTopic   string
@@ -34,6 +38,7 @@ type KafkaConfig struct {
 type Config struct {
 	Postgres PostgresConfig
 	Server   ServerConfig
+	Services ServiceConfig
 	Kafka    KafkaConfig
 }
 
@@ -65,7 +70,11 @@ func load() Config {
 		APIKey:                   os.Getenv("KAFKA_API_KEY"),
 		APISecret:                os.Getenv("KAFKA_API_SECRET"),
 	}
-	return Config{Postgres: postgres, Server: server, Kafka: kafka}
+	services := ServiceConfig{UserServiceURL: os.Getenv("USER_SERVICE_URL")}
+	if services.UserServiceURL == "" {
+		services.UserServiceURL = "http://localhost:8081"
+	}
+	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka}
 }
 
 var App = load()

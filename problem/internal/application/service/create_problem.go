@@ -3,6 +3,7 @@ package problem
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/problem/internal/application/ports/in"
@@ -12,12 +13,13 @@ import (
 
 type CreateProblemService struct {
 	problemRepo out.ProblemRepository
+	userClient  out.UserClient
 	idGen       out.IDGenerator
 	clock       out.Clock
 }
 
-func NewCreateProblemService(problemRepo out.ProblemRepository, idGen out.IDGenerator, clock out.Clock) in.CreateProblemService {
-	return &CreateProblemService{problemRepo: problemRepo, idGen: idGen, clock: clock}
+func NewCreateProblemService(problemRepo out.ProblemRepository, userClient out.UserClient, idGen out.IDGenerator, clock out.Clock) in.CreateProblemService {
+	return &CreateProblemService{problemRepo: problemRepo, userClient: userClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateProblemService) Execute(ctx context.Context, input in.CreateProblemInput) (in.CreateProblemOutput, error) {
@@ -29,6 +31,9 @@ func (s *CreateProblemService) Execute(ctx context.Context, input in.CreateProbl
 	createdBy := strings.TrimSpace(input.CreatedBy)
 	if createdBy == "" {
 		return in.CreateProblemOutput{}, errors.New("created by is required")
+	}
+	if err := s.userClient.Exists(ctx, createdBy); err != nil {
+		return in.CreateProblemOutput{}, fmt.Errorf("created by user is invalid: %w", err)
 	}
 
 	problem := domain.Problem{
