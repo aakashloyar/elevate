@@ -34,11 +34,24 @@ type Submission struct {
 	UpdatedAt       time.Time
 }
 
-type SubmissionAnswer struct {
-	ID           string
-	SubmissionID string
-	ProblemID    string
-	Answer       []string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+type SubmissionAnswerDraft struct {
+	SubmissionID    string
+	ProblemID       string
+	ProblemType     ProblemType
+	Options         []Option
+	Answer          []string
+	AnswerUpdatedAt *time.Time
 }
+
+type Option struct {
+	ID   string
+	Text string
+}
+
+type ProblemType string
+
+const (
+	ProblemTypeSingle    ProblemType = "single"
+	ProblemTypeMultiple  ProblemType = "multiple"
+	ProblemTypeNumerical ProblemType = "numerical"
+)

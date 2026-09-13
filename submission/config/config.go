@@ -23,8 +23,8 @@ type ServerConfig struct {
 
 type ServiceConfig struct {
 	AssessmentServiceURL string
-	ProblemServiceURL    string
 	UserServiceURL       string
+	ProblemServiceURL    string
 }
 
 type KafkaConfig struct {
@@ -74,14 +74,14 @@ func load() Config {
 		ProblemServiceURL:    os.Getenv("PROBLEM_SERVICE_URL"),
 		UserServiceURL:       os.Getenv("USER_SERVICE_URL"),
 	}
-	if services.AssessmentServiceURL == "" {
-		services.AssessmentServiceURL = "http://localhost:8082"
-	}
 	if services.ProblemServiceURL == "" {
 		services.ProblemServiceURL = "http://localhost:8083"
 	}
 	if services.UserServiceURL == "" {
 		services.UserServiceURL = "http://localhost:8081"
+	}
+	if services.AssessmentServiceURL == "" {
+		services.AssessmentServiceURL = "http://localhost:8082"
 	}
 
 	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka}

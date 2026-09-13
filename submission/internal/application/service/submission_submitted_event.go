@@ -7,19 +7,23 @@ import (
 	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
-func newSubmissionSubmittedMessage(topic string, submission domain.Submission, answers []domain.SubmissionAnswer) out.SubmissionSubmittedMessage {
+func newSubmissionSubmittedMessage(topic string, submission domain.Submission, drafts []domain.SubmissionAnswerDraft) out.SubmissionSubmittedMessage {
 	var startedAt time.Time
 	if submission.StartedAt != nil {
 		startedAt = *submission.StartedAt
 	}
 
-	eventAnswers := make([]out.SubmissionAnswerEvent, 0, len(answers))
-	for _, answer := range answers {
+	eventAnswers := make([]out.SubmissionAnswerEvent, 0, len(drafts))
+	for _, draft := range drafts {
+		updatedAt := time.Time{}
+		if draft.AnswerUpdatedAt != nil {
+			updatedAt = *draft.AnswerUpdatedAt
+		}
 		eventAnswers = append(eventAnswers, out.SubmissionAnswerEvent{
-			ProblemID: answer.ProblemID,
-			Answer:    answer.Answer,
-			CreatedAt: answer.CreatedAt,
-			UpdatedAt: answer.UpdatedAt,
+			ProblemID: draft.ProblemID,
+			Answer:    draft.Answer,
+			CreatedAt: updatedAt,
+			UpdatedAt: updatedAt,
 		})
 	}
 

@@ -57,13 +57,13 @@ func main() {
 	}
 	defer producer.Close()
 
-	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
-	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)
-	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, assessmentClient, userClient, idGen, clock)
+	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
+	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
+	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, problemClient, assessmentClient, userClient, idGen, clock)
 	startSubmissionService := submissionservice.NewStartSubmissionService(submissionRepo, clock)
-	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, problemClient, clock)
-	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(saveAnswerService)
+	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, clock)
+	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(submissionRepo, clock)
 	getSubmissionService := submissionservice.NewGetSubmissionService(submissionRepo)
 	getSubmissionStatusService := submissionservice.NewGetSubmissionStatusService(submissionRepo)
 	submitSubmissionService := submissionservice.NewSubmitSubmissionService(submissionRepo, clock, producer, config.App.Kafka.SubmissionSubmittedTopic)

@@ -18,7 +18,12 @@ func NewSubmissionRepository(db *sql.DB) out.SubmissionRepository {
 	return &SubmissionRepository{db: db}
 }
 
-func (r *SubmissionRepository) Save(submission domain.Submission) error {
+func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domain.SubmissionAnswerDraft) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
 	query := `
 		INSERT INTO submissions (
 			id,
@@ -34,14 +39,29 @@ func (r *SubmissionRepository) Save(submission domain.Submission) error {
 		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
-	_, err := r.db.Exec(query, submission.ID, submission.AssessmentID, submission.UserID, submission.Status, submission.StartedAt, submission.DurationSeconds, submission.ExpiresAt, submission.SubmittedAt, submission.CreatedAt, submission.UpdatedAt)
-	return err
+	if _, err := tx.Exec(query, submission.ID, submission.AssessmentID, submission.UserID, submission.Status, submission.StartedAt, submission.DurationSeconds, submission.ExpiresAt, submission.SubmittedAt, submission.CreatedAt, submission.UpdatedAt); err != nil {
+		return err
+	}
+	for _, draft := range drafts {
+		optionIDs := make([]string, 0, len(draft.Options))
+		optionTexts := make([]string, 0, len(draft.Options))
+		for _, option := range draft.Options {
+			optionIDs = append(optionIDs, option.ID)
+			optionTexts = append(optionTexts, option.Text)
+		}
+		if _, err := tx.Exec(`INSERT INTO submission_answer_drafts (submission_id, problem_id, problem_type, option_ids, option_texts, answer, answer_updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`, submission.ID, draft.ProblemID, draft.ProblemType, pqStringArray(optionIDs), pqStringArray(optionTexts), pqStringArray(draft.Answer), draft.AnswerUpdatedAt); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
-func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswer) (bool, error) {
-	if answer.ID == "" {
-		answer.ID = time.Now().UTC().Format(time.RFC3339Nano)
+func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswerDraft) (bool, error) {
+	updatedAt := time.Now().UTC()
+	if answer.AnswerUpdatedAt != nil {
+		updatedAt = *answer.AnswerUpdatedAt
 	}
+	answerUpdatedAt := updatedAt
 	tx, err := r.db.Begin()
 	if err != nil {
 		return false, err
@@ -59,25 +79,24 @@ func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswer) (bool,
 		return false, nil
 	}
 
-	query := `
-		INSERT INTO submission_answers (
-			id,
-			submission_id,
-			problem_id,
-			answer,
-			created_at,
-			updated_at
-		)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		ON CONFLICT (submission_id, problem_id)
-		DO UPDATE SET
-			answer = EXCLUDED.answer,
-			updated_at = EXCLUDED.updated_at
-	`
-	if _, err := tx.Exec(query, answer.ID, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answer.CreatedAt, answer.UpdatedAt); err != nil {
+	result, err := tx.Exec(`
+		UPDATE submission_answer_drafts
+		SET answer = $3,
+			answer_updated_at = $4
+		WHERE submission_id = $1
+			AND problem_id = $2
+	`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt)
+	if err != nil {
 		return false, err
 	}
-	if _, err := tx.Exec(`UPDATE submissions SET updated_at = $2 WHERE id = $1`, answer.SubmissionID, answer.UpdatedAt); err != nil {
+	updated, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	if updated == 0 {
+		return false, nil
+	}
+	if _, err := tx.Exec(`UPDATE submissions SET updated_at = $2 WHERE id = $1`, answer.SubmissionID, updatedAt); err != nil {
 		return false, err
 	}
 	if err := tx.Commit(); err != nil {
@@ -86,7 +105,127 @@ func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswer) (bool,
 	return true, nil
 }
 
-func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswer, error) {
+func (r *SubmissionRepository) SaveAnswers(answers []domain.SubmissionAnswerDraft) (bool, error) {
+	if len(answers) == 0 {
+		return true, nil
+	}
+
+	submissionID := answers[0].SubmissionID
+	updatedAt := time.Now().UTC()
+	if answers[0].AnswerUpdatedAt != nil {
+		updatedAt = *answers[0].AnswerUpdatedAt
+	}
+
+	tx, err := r.db.Begin()
+	if err != nil {
+		return false, err
+	}
+	defer tx.Rollback()
+
+	var status domain.SubmissionStatus
+	if err := tx.QueryRow(`SELECT status FROM submissions WHERE id = $1 FOR UPDATE`, submissionID).Scan(&status); err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	if status != domain.SubmissionStatusInProgress {
+		return false, nil
+	}
+
+	for _, answer := range answers {
+		answerUpdatedAt := updatedAt
+		if answer.AnswerUpdatedAt != nil {
+			answerUpdatedAt = *answer.AnswerUpdatedAt
+		}
+		result, err := tx.Exec(`
+			UPDATE submission_answer_drafts
+			SET answer = $3,
+				answer_updated_at = $4
+			WHERE submission_id = $1
+				AND problem_id = $2
+		`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt)
+		if err != nil {
+			return false, err
+		}
+		updated, err := result.RowsAffected()
+		if err != nil {
+			return false, err
+		}
+		if updated == 0 {
+			return false, nil
+		}
+		if answerUpdatedAt.After(updatedAt) {
+			updatedAt = answerUpdatedAt
+		}
+	}
+	if _, err := tx.Exec(`UPDATE submissions SET updated_at = $2 WHERE id = $1`, submissionID, updatedAt); err != nil {
+		return false, err
+	}
+	if err := tx.Commit(); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.SubmissionStatus, []domain.SubmissionAnswerDraft, error) {
+	rows, err := r.db.Query(`
+		SELECT
+			submission.status,
+			draft.problem_id,
+			draft.problem_type,
+			draft.option_ids,
+			draft.option_texts,
+			draft.answer,
+			draft.answer_updated_at
+		FROM submissions AS submission
+		INNER JOIN submission_answer_drafts AS draft
+			ON draft.submission_id = submission.id
+		WHERE submission.id = $1
+		ORDER BY draft.problem_id
+	`, submissionID)
+	if err != nil {
+		return "", nil, err
+	}
+	defer rows.Close()
+
+	var status domain.SubmissionStatus
+	drafts := make([]domain.SubmissionAnswerDraft, 0)
+	found := false
+	for rows.Next() {
+		found = true
+		var draft domain.SubmissionAnswerDraft
+		var optionIDs []string
+		var optionTexts []string
+		var answer []string
+		var answerUpdatedAt sql.NullTime
+		if err := rows.Scan(&status, &draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &answerUpdatedAt); err != nil {
+			return "", nil, err
+		}
+		draft.SubmissionID = submissionID
+		draft.Answer = answer
+		for index, optionID := range optionIDs {
+			option := domain.Option{ID: optionID}
+			if index < len(optionTexts) {
+				option.Text = optionTexts[index]
+			}
+			draft.Options = append(draft.Options, option)
+		}
+		if answerUpdatedAt.Valid {
+			draft.AnswerUpdatedAt = &answerUpdatedAt.Time
+		}
+		drafts = append(drafts, draft)
+	}
+	if err := rows.Err(); err != nil {
+		return "", nil, err
+	}
+	if !found {
+		return "", nil, sql.ErrNoRows
+	}
+	return status, drafts, nil
+}
+
+func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswerDraft, error) {
 	submissionQuery := `SELECT id, assessment_id, user_id, status, started_at, duration_seconds, expires_at, submitted_at, created_at, updated_at FROM submissions WHERE id = $1`
 	row := r.db.QueryRow(submissionQuery, submissionID)
 
@@ -106,25 +245,39 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	if submittedAt.Valid {
 		submission.SubmittedAt = &submittedAt.Time
 	}
-
-	answerQuery := `SELECT problem_id, answer, created_at, updated_at FROM submission_answers WHERE submission_id = $1 ORDER BY created_at`
-	answerRows, err := r.db.Query(answerQuery, submissionID)
+	draftRows, err := r.db.Query(`SELECT problem_id, problem_type, option_ids, option_texts, answer, answer_updated_at FROM submission_answer_drafts WHERE submission_id = $1 ORDER BY problem_id`, submissionID)
 	if err != nil {
 		return domain.Submission{}, nil, err
 	}
-	defer answerRows.Close()
-
-	answers := []domain.SubmissionAnswer{}
-	for answerRows.Next() {
-		var answer domain.SubmissionAnswer
-		var rawAnswer []string
-		if err := answerRows.Scan(&answer.ProblemID, pq.Array(&rawAnswer), &answer.CreatedAt, &answer.UpdatedAt); err != nil {
+	defer draftRows.Close()
+	drafts := make([]domain.SubmissionAnswerDraft, 0)
+	for draftRows.Next() {
+		var draft domain.SubmissionAnswerDraft
+		var optionIDs []string
+		var optionTexts []string
+		var answer []string
+		var answerUpdatedAt sql.NullTime
+		if err := draftRows.Scan(&draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &answerUpdatedAt); err != nil {
 			return domain.Submission{}, nil, err
 		}
-		answer.Answer = rawAnswer
-		answers = append(answers, answer)
+		draft.SubmissionID = submissionID
+		draft.Answer = answer
+		for index, optionID := range optionIDs {
+			option := domain.Option{ID: optionID}
+			if index < len(optionTexts) {
+				option.Text = optionTexts[index]
+			}
+			draft.Options = append(draft.Options, option)
+		}
+		if answerUpdatedAt.Valid {
+			draft.AnswerUpdatedAt = &answerUpdatedAt.Time
+		}
+		drafts = append(drafts, draft)
 	}
-	return submission, answers, nil
+	if err := draftRows.Err(); err != nil {
+		return domain.Submission{}, nil, err
+	}
+	return submission, drafts, nil
 }
 
 func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {

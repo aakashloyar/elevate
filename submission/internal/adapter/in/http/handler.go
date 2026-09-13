@@ -31,19 +31,28 @@ type SaveAnswerBatchRequest struct {
 	Answers []SaveAnswerRequest `json:"answers"`
 }
 
-type SaveAnswerBatchResponse struct{}
+type SaveAnswerBatchResponse struct {
+	SavedCount int                            `json:"saved_count"`
+	Errors     []SaveAnswerBatchErrorResponse `json:"errors"`
+}
+
+type SaveAnswerBatchErrorResponse struct {
+	ProblemID string `json:"problem_id"`
+	Message   string `json:"message"`
+}
 
 type GetSubmissionResponse struct {
-	ID           string                     `json:"id"`
-	AssessmentID string                     `json:"assessment_id"`
-	UserID       string                     `json:"user_id"`
-	Status       string                     `json:"status"`
-	StartedAt    *string                    `json:"started_at,omitempty"`
-	ExpiresAt    *string                    `json:"expires_at,omitempty"`
-	SubmittedAt  *string                    `json:"submitted_at,omitempty"`
-	CreatedAt    string                     `json:"created_at"`
-	UpdatedAt    string                     `json:"updated_at"`
-	Answers      []SubmissionAnswerResponse `json:"answers"`
+	ID           string                      `json:"id"`
+	AssessmentID string                      `json:"assessment_id"`
+	UserID       string                      `json:"user_id"`
+	Status       string                      `json:"status"`
+	StartedAt    *string                     `json:"started_at,omitempty"`
+	ExpiresAt    *string                     `json:"expires_at,omitempty"`
+	SubmittedAt  *string                     `json:"submitted_at,omitempty"`
+	CreatedAt    string                      `json:"created_at"`
+	UpdatedAt    string                      `json:"updated_at"`
+	Answers      []SubmissionAnswerResponse  `json:"answers"`
+	Problems     []SubmissionProblemResponse `json:"problems"`
 }
 
 type GetSubmissionStatusResponse struct {
@@ -66,6 +75,14 @@ type SubmissionAnswerResponse struct {
 	Answer    []string `json:"answer"`
 	CreatedAt string   `json:"created_at"`
 	UpdatedAt string   `json:"updated_at"`
+}
+
+type SubmissionProblemResponse struct {
+	ProblemID       string   `json:"problem_id"`
+	ProblemType     string   `json:"problem_type"`
+	OptionIDs       []string `json:"option_ids"`
+	OptionTexts     []string `json:"option_texts"`
+	AnswerUpdatedAt *string  `json:"answer_updated_at,omitempty"`
 }
 
 type Handler struct {
@@ -137,12 +154,26 @@ func (h *Handler) SaveAnswerBatch(w http.ResponseWriter, r *http.Request, submis
 		answers = append(answers, in.SaveAnswerBatchItem{ProblemID: item.ProblemID, Answer: item.Answer})
 	}
 
-	if err := h.saveAnswerBatchService.Execute(r.Context(), in.SaveAnswerBatchInput{SubmissionID: submissionID, Answers: answers}); err != nil {
+	out, err := h.saveAnswerBatchService.Execute(r.Context(), in.SaveAnswerBatchInput{SubmissionID: submissionID, Answers: answers})
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	errors := make([]SaveAnswerBatchErrorResponse, 0, len(out.Errors))
+	for _, item := range out.Errors {
+		errors = append(errors, SaveAnswerBatchErrorResponse{
+			ProblemID: item.ProblemID,
+			Message:   item.Message,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(SaveAnswerBatchResponse{
+		SavedCount: out.SavedCount,
+		Errors:     errors,
+	})
 }
 
 func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, submissionID string) {
@@ -177,6 +208,21 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 			UpdatedAt: ans.UpdatedAt.Format(http.TimeFormat),
 		})
 	}
+	problems := make([]SubmissionProblemResponse, 0, len(out.Problems))
+	for _, problem := range out.Problems {
+		var answerUpdatedAt *string
+		if problem.AnswerUpdatedAt != nil {
+			value := problem.AnswerUpdatedAt.Format(http.TimeFormat)
+			answerUpdatedAt = &value
+		}
+		problems = append(problems, SubmissionProblemResponse{
+			ProblemID:       problem.ProblemID,
+			ProblemType:     string(problem.ProblemType),
+			OptionIDs:       problem.OptionIDs,
+			OptionTexts:     problem.OptionTexts,
+			AnswerUpdatedAt: answerUpdatedAt,
+		})
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -191,6 +237,7 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		CreatedAt:    out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:    out.UpdatedAt.Format(http.TimeFormat),
 		Answers:      answers,
+		Problems:     problems,
 	})
 }
 

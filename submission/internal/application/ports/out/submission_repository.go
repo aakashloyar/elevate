@@ -7,9 +7,11 @@ import (
 )
 
 type SubmissionRepository interface {
-	Save(submission domain.Submission) error
-	SaveAnswer(answer domain.SubmissionAnswer) (bool, error)
-	FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswer, error)
+	Save(submission domain.Submission, drafts []domain.SubmissionAnswerDraft) error
+	SaveAnswer(answer domain.SubmissionAnswerDraft) (bool, error)
+	SaveAnswers(answers []domain.SubmissionAnswerDraft) (bool, error)
+	FindAnswerSnapshots(submissionID string) (domain.SubmissionStatus, []domain.SubmissionAnswerDraft, error)
+	FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswerDraft, error)
 	FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error)
 	UpdateStatus(submissionID string, status domain.SubmissionStatus) error
 	UpdateStartTime(submissionID string, startedAt, expiresAt time.Time, status domain.SubmissionStatus) error

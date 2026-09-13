@@ -12,8 +12,16 @@ type SaveAnswerBatchItem struct {
 	Answer    []string
 }
 
-type SaveAnswerBatchOutput struct{}
+type SaveAnswerBatchOutput struct {
+	SavedCount int
+	Errors     []SaveAnswerBatchItemError
+}
+
+type SaveAnswerBatchItemError struct {
+	ProblemID string
+	Message   string
+}
 
 type SaveAnswerBatchService interface {
-	Execute(ctx context.Context, input SaveAnswerBatchInput) error
+	Execute(ctx context.Context, input SaveAnswerBatchInput) (SaveAnswerBatchOutput, error)
 }
