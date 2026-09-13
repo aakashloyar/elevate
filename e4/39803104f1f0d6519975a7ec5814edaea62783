@@ -1,0 +1,36 @@
+evaluation/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 42-55
+assessment/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 87,91-102
+  s_a0f5e61315c163::t_a1fb4150d67b99 103
+problem_generation/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 106,110-121
+  s_a0f5e61315c163::t_15bb4a3c941c84 122
+user/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 54,58-69
+  s_a0f5e61315c163::t_cd62586d365777 70
+problem/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 97,101-112
+  s_a0f5e61315c163::t_e3756a5edffc2a 113
+assessment_runner/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 21-34
+submission/cmd/server/main.go
+  s_a0f5e61315c163::t_f41c905fb90e73 84,88-99
+  s_a0f5e61315c163::t_d7889f4c0766c2 100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e439803104f1f0d6519975a7ec5814edaea62783",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
