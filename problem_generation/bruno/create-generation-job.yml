@@ -10,15 +10,18 @@ http:
     type: json
     data: |-
       {
-        "user_id": "",
-        "single_correct_count": 0,
-        "multi_correct_count": 0,
-        "numerical_count": 0,
-        "document_id": "",
-        "assessment_id": "",
-        "level": "",
-        "description": "",
-        "topic_ids": []
+        "user_id": "019fd16d-8296-7039-949f-65044c31d28f",
+        "single_correct_count": 2,
+        "multi_correct_count": 1,
+        "numerical_count": 1,
+        "document_id": null,
+        "assessment_id": "f207db6a-c9bc-4743-96f3-56028ec6cfa2",
+        "level": "medium",
+        "description": "Generate data structures and algorithms questions around binary search and arrays.",
+        "topic_ids": [
+          "binary-search",
+          "arrays"
+        ]
       }
   auth: inherit
 

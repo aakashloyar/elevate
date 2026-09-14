@@ -1,0 +1,23 @@
+info:
+  name: get-problem-batch
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://localhost:8083/problems/batch
+  body:
+    type: json
+    data: |-
+      {
+        "problem_ids": [
+          "35fd7cf2-2854-4624-89d4-c6da6965bce9"
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
