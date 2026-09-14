@@ -5,7 +5,14 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8086/attempts//problems
+  url: http://localhost:8086/attempts/aba9dfa2-d4f6-4694-8b41-2230ecf48571/problems?offset=0&limit=10
+  params:
+    - name: offset
+      value: "0"
+      type: query
+    - name: limit
+      value: "10"
+      type: query
   auth: inherit
 
 settings:
