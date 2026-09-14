@@ -1,0 +1,21 @@
+problem/bruno/get-problem-batch.yml
+  s_a0f5e61315c163::t_d5cbbcae22b607 1-23
+problem_generation/bruno/create-generation-job.yml
+  s_a0f5e61315c163::t_d5cbbcae22b607 13-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "cc22a4cf1ae544c5551615f6a46f2890f5f7e47e",
+  "prompts": {},
+  "sessions": {
+    "s_a0f5e61315c163": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a00a94-9263-7ad2-a655-a4bdf68350a5",
+        "model": "gpt-5.5"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
