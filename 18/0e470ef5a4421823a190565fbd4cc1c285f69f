@@ -1,0 +1,46 @@
+problem_generation/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_ecf6f58bc8090d 107
+  s_8c7c13500c0009::t_c10aac37a8e9a2 30-43,96-106,108-109
+problem_generation/internal/application/ports/in/get_generation_job.go
+  s_8c7c13500c0009::t_f56922f2c391cf 15-25,27-28
+  s_8c7c13500c0009::t_0fb027a731c072 26
+problem_generation/internal/application/service/get_generation_job.go
+  s_8c7c13500c0009::t_f56922f2c391cf 30-40,42-43
+  s_8c7c13500c0009::t_0fb027a731c072 41
+problem_generation/migrations/000002_add_generated_problems_to_jobs.down.sql
+  s_8c7c13500c0009::t_7aa7a4521f9f19 1
+problem_generation/internal/application/ports/out/generation_processor.go
+  s_8c7c13500c0009::t_7aa7a4521f9f19 10
+problem_generation/migrations/000002_add_generated_problems_to_jobs.up.sql
+  s_8c7c13500c0009::t_f8e13dd54249ee 1
+  s_8c7c13500c0009::t_7aa7a4521f9f19 2
+problem_generation/internal/domain/generation_job.go
+  s_8c7c13500c0009::t_c10aac37a8e9a2 33-43,45-46
+  s_8c7c13500c0009::t_7aa7a4521f9f19 44
+problem_generation/internal/application/ports/out/generation_job_repository.go
+  s_8c7c13500c0009::t_7aa7a4521f9f19 8
+problem_generation/internal/adapter/out/postgres/generation_job_repository.go
+  s_8c7c13500c0009::t_f8e13dd54249ee 48,94-104
+  s_8c7c13500c0009::t_7aa7a4521f9f19 44,49,75,85,92-93,106
+  s_8c7c13500c0009::t_f08f9dda660828 105
+problem_generation/internal/application/service/process_generation_job.go
+  s_8c7c13500c0009::t_7aa7a4521f9f19 37,44-45
+  s_8c7c13500c0009::t_f8e13dd54249ee 38
+  s_8c7c13500c0009::t_67f69879908ad9 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "180e470ef5a4421823a190565fbd4cc1c285f69f",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
