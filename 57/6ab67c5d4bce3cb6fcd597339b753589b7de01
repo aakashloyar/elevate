@@ -1,0 +1,39 @@
+problem_generation/internal/adapter/out/ai/groq/config.go
+  s_8c7c13500c0009::t_a8a4afc3830a95 1-28
+problem_generation/config/config.go
+  s_8c7c13500c0009::t_2f7b01ace82c3b 109
+  s_8c7c13500c0009::t_4634c7170e84cf 95,102-106,108,110-112,125-133
+  s_8c7c13500c0009::t_5878eb343a48d8 134-135
+problem_generation/internal/adapter/out/ai/provider.go
+  s_8c7c13500c0009::t_4634c7170e84cf 1-7,9-22,28,34-37
+  s_8c7c13500c0009::t_a8a4afc3830a95 8,33
+  s_8c7c13500c0009::t_c414056e4459b2 23-27,29-32
+problem_generation/internal/adapter/out/processor/ai_problem_generator.go
+  s_8c7c13500c0009::t_7aa7a4521f9f19 26,28,38,41,44,49,59,61
+  s_8c7c13500c0009::t_f8e13dd54249ee 52,58,60
+  s_8c7c13500c0009::t_45c576dc9b8fa8 78
+problem_generation/cmd/server/main.go
+  s_8c7c13500c0009::t_4634c7170e84cf 12,68-76
+problem_generation/README.md
+  s_8c7c13500c0009::t_4634c7170e84cf 29-30
+  s_8c7c13500c0009::t_2f7b01ace82c3b 34
+  s_8c7c13500c0009::t_c414056e4459b2 33
+problem_generation/internal/adapter/out/ai/groq/client.go
+  s_8c7c13500c0009::t_a8a4afc3830a95 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "576ab67c5d4bce3cb6fcd597339b753589b7de01",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
