@@ -49,3 +49,11 @@ stop:
 			kill $$pids 2>/dev/null || true; \
 		fi; \
 	done
+	@sleep 1
+	@for port in $(PORTS); do \
+		pids="$$(lsof -ti tcp:$$port -sTCP:LISTEN 2>/dev/null || true)"; \
+		if [ -n "$$pids" ]; then \
+			echo "Force stopping process on port $$port: $$pids"; \
+			kill -9 $$pids 2>/dev/null || true; \
+		fi; \
+	done
