@@ -7,5 +7,5 @@ import (
 )
 
 type GenerationProcessor interface {
-	ProcessGeneration(ctx context.Context, job domain.GenerationJob) error
+	ProcessGeneration(ctx context.Context, job domain.GenerationJob) (int, error)
 }

@@ -12,19 +12,20 @@ type GetGenerationJobInput struct {
 }
 
 type GetGenerationJobOutput struct {
-	ID                 string
-	UserID             string
-	SingleCorrectCount int
-	MultiCorrectCount  int
-	NumericalCount     int
-	DocumentID         *string
-	AssessmentID       *string
-	Level              domain.GenerationLevel
-	Description        string
-	Status             domain.GenerationJobStatus
-	TopicIDs           []string
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	ID                    string
+	UserID                string
+	SingleCorrectCount    int
+	MultiCorrectCount     int
+	NumericalCount        int
+	DocumentID            *string
+	AssessmentID          *string
+	Level                 domain.GenerationLevel
+	Description           string
+	Status                domain.GenerationJobStatus
+	TopicIDs              []string
+	GeneratedProblemCount int
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 type GetGenerationJobService interface {

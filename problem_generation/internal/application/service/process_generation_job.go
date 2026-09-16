@@ -34,11 +34,15 @@ func (s *ProcessGenerationJobService) Execute(ctx context.Context, jobID string)
 		return fmt.Errorf("mark generation job processing: %w", err)
 	}
 
-	if err := s.processor.ProcessGeneration(ctx, job); err != nil {
+	generatedProblemCount, err := s.processor.ProcessGeneration(ctx, job)
+	if err != nil {
 		if statusErr := s.jobRepo.UpdateStatus(jobID, domain.GenerationJobStatusFailed); statusErr != nil {
 			return fmt.Errorf("%w; additionally failed to mark generation job failed: %v", err, statusErr)
 		}
 		return err
+	}
+	if err := s.jobRepo.SaveGeneratedProblemCount(jobID, generatedProblemCount); err != nil {
+		return fmt.Errorf("save generated problem count: %w", err)
 	}
 
 	if err := s.jobRepo.UpdateStatus(jobID, domain.GenerationJobStatusCompleted); err != nil {

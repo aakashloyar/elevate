@@ -30,17 +30,18 @@ func (t GeneratedProblemType) IsValid() bool {
 }
 
 type GenerationJob struct {
-	ID                 string
-	UserID             string
-	SingleCorrectCount int
-	MultiCorrectCount  int
-	NumericalCount     int
-	DocumentID         *string
-	AssessmentID       *string
-	Level              GenerationLevel
-	Description        string
-	Status             GenerationJobStatus
-	TopicIDs           []string
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	ID                    string
+	UserID                string
+	SingleCorrectCount    int
+	MultiCorrectCount     int
+	NumericalCount        int
+	DocumentID            *string
+	AssessmentID          *string
+	Level                 GenerationLevel
+	Description           string
+	Status                GenerationJobStatus
+	TopicIDs              []string
+	GeneratedProblemCount int
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }

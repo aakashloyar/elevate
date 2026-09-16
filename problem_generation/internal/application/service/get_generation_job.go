@@ -27,18 +27,19 @@ func (s *GetGenerationJobService) Execute(ctx context.Context, input in.GetGener
 	}
 
 	return in.GetGenerationJobOutput{
-		ID:                 job.ID,
-		UserID:             job.UserID,
-		SingleCorrectCount: job.SingleCorrectCount,
-		MultiCorrectCount:  job.MultiCorrectCount,
-		NumericalCount:     job.NumericalCount,
-		DocumentID:         job.DocumentID,
-		AssessmentID:       job.AssessmentID,
-		Level:              job.Level,
-		Description:        job.Description,
-		Status:             job.Status,
-		TopicIDs:           job.TopicIDs,
-		CreatedAt:          job.CreatedAt,
-		UpdatedAt:          job.UpdatedAt,
+		ID:                    job.ID,
+		UserID:                job.UserID,
+		SingleCorrectCount:    job.SingleCorrectCount,
+		MultiCorrectCount:     job.MultiCorrectCount,
+		NumericalCount:        job.NumericalCount,
+		DocumentID:            job.DocumentID,
+		AssessmentID:          job.AssessmentID,
+		Level:                 job.Level,
+		Description:           job.Description,
+		Status:                job.Status,
+		TopicIDs:              job.TopicIDs,
+		GeneratedProblemCount: job.GeneratedProblemCount,
+		CreatedAt:             job.CreatedAt,
+		UpdatedAt:             job.UpdatedAt,
 	}, nil
 }

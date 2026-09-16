@@ -27,19 +27,20 @@ type CreateGenerationJobResponse struct {
 }
 
 type GetGenerationJobResponse struct {
-	ID                 string   `json:"id"`
-	UserID             string   `json:"user_id"`
-	SingleCorrectCount int      `json:"single_correct_count"`
-	MultiCorrectCount  int      `json:"multi_correct_count"`
-	NumericalCount     int      `json:"numerical_count"`
-	DocumentID         *string  `json:"document_id"`
-	AssessmentID       *string  `json:"assessment_id"`
-	Level              string   `json:"level"`
-	Description        string   `json:"description"`
-	Status             string   `json:"status"`
-	TopicIDs           []string `json:"topic_ids"`
-	CreatedAt          string   `json:"created_at"`
-	UpdatedAt          string   `json:"updated_at"`
+	ID                    string   `json:"id"`
+	UserID                string   `json:"user_id"`
+	SingleCorrectCount    int      `json:"single_correct_count"`
+	MultiCorrectCount     int      `json:"multi_correct_count"`
+	NumericalCount        int      `json:"numerical_count"`
+	DocumentID            *string  `json:"document_id"`
+	AssessmentID          *string  `json:"assessment_id"`
+	Level                 string   `json:"level"`
+	Description           string   `json:"description"`
+	Status                string   `json:"status"`
+	TopicIDs              []string `json:"topic_ids"`
+	GeneratedProblemCount int      `json:"generated_problem_count"`
+	CreatedAt             string   `json:"created_at"`
+	UpdatedAt             string   `json:"updated_at"`
 }
 
 type Handler struct {
@@ -92,19 +93,20 @@ func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, j
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(GetGenerationJobResponse{
-		ID:                 out.ID,
-		UserID:             out.UserID,
-		SingleCorrectCount: out.SingleCorrectCount,
-		MultiCorrectCount:  out.MultiCorrectCount,
-		NumericalCount:     out.NumericalCount,
-		DocumentID:         out.DocumentID,
-		AssessmentID:       out.AssessmentID,
-		Level:              string(out.Level),
-		Description:        out.Description,
-		Status:             string(out.Status),
-		TopicIDs:           out.TopicIDs,
-		CreatedAt:          out.CreatedAt.Format(http.TimeFormat),
-		UpdatedAt:          out.UpdatedAt.Format(http.TimeFormat),
+		ID:                    out.ID,
+		UserID:                out.UserID,
+		SingleCorrectCount:    out.SingleCorrectCount,
+		MultiCorrectCount:     out.MultiCorrectCount,
+		NumericalCount:        out.NumericalCount,
+		DocumentID:            out.DocumentID,
+		AssessmentID:          out.AssessmentID,
+		Level:                 string(out.Level),
+		Description:           out.Description,
+		Status:                string(out.Status),
+		TopicIDs:              out.TopicIDs,
+		GeneratedProblemCount: out.GeneratedProblemCount,
+		CreatedAt:             out.CreatedAt.Format(http.TimeFormat),
+		UpdatedAt:             out.UpdatedAt.Format(http.TimeFormat),
 	})
 }
 
