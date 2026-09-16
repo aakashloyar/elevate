@@ -26,5 +26,9 @@ Environment:
 - `AI_MODEL`
 - `AI_BASE_URL`
 - `GEMINI_API_KEY`
+- `GROQ_API_KEY` (or `GROK_API_KEY` for existing local configuration)
+- `AI_PROVIDER` (`gemini`/`google` or `groq`/`grok`)
 
 `Elevate_Gemini_API_Key` is also supported for the Gemini API key to match existing local config.
+
+To use Groq, set `AI_PROVIDER=groq`, provide `GROQ_API_KEY` (or the existing `GROK_API_KEY` name), and optionally set `AI_MODEL` (for example, `openai/gpt-oss-120b`). Leave `AI_BASE_URL` empty to use Groq's default endpoint, or set it to a compatible OpenAI-style endpoint.

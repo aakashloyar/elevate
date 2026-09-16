@@ -92,16 +92,24 @@ func load() Config {
 
 	worker := WorkerConfig{Enabled: boolEnv("GENERATION_WORKER_ENABLED", false)}
 	ai := AIConfig{
-		Provider: strings.ToLower(strings.TrimSpace(os.Getenv("AI_PROVIDER"))),
+		Provider: normalizeAIProvider(os.Getenv("AI_PROVIDER")),
 		BaseURL:  os.Getenv("AI_BASE_URL"),
-		APIKey:   firstNonEmpty(os.Getenv("GEMINI_API_KEY"), os.Getenv("Elevate_Gemini_API_Key")),
 		Model:    os.Getenv("AI_MODEL"),
 	}
 	if ai.Provider == "" {
 		ai.Provider = "gemini"
 	}
+	if ai.Provider == "groq" {
+		ai.APIKey = firstNonEmpty(os.Getenv("GROQ_API_KEY"), os.Getenv("GROK_API_KEY"))
+	} else {
+		ai.APIKey = firstNonEmpty(os.Getenv("GEMINI_API_KEY"), os.Getenv("Elevate_Gemini_API_Key"))
+	}
 	if ai.Model == "" {
-		ai.Model = "gemini-flash-latest"
+		if ai.Provider == "groq" {
+			ai.Model = "openai/gpt-oss-120b"
+		} else {
+			ai.Model = "gemini-flash-latest"
+		}
 	}
 
 	services := ServiceConfig{AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"), UserServiceURL: os.Getenv("USER_SERVICE_URL")}
@@ -112,6 +120,17 @@ func load() Config {
 		services.UserServiceURL = "http://localhost:8081"
 	}
 	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka, Worker: worker, AI: ai}
+}
+
+func normalizeAIProvider(value string) string {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "google":
+		return "gemini"
+	case "groq", "grok":
+		return "groq"
+	default:
+		return strings.ToLower(strings.TrimSpace(value))
+	}
 }
 
 var App = load()

@@ -23,9 +23,9 @@ func NewAIProblemGenerator(ai out.AITextGenerator, publisher out.GeneratedProble
 	return &AIProblemGenerator{ai: ai, publisher: publisher, topic: topic}
 }
 
-func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.GenerationJob) error {
+func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.GenerationJob) (int, error) {
 	if job.AssessmentID == nil || strings.TrimSpace(*job.AssessmentID) == "" {
-		return errors.New("assessment id is required to publish generated problems")
+		return 0, errors.New("assessment id is required to publish generated problems")
 	}
 
 	response, err := p.ai.GenerateText(ctx, out.GenerateTextRequest{
@@ -35,26 +35,30 @@ func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.G
 		Temperature:      floatPtr(0.2),
 	})
 	if err != nil {
-		return fmt.Errorf("generate problems with ai: %w", err)
+		return 0, fmt.Errorf("generate problems with ai: %w", err)
 	}
 
+	fmt.Println("AI response:", response.Text)
 	batch, err := parseGeneratedProblemBatch(response.Text)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	problems := normalizeGeneratedProblems(job, batch.Problems)
 	if err := validateGeneratedProblems(problems); err != nil {
-		return err
+		return 0, err
 	}
 
-	return p.publisher.PublishGeneratedProblems(ctx, out.GeneratedProblemBatchMessage{
+	if err := p.publisher.PublishGeneratedProblems(ctx, out.GeneratedProblemBatchMessage{
 		Topic: p.topic,
 		Event: out.GeneratedProblemBatchEvent{
 			AssessmentID: strings.TrimSpace(*job.AssessmentID),
 			Problems:     problems,
 		},
-	})
+	}); err != nil {
+		return 0, err
+	}
+	return len(problems), nil
 }
 
 type generatedProblemBatch struct {
@@ -71,6 +75,7 @@ func systemPrompt() string {
 		"For single problems, exactly one option must be correct.",
 		"For multiple problems, at least one option must be correct.",
 		"For numerical problems, include exactly one correct option whose text is the answer.",
+		"Every option must use the exact boolean field name is_correct (not correct).",
 		"Do not include markdown fences or explanation.",
 	}, " ")
 }
@@ -104,6 +109,7 @@ func cleanJSON(text string) string {
 }
 
 func validateGeneratedProblems(problems []out.GeneratedProblem) error {
+	fmt.Println("Validating generated problems:", problems)
 	if len(problems) == 0 {
 		return errors.New("ai response did not include any problems")
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/aakashloyar/elevate/problem_generation/config"
 	httpgenerationjob "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/http"
 	kafkaconsumer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/kafka"
-	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/ai/gemini"
+	aiadapter "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/ai"
 	assessmenthttp "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/assessmenthttp"
 	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
@@ -65,11 +65,15 @@ func main() {
 	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo)
 
 	if config.App.Worker.Enabled {
-		aiClient := gemini.Config{
-			BaseURL: config.App.AI.BaseURL,
-			APIKey:  config.App.AI.APIKey,
-			Model:   config.App.AI.Model,
-		}.NewClient()
+		aiClient, err := aiadapter.NewClient(aiadapter.Config{
+			Provider: config.App.AI.Provider,
+			BaseURL:  config.App.AI.BaseURL,
+			APIKey:   config.App.AI.APIKey,
+			Model:    config.App.AI.Model,
+		})
+		if err != nil {
+			log.Fatalf("failed to configure AI provider: %v", err)
+		}
 		generationProcessor := processor.NewAIProblemGenerator(aiClient, eventPublisher, config.App.Kafka.GeneratedProblemsTopic)
 		processJobService := generationjobsvc.NewProcessGenerationJobService(jobRepo, generationProcessor)
 
