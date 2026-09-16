@@ -1,0 +1,22 @@
+problem/bruno/get-problem-batch.yml
+  s_8c7c13500c0009::t_ac03598d824b86 2,17-19
+problem/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_59d7d81c3d7177 58-66,68-70
+  s_8c7c13500c0009::t_9d705e3ef760cb 191,193-196,198-199,201-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f6965e97c9ade19c46aad93e9ccd25f864626bd0",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
