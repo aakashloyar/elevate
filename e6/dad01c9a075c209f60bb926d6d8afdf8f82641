@@ -1,0 +1,14 @@
+.gitignore
+  h_6fce61bebff0e2 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e6dad01c9a075c209f60bb926d6d8afdf8f82641",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
