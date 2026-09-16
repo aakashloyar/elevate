@@ -41,9 +41,6 @@ func main() {
 	defer db.Close()
 
 	jobRepo := postgres.NewGenerationJobRepository(db)
-	if err := jobRepo.Migrate(); err != nil {
-		log.Fatalf("failed to migrate generation jobs tables: %v", err)
-	}
 
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
