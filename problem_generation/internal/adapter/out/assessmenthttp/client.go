@@ -16,7 +16,7 @@ type Client struct {
 }
 
 func NewClient(baseURL string) out.AssessmentClient {
-	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 5 * time.Second}}
+	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: 10 * time.Second}}
 }
 
 func (c *Client) Exists(ctx context.Context, assessmentID string) error {
