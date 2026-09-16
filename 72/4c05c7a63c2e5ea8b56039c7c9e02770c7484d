@@ -1,0 +1,14 @@
+problem_generation/internal/adapter/out/assessmenthttp/client.go
+  h_6fce61bebff0e2 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "724c05c7a63c2e5ea8b56039c7c9e02770c7484d",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
