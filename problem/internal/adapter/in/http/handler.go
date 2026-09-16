@@ -55,9 +55,19 @@ type GetProblemsBatchRequest struct {
 }
 
 type ProblemSnapshotResponse struct {
-	ProblemID   string                          `json:"problem_id"`
-	ProblemType domain.ProblemType              `json:"problem_type"`
+	ID          string                          `json:"id"`
+	ProblemID   string                          `json:"problem_id,omitempty"`
+	CreatedBy   string                          `json:"created_by"`
+	Title       string                          `json:"title"`
+	Statement   string                          `json:"statement"`
+	Type        domain.ProblemType              `json:"type"`
+	ProblemType domain.ProblemType              `json:"problem_type,omitempty"`
+	Difficulty  domain.Difficulty               `json:"difficulty"`
+	SourceType  domain.SourceType               `json:"source_type"`
 	Options     []ProblemSnapshotOptionResponse `json:"options"`
+	Tags        []string                        `json:"tags"`
+	CreatedAt   string                          `json:"created_at"`
+	UpdatedAt   string                          `json:"updated_at"`
 }
 
 type ProblemSnapshotOptionResponse struct {
@@ -178,9 +188,19 @@ func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 		responses = append(responses, ProblemSnapshotResponse{
+			ID:          problem.ID,
 			ProblemID:   problem.ID,
+			CreatedBy:   problem.CreatedBy,
+			Title:       problem.Title,
+			Statement:   problem.Statement,
+			Type:        problem.Type,
 			ProblemType: problem.Type,
+			Difficulty:  problem.Difficulty,
+			SourceType:  problem.SourceType,
 			Options:     options,
+			Tags:        problem.Tags,
+			CreatedAt:   problem.CreatedAt.Format(http.TimeFormat),
+			UpdatedAt:   problem.UpdatedAt.Format(http.TimeFormat),
 		})
 	}
 

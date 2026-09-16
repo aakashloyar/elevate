@@ -1,5 +1,5 @@
 info:
-  name: get-problem-batch
+  name: get-problems-batch
   type: http
   seq: 7
 
@@ -14,6 +14,9 @@ http:
           "35fd7cf2-2854-4624-89d4-c6da6965bce9"
         ]
       }
+  headers:
+    - name: Content-Type
+      value: application/json
   auth: inherit
 
 settings:
