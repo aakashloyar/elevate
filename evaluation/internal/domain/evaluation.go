@@ -38,9 +38,13 @@ type Answer struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 type Problem struct {
-	ID      string      `json:"id"`
-	Type    ProblemType `json:"type"`
-	Options []Option    `json:"options"`
+	ID         string      `json:"id"`
+	Title      string      `json:"title"`
+	Statement  string      `json:"statement"`
+	Type       ProblemType `json:"type"`
+	Difficulty string      `json:"difficulty"`
+	Tags       []string    `json:"tags"`
+	Options    []Option    `json:"options"`
 }
 type Option struct {
 	ID        string `json:"id"`
@@ -52,20 +56,28 @@ type Option struct {
 type Evaluation struct {
 	SubmissionID    string           `json:"submission_id"`
 	AssessmentID    string           `json:"assessment_id"`
+	AssessmentTitle string           `json:"assessment_title"`
 	UserID          string           `json:"user_id"`
+	UserName        string           `json:"user_name"`
 	StartedAt       time.Time        `json:"started_at"`
 	DurationSeconds int              `json:"duration_seconds"`
 	SubmittedAt     *time.Time       `json:"submitted_at,omitempty"`
 	Score           float64          `json:"score"`
+	TotalMarks      float64          `json:"total_marks"`
 	Questions       []QuestionResult `json:"questions"`
 	EvaluatedAt     time.Time        `json:"evaluated_at"`
 }
 
 type QuestionResult struct {
 	ProblemID       string               `json:"problem_id"`
+	Title           string               `json:"title"`
+	Statement       string               `json:"statement"`
 	Type            ProblemType          `json:"type"`
+	Difficulty      string               `json:"difficulty"`
+	Tags            []string             `json:"tags"`
 	Status          QuestionResultStatus `json:"status"`
 	Marks           float64              `json:"marks"`
+	Options         []SelectedOption     `json:"options"`
 	SelectedOptions []SelectedOption     `json:"selected_options"`
 }
 

@@ -5,11 +5,24 @@ import "github.com/aakashloyar/elevate/evaluation/internal/domain"
 func EvaluateAnswer(problem domain.Problem, selectedOptions []string, scheme domain.MarkingScheme) domain.QuestionResult {
 	result := domain.QuestionResult{
 		ProblemID:       problem.ID,
+		Title:           problem.Title,
+		Statement:       problem.Statement,
 		Type:            problem.Type,
+		Difficulty:      problem.Difficulty,
+		Tags:            problem.Tags,
+		Options:         allOptions(problem),
 		SelectedOptions: evaluateOptions(problem, selectedOptions),
 	}
 	updateProblemResult(problem, &result, scheme)
 	return result
+}
+
+func allOptions(problem domain.Problem) []domain.SelectedOption {
+	options := make([]domain.SelectedOption, 0, len(problem.Options))
+	for _, option := range problem.Options {
+		options = append(options, domain.SelectedOption{ID: option.ID, Text: option.Text, IsCorrect: option.IsCorrect})
+	}
+	return options
 }
 
 func evaluateOptions(problem domain.Problem, selectedOptions []string) []domain.SelectedOption {
