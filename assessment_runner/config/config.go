@@ -23,10 +23,10 @@ func Load() Config {
 		cfg.AssessmentServiceURL = "http://localhost:8082"
 	}
 	if cfg.ProblemServiceURL == "" {
-		cfg.ProblemServiceURL = "http://localhost:8081"
+		cfg.ProblemServiceURL = "http://localhost:8083"
 	}
 	if cfg.SubmissionServiceURL == "" {
-		cfg.SubmissionServiceURL = "http://localhost:8083"
+		cfg.SubmissionServiceURL = "http://localhost:8084"
 	}
 	return cfg
 }
