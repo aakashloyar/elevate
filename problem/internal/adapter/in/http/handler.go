@@ -75,6 +75,28 @@ type ProblemSnapshotOptionResponse struct {
 	Text string `json:"text"`
 }
 
+type ProblemAnalysisResponse struct {
+	ID          string                          `json:"id"`
+	ProblemID   string                          `json:"problem_id,omitempty"`
+	CreatedBy   string                          `json:"created_by"`
+	Title       string                          `json:"title"`
+	Statement   string                          `json:"statement"`
+	Type        domain.ProblemType              `json:"type"`
+	ProblemType domain.ProblemType              `json:"problem_type,omitempty"`
+	Difficulty  domain.Difficulty               `json:"difficulty"`
+	SourceType  domain.SourceType               `json:"source_type"`
+	Options     []ProblemAnalysisOptionResponse `json:"options"`
+	Tags        []string                        `json:"tags"`
+	CreatedAt   string                          `json:"created_at"`
+	UpdatedAt   string                          `json:"updated_at"`
+}
+
+type ProblemAnalysisOptionResponse struct {
+	ID        string `json:"id"`
+	Text      string `json:"text"`
+	IsCorrect bool   `json:"is_correct"`
+}
+
 type ListProblemsResponse struct {
 	Problems []ListProblemItemResponse `json:"problems"`
 }
@@ -188,6 +210,49 @@ func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 		responses = append(responses, ProblemSnapshotResponse{
+			ID:          problem.ID,
+			ProblemID:   problem.ID,
+			CreatedBy:   problem.CreatedBy,
+			Title:       problem.Title,
+			Statement:   problem.Statement,
+			Type:        problem.Type,
+			ProblemType: problem.Type,
+			Difficulty:  problem.Difficulty,
+			SourceType:  problem.SourceType,
+			Options:     options,
+			Tags:        problem.Tags,
+			CreatedAt:   problem.CreatedAt.Format(http.TimeFormat),
+			UpdatedAt:   problem.UpdatedAt.Format(http.TimeFormat),
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(responses)
+}
+
+func (h *Handler) GetProblemsBatchAnalysis(w http.ResponseWriter, r *http.Request) {
+	var req GetProblemsBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req.ProblemIDs) == 0 {
+		http.Error(w, "problem_ids are required", http.StatusBadRequest)
+		return
+	}
+
+	responses := make([]ProblemAnalysisResponse, 0, len(req.ProblemIDs))
+	for _, problemID := range req.ProblemIDs {
+		problem, err := h.getProblemService.Execute(r.Context(), in.GetProblemInput{ProblemID: problemID})
+		if err != nil {
+			http.Error(w, "problem "+problemID+" not found", http.StatusNotFound)
+			return
+		}
+		options := make([]ProblemAnalysisOptionResponse, 0, len(problem.Options))
+		for _, option := range problem.Options {
+			options = append(options, ProblemAnalysisOptionResponse{
+				ID:        option.ID,
+				Text:      option.Text,
+				IsCorrect: option.IsCorrect,
+			})
+		}
+		responses = append(responses, ProblemAnalysisResponse{
 			ID:          problem.ID,
 			ProblemID:   problem.ID,
 			CreatedBy:   problem.CreatedBy,
