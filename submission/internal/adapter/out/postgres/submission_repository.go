@@ -347,5 +347,8 @@ func (r *SubmissionRepository) ExpireSubmissions(expiredAt time.Time, limit int)
 }
 
 func pqStringArray(values []string) []string {
+	if values == nil {
+		return []string{}
+	}
 	return values
 }
