@@ -1,0 +1,26 @@
+evaluation/internal/application/service/scoring.go
+  s_8c7c13500c0009::t_4715a1ff5a06c3 13,20-25
+  s_8c7c13500c0009::t_f9e4b69212d842 8-9,11-12
+  s_8c7c13500c0009::t_61896fe44f4c70 26-27
+evaluation/internal/domain/evaluation.go
+  s_8c7c13500c0009::t_bd8a6c4d70bb2c 59,61
+  s_8c7c13500c0009::t_43afc80913be39 66
+  s_8c7c13500c0009::t_966688fb145512 41-47,73-74,76-77
+  s_8c7c13500c0009::t_4715a1ff5a06c3 80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "924ff5e118246f643330167ed1dd5a8f694a6596",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
