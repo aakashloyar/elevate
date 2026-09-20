@@ -13,6 +13,7 @@ type SubmissionRepository interface {
 	FindAnswerSnapshots(submissionID string) (domain.SubmissionStatus, []domain.SubmissionAnswerDraft, error)
 	FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswerDraft, error)
 	ListByUserID(userID string) ([]domain.Submission, error)
+	ListAll() ([]domain.Submission, error)
 	FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error)
 	UpdateStatus(submissionID string, status domain.SubmissionStatus) error
 	UpdateStartTime(submissionID string, startedAt, expiresAt time.Time, status domain.SubmissionStatus) error

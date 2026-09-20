@@ -59,17 +59,18 @@ type SaveAnswerBatchErrorResponse struct {
 }
 
 type GetSubmissionResponse struct {
-	ID           string                      `json:"id"`
-	AssessmentID string                      `json:"assessment_id"`
-	UserID       string                      `json:"user_id"`
-	Status       string                      `json:"status"`
-	StartedAt    *string                     `json:"started_at,omitempty"`
-	ExpiresAt    *string                     `json:"expires_at,omitempty"`
-	SubmittedAt  *string                     `json:"submitted_at,omitempty"`
-	CreatedAt    string                      `json:"created_at"`
-	UpdatedAt    string                      `json:"updated_at"`
-	Answers      []SubmissionAnswerResponse  `json:"answers"`
-	Problems     []SubmissionProblemResponse `json:"problems"`
+	ID              string                      `json:"id"`
+	AssessmentID    string                      `json:"assessment_id"`
+	UserID          string                      `json:"user_id"`
+	Status          string                      `json:"status"`
+	DurationSeconds int                         `json:"duration_seconds"`
+	StartedAt       *string                     `json:"started_at,omitempty"`
+	ExpiresAt       *string                     `json:"expires_at,omitempty"`
+	SubmittedAt     *string                     `json:"submitted_at,omitempty"`
+	CreatedAt       string                      `json:"created_at"`
+	UpdatedAt       string                      `json:"updated_at"`
+	Answers         []SubmissionAnswerResponse  `json:"answers"`
+	Problems        []SubmissionProblemResponse `json:"problems"`
 }
 
 type GetSubmissionStatusResponse struct {
@@ -137,8 +138,7 @@ func NewHandler(createSubmissionService in.CreateSubmissionService, listSubmissi
 }
 
 func (h *Handler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
-	userID := strings.TrimSpace(r.URL.Query().Get("user_id"))
-	out, err := h.listSubmissionsService.Execute(r.Context(), in.ListSubmissionsInput{UserID: userID})
+	out, err := h.listSubmissionsService.Execute(r.Context(), in.ListSubmissionsInput{UserID: r.URL.Query().Get("user_id")})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -274,17 +274,18 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(GetSubmissionResponse{
-		ID:           out.ID,
-		AssessmentID: out.AssessmentID,
-		UserID:       out.UserID,
-		Status:       string(out.Status),
-		StartedAt:    startedAt,
-		ExpiresAt:    expiresAt,
-		SubmittedAt:  submittedAt,
-		CreatedAt:    out.CreatedAt.Format(http.TimeFormat),
-		UpdatedAt:    out.UpdatedAt.Format(http.TimeFormat),
-		Answers:      answers,
-		Problems:     problems,
+		ID:              out.ID,
+		AssessmentID:    out.AssessmentID,
+		UserID:          out.UserID,
+		Status:          string(out.Status),
+		DurationSeconds: out.DurationSeconds,
+		StartedAt:       startedAt,
+		ExpiresAt:       expiresAt,
+		SubmittedAt:     submittedAt,
+		CreatedAt:       out.CreatedAt.Format(http.TimeFormat),
+		UpdatedAt:       out.UpdatedAt.Format(http.TimeFormat),
+		Answers:         answers,
+		Problems:        problems,
 	})
 }
 

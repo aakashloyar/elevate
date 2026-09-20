@@ -12,17 +12,18 @@ type GetSubmissionInput struct {
 }
 
 type GetSubmissionOutput struct {
-	ID           string
-	AssessmentID string
-	UserID       string
-	Status       domain.SubmissionStatus
-	StartedAt    *time.Time
-	ExpiresAt    *time.Time
-	SubmittedAt  *time.Time
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	Answers      []SubmissionAnswerOutput
-	Problems     []SubmissionProblemOutput
+	ID              string
+	AssessmentID    string
+	UserID          string
+	Status          domain.SubmissionStatus
+	DurationSeconds int
+	StartedAt       *time.Time
+	ExpiresAt       *time.Time
+	SubmittedAt     *time.Time
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Answers         []SubmissionAnswerOutput
+	Problems        []SubmissionProblemOutput
 }
 
 type SubmissionProblemOutput struct {

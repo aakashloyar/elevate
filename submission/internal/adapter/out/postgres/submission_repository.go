@@ -314,6 +314,39 @@ func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission,
 	return submissions, rows.Err()
 }
 
+func (r *SubmissionRepository) ListAll() ([]domain.Submission, error) {
+	rows, err := r.db.Query(`
+		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
+		       expires_at, submitted_at, created_at, updated_at
+		FROM submissions
+		ORDER BY created_at DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	submissions := make([]domain.Submission, 0)
+	for rows.Next() {
+		var submission domain.Submission
+		if err := rows.Scan(
+			&submission.ID,
+			&submission.AssessmentID,
+			&submission.UserID,
+			&submission.Status,
+			&submission.StartedAt,
+			&submission.DurationSeconds,
+			&submission.ExpiresAt,
+			&submission.SubmittedAt,
+			&submission.CreatedAt,
+			&submission.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		submissions = append(submissions, submission)
+	}
+	return submissions, rows.Err()
+}
+
 func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {
 	var status domain.SubmissionStatus
 	var expiresAt sql.NullTime

@@ -45,16 +45,17 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 	}
 
 	return in.GetSubmissionOutput{
-		ID:           submission.ID,
-		AssessmentID: submission.AssessmentID,
-		UserID:       submission.UserID,
-		Status:       submission.Status,
-		StartedAt:    submission.StartedAt,
-		ExpiresAt:    submission.ExpiresAt,
-		SubmittedAt:  submission.SubmittedAt,
-		CreatedAt:    submission.CreatedAt,
-		UpdatedAt:    submission.UpdatedAt,
-		Answers:      answerOutputs,
-		Problems:     problemOutputs,
+		ID:              submission.ID,
+		AssessmentID:    submission.AssessmentID,
+		UserID:          submission.UserID,
+		Status:          submission.Status,
+		DurationSeconds: submission.DurationSeconds,
+		StartedAt:       submission.StartedAt,
+		ExpiresAt:       submission.ExpiresAt,
+		SubmittedAt:     submission.SubmittedAt,
+		CreatedAt:       submission.CreatedAt,
+		UpdatedAt:       submission.UpdatedAt,
+		Answers:         answerOutputs,
+		Problems:        problemOutputs,
 	}, nil
 }

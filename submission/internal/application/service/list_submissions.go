@@ -2,11 +2,11 @@ package submission
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 type ListSubmissionsService struct {
@@ -18,10 +18,13 @@ func NewListSubmissionsService(repository out.SubmissionRepository) in.ListSubmi
 }
 
 func (s *ListSubmissionsService) Execute(_ context.Context, input in.ListSubmissionsInput) (in.ListSubmissionsOutput, error) {
-	if strings.TrimSpace(input.UserID) == "" {
-		return in.ListSubmissionsOutput{}, errors.New("user id is required")
+	var submissions []domain.Submission
+	var err error
+	if strings.TrimSpace(input.UserID) != "" {
+		submissions, err = s.repository.ListByUserID(strings.TrimSpace(input.UserID))
+	} else {
+		submissions, err = s.repository.ListAll()
 	}
-	submissions, err := s.repository.ListByUserID(input.UserID)
 	if err != nil {
 		return in.ListSubmissionsOutput{}, err
 	}
