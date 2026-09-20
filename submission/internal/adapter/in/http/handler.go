@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	in "github.com/aakashloyar/elevate/submission/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
@@ -18,6 +19,22 @@ type CreateSubmissionRequest struct {
 type CreateSubmissionResponse struct {
 	SubmissionID string `json:"submission_id"`
 	CreatedAt    string `json:"created_at"`
+}
+
+type ListSubmissionsResponse struct {
+	Submissions []SubmissionSummaryResponse `json:"submissions"`
+}
+
+type SubmissionSummaryResponse struct {
+	ID              string  `json:"id"`
+	AssessmentID    string  `json:"assessment_id"`
+	UserID          string  `json:"user_id"`
+	Status          string  `json:"status"`
+	DurationSeconds int     `json:"duration_seconds"`
+	StartedAt       *string `json:"started_at,omitempty"`
+	ExpiresAt       *string `json:"expires_at,omitempty"`
+	SubmittedAt     *string `json:"submitted_at,omitempty"`
+	CreatedAt       string  `json:"created_at"`
 }
 
 type SaveAnswerRequest struct {
@@ -87,6 +104,7 @@ type SubmissionProblemResponse struct {
 
 type Handler struct {
 	createSubmissionService       in.CreateSubmissionService
+	listSubmissionsService        in.ListSubmissionsService
 	startSubmissionService        in.StartSubmissionService
 	saveAnswerService             in.SaveAnswerService
 	saveAnswerBatchService        in.SaveAnswerBatchService
@@ -96,9 +114,18 @@ type Handler struct {
 	updateSubmissionStatusService in.UpdateSubmissionStatusService
 }
 
-func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, getSubmissionStatusService in.GetSubmissionStatusService, submitSubmissionService in.SubmitSubmissionService, updateSubmissionStatusService in.UpdateSubmissionStatusService) *Handler {
+func formatOptionalTime(value *time.Time) *string {
+	if value == nil {
+		return nil
+	}
+	formatted := value.Format(http.TimeFormat)
+	return &formatted
+}
+
+func NewHandler(createSubmissionService in.CreateSubmissionService, listSubmissionsService in.ListSubmissionsService, startSubmissionService in.StartSubmissionService, saveAnswerService in.SaveAnswerService, saveAnswerBatchService in.SaveAnswerBatchService, getSubmissionService in.GetSubmissionService, getSubmissionStatusService in.GetSubmissionStatusService, submitSubmissionService in.SubmitSubmissionService, updateSubmissionStatusService in.UpdateSubmissionStatusService) *Handler {
 	return &Handler{
 		createSubmissionService:       createSubmissionService,
+		listSubmissionsService:        listSubmissionsService,
 		startSubmissionService:        startSubmissionService,
 		saveAnswerService:             saveAnswerService,
 		saveAnswerBatchService:        saveAnswerBatchService,
@@ -107,6 +134,26 @@ func NewHandler(createSubmissionService in.CreateSubmissionService, startSubmiss
 		submitSubmissionService:       submitSubmissionService,
 		updateSubmissionStatusService: updateSubmissionStatusService,
 	}
+}
+
+func (h *Handler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
+	userID := strings.TrimSpace(r.URL.Query().Get("user_id"))
+	out, err := h.listSubmissionsService.Execute(r.Context(), in.ListSubmissionsInput{UserID: userID})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	items := make([]SubmissionSummaryResponse, 0, len(out.Submissions))
+	for _, submission := range out.Submissions {
+		items = append(items, SubmissionSummaryResponse{
+			ID: submission.ID, AssessmentID: submission.AssessmentID, UserID: submission.UserID,
+			Status: string(submission.Status), DurationSeconds: submission.DurationSeconds,
+			StartedAt: formatOptionalTime(submission.StartedAt), ExpiresAt: formatOptionalTime(submission.ExpiresAt),
+			SubmittedAt: formatOptionalTime(submission.SubmittedAt), CreatedAt: submission.CreatedAt.Format(http.TimeFormat),
+		})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(ListSubmissionsResponse{Submissions: items})
 }
 
 func (h *Handler) CreateSubmission(w http.ResponseWriter, r *http.Request) {

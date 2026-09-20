@@ -280,6 +280,40 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	return submission, drafts, nil
 }
 
+func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission, error) {
+	rows, err := r.db.Query(`
+		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
+		       expires_at, submitted_at, created_at, updated_at
+		FROM submissions
+		WHERE user_id = $1
+		ORDER BY created_at DESC`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	submissions := make([]domain.Submission, 0)
+	for rows.Next() {
+		var submission domain.Submission
+		if err := rows.Scan(
+			&submission.ID,
+			&submission.AssessmentID,
+			&submission.UserID,
+			&submission.Status,
+			&submission.StartedAt,
+			&submission.DurationSeconds,
+			&submission.ExpiresAt,
+			&submission.SubmittedAt,
+			&submission.CreatedAt,
+			&submission.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		submissions = append(submissions, submission)
+	}
+	return submissions, rows.Err()
+}
+
 func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {
 	var status domain.SubmissionStatus
 	var expiresAt sql.NullTime

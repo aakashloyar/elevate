@@ -18,6 +18,8 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 	//create submission route
 	mux.HandleFunc("/submissions", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		case http.MethodGet:
+			h.ListSubmissions(w, r)
 		case http.MethodPost:
 			h.CreateSubmission(w, r)
 		default:
