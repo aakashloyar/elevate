@@ -11,6 +11,7 @@ import (
 type Config struct {
 	HTTPPort             string
 	AssessmentServiceURL string
+	UserServiceURL      string
 	ProblemServiceURL    string
 	SubmissionServiceURL string
 	Postgres             PostgresConfig
@@ -35,6 +36,7 @@ func Load() Config {
 	cfg := Config{
 		HTTPPort:             os.Getenv("HTTP_PORT"),
 		AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"),
+		UserServiceURL:      os.Getenv("USER_SERVICE_URL"),
 		ProblemServiceURL:    os.Getenv("PROBLEM_SERVICE_URL"),
 		SubmissionServiceURL: os.Getenv("SUBMISSION_SERVICE_URL"),
 		Postgres:             PostgresConfig{Host: os.Getenv("POSTGRES_HOST"), Port: os.Getenv("POSTGRES_PORT"), User: os.Getenv("POSTGRES_USER"), Password: os.Getenv("POSTGRES_PASSWORD"), DBName: os.Getenv("POSTGRES_DB"), SSLMode: os.Getenv("POSTGRES_SSLMODE")},
@@ -45,6 +47,9 @@ func Load() Config {
 	}
 	if cfg.AssessmentServiceURL == "" {
 		cfg.AssessmentServiceURL = "http://localhost:8082"
+	}
+	if cfg.UserServiceURL == "" {
+		cfg.UserServiceURL = "http://localhost:8081"
 	}
 	if cfg.ProblemServiceURL == "" {
 		cfg.ProblemServiceURL = "http://localhost:8083"

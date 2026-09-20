@@ -12,7 +12,7 @@ import (
 	"github.com/aakashloyar/elevate/evaluation/internal/domain"
 )
 
-const defaultTimeout = 	10 * time.Second
+const defaultTimeout = 10 * time.Second
 
 type Client struct {
 	baseURL string
@@ -23,8 +23,20 @@ type GetAssessmentProblemsResponse struct {
 	ProblemIDs []string `json:"problem_ids"`
 }
 
+type GetAssessmentResponse struct {
+	Title string `json:"title"`
+}
+
 func NewClient(baseURL string) out.AssessmentClient {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), http: &http.Client{Timeout: defaultTimeout}}
+}
+
+func (c *Client) GetAssessmentTitle(ctx context.Context, assessmentID string) (string, error) {
+	var value GetAssessmentResponse
+	if err := c.doGetRequest(ctx, "/assessments/"+assessmentID, &value); err != nil {
+		return "", err
+	}
+	return value.Title, nil
 }
 
 func (c *Client) GetAssessmentMarkingScheme(ctx context.Context, assessmentID string) (domain.MarkingScheme, error) {

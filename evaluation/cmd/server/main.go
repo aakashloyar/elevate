@@ -12,6 +12,7 @@ import (
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/problemhttp"
 	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/submissionhttp"
+	"github.com/aakashloyar/elevate/evaluation/internal/adapter/out/userhttp"
 	evaluationservice "github.com/aakashloyar/elevate/evaluation/internal/application/service"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	}
 	defer db.Close()
 	repository := postgres.New(db)
-	evaluateSubmissionService := evaluationservice.NewEvaluateSubmissionService(assessmenthttp.NewClient(cfg.AssessmentServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), repository)
+	evaluateSubmissionService := evaluationservice.NewEvaluateSubmissionService(assessmenthttp.NewClient(cfg.AssessmentServiceURL), userhttp.NewClient(cfg.UserServiceURL), problemhttp.NewClient(cfg.ProblemServiceURL), submissionhttp.NewClient(cfg.SubmissionServiceURL), repository)
 	getEvaluationService := evaluationservice.NewGetEvaluationService(repository)
 	consumerConfig := kafka.Config{Brokers: cfg.Kafka.Brokers, SubmissionSubmittedTopic: cfg.Kafka.SubmissionSubmittedTopic, ClientID: cfg.Kafka.ClientID, GroupID: cfg.Kafka.GroupID, APIKey: cfg.Kafka.APIKey, APISecret: cfg.Kafka.APISecret}
 	consumer, err := consumerConfig.NewConsumer(evaluateSubmissionService)

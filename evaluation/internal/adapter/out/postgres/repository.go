@@ -26,13 +26,13 @@ func (r *Repository) Save(ctx context.Context, evaluation domain.Evaluation) err
 	if err != nil {
 		return err
 	}
-	_, err = r.db.ExecContext(ctx, `INSERT INTO evaluations (submission_id, assessment_id, user_id, started_at, duration_seconds, submitted_at, score, questions, evaluated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (submission_id) DO NOTHING`, evaluation.SubmissionID, evaluation.AssessmentID, evaluation.UserID, evaluation.StartedAt, evaluation.DurationSeconds, evaluation.SubmittedAt, evaluation.Score, questions, evaluation.EvaluatedAt)
+	_, err = r.db.ExecContext(ctx, `INSERT INTO evaluations (submission_id, assessment_id, assessment_title, user_id, user_name, started_at, duration_seconds, submitted_at, score, total_marks, questions, evaluated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (submission_id) DO NOTHING`, evaluation.SubmissionID, evaluation.AssessmentID, evaluation.AssessmentTitle, evaluation.UserID, evaluation.UserName, evaluation.StartedAt, evaluation.DurationSeconds, evaluation.SubmittedAt, evaluation.Score, evaluation.TotalMarks, questions, evaluation.EvaluatedAt)
 	return err
 }
 func (r *Repository) FindBySubmissionID(ctx context.Context, submissionID string) (domain.Evaluation, error) {
 	var result domain.Evaluation
 	var questions []byte
-	err := r.db.QueryRowContext(ctx, `SELECT submission_id, assessment_id, user_id, started_at, duration_seconds, submitted_at, score, questions, evaluated_at FROM evaluations WHERE submission_id = $1`, submissionID).Scan(&result.SubmissionID, &result.AssessmentID, &result.UserID, &result.StartedAt, &result.DurationSeconds, &result.SubmittedAt, &result.Score, &questions, &result.EvaluatedAt)
+	err := r.db.QueryRowContext(ctx, `SELECT submission_id, assessment_id, assessment_title, user_id, user_name, started_at, duration_seconds, submitted_at, score, total_marks, questions, evaluated_at FROM evaluations WHERE submission_id = $1`, submissionID).Scan(&result.SubmissionID, &result.AssessmentID, &result.AssessmentTitle, &result.UserID, &result.UserName, &result.StartedAt, &result.DurationSeconds, &result.SubmittedAt, &result.Score, &result.TotalMarks, &questions, &result.EvaluatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Evaluation{}, evaluationservice.ErrEvaluationNotFound
 	}

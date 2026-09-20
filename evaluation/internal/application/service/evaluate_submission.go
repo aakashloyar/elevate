@@ -12,15 +12,17 @@ import (
 
 type EvaluateSubmissionService struct {
 	assessments out.AssessmentClient
+	users       out.UserClient
 	problems    out.ProblemClient
 	submissions out.SubmissionClient
 	repository  out.Repository
 	now         func() time.Time
 }
 
-func NewEvaluateSubmissionService(assessments out.AssessmentClient, problems out.ProblemClient, submissions out.SubmissionClient, repository out.Repository) *EvaluateSubmissionService {
+func NewEvaluateSubmissionService(assessments out.AssessmentClient, users out.UserClient, problems out.ProblemClient, submissions out.SubmissionClient, repository out.Repository) *EvaluateSubmissionService {
 	return &EvaluateSubmissionService{
 		assessments: assessments,
+		users:       users,
 		problems:    problems,
 		submissions: submissions,
 		repository:  repository,
@@ -34,7 +36,7 @@ func (s *EvaluateSubmissionService) Execute(ctx context.Context, submission doma
 		return domain.Evaluation{}, errors.New("submission_id and assessment_id are required")
 	}
 
-	//check if evaluation already exists for this submission id 
+	//check if evaluation already exists for this submission id
 	if existing, err := s.repository.FindBySubmissionID(ctx, submission.SubmissionID); err == nil {
 		if err := s.submissions.UpdateSubmissionStatus(ctx, submission.SubmissionID, domain.SubmissionStatusEvaluated); err != nil {
 			return domain.Evaluation{}, fmt.Errorf("mark submission evaluated: %w", err)
@@ -71,6 +73,14 @@ func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, subm
 	if err != nil {
 		return domain.Evaluation{}, fmt.Errorf("get marking scheme: %w", err)
 	}
+	assessmentTitle, err := s.assessments.GetAssessmentTitle(ctx, submission.AssessmentID)
+	if err != nil {
+		return domain.Evaluation{}, fmt.Errorf("get assessment title: %w", err)
+	}
+	userName, err := s.users.GetUserName(ctx, submission.UserID)
+	if err != nil {
+		return domain.Evaluation{}, fmt.Errorf("get user name: %w", err)
+	}
 
 	problemIDs, err := s.assessments.GetAssessmentProblemIDs(ctx, submission.AssessmentID)
 	if err != nil {
@@ -85,7 +95,9 @@ func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, subm
 	result := domain.Evaluation{
 		SubmissionID:    submission.SubmissionID,
 		AssessmentID:    submission.AssessmentID,
+		AssessmentTitle: assessmentTitle,
 		UserID:          submission.UserID,
+		UserName:        userName,
 		StartedAt:       submission.StartedAt,
 		DurationSeconds: submission.DurationSeconds,
 		SubmittedAt:     submission.SubmittedAt,
@@ -101,6 +113,8 @@ func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, subm
 		question := EvaluateAnswer(problem, selectedOptions[problemID], scheme)
 		result.Questions = append(result.Questions, question)
 		result.Score += question.Marks
+		correctMarks, _, _ := marks(problem.Type, scheme)
+		result.TotalMarks += correctMarks
 	}
 
 	if err := s.repository.Save(ctx, result); err != nil {
