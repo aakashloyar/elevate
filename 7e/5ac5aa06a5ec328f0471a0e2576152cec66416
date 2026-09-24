@@ -1,0 +1,41 @@
+problem/internal/adapter/in/http/routes.go
+  s_c7e5d1210f1f2d::t_2ee0864a8fd190 35-41
+problem/internal/application/ports/in/list_problems.go
+  s_8c7c13500c0009::t_ded744c7fcab34 29-30
+problem/internal/application/service/list_problems.go
+  s_8c7c13500c0009::t_ded744c7fcab34 52-53
+problem/internal/domain/problem.go
+  s_8c7c13500c0009::t_ded744c7fcab34 14
+problem/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_43f68bbef7a40e 90,259
+  s_c7e5d1210f1f2d::t_2ee0864a8fd190 75-77,174-184,202-207
+  s_8c7c13500c0009::t_7c7201eb5e9f8b 54-55
+  s_8c7c13500c0009::t_452b7580bf1277 198-201,208
+  s_8c7c13500c0009::t_7f72b600512028 89
+problem/internal/adapter/out/postgres/problem_repository.go
+  s_8c7c13500c0009::t_ded744c7fcab34 9,113,155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "7e5ac5aa06a5ec328f0471a0e2576152cec66416",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    },
+    "s_c7e5d1210f1f2d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0adb3-71ff-7ae2-9ef3-4b4153e26101",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
