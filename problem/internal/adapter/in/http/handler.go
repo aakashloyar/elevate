@@ -51,7 +51,8 @@ type ProblemOptionResponse struct {
 }
 
 type GetProblemsBatchRequest struct {
-	ProblemIDs []string `json:"problem_ids"`
+	ProblemIDs     []string `json:"problem_ids"`
+	IncludeOptions *bool    `json:"include_options,omitempty"`
 }
 
 type ProblemSnapshotResponse struct {
@@ -71,8 +72,9 @@ type ProblemSnapshotResponse struct {
 }
 
 type ProblemSnapshotOptionResponse struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
+	ID        string `json:"id"`
+	Text      string `json:"text"`
+	IsCorrect *bool  `json:"is_correct,omitempty"`
 }
 
 type ListProblemsResponse struct {
@@ -84,6 +86,8 @@ type ListProblemItemResponse struct {
 	Title      string             `json:"title"`
 	Type       domain.ProblemType `json:"type"`
 	Difficulty domain.Difficulty  `json:"difficulty"`
+	SourceType domain.SourceType  `json:"source_type"`
+	Tags       []string           `json:"tags"`
 	CreatedAt  string             `json:"created_at"`
 }
 
@@ -167,6 +171,17 @@ func (h *Handler) GetProblemByID(w http.ResponseWriter, r *http.Request, problem
 }
 
 func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
+	h.getProblemsBatch(w, r, false)
+}
+
+// GetProblemsBatchForAuthor returns answer keys for the assessment-author UI.
+// Keep this separate from the student-facing batch endpoint so correct answers
+// are not accidentally exposed to assessment takers.
+func (h *Handler) GetProblemsBatchForAuthor(w http.ResponseWriter, r *http.Request) {
+	h.getProblemsBatch(w, r, true)
+}
+
+func (h *Handler) getProblemsBatch(w http.ResponseWriter, r *http.Request, includeCorrectAnswers bool) {
 	var req GetProblemsBatchRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req.ProblemIDs) == 0 {
 		http.Error(w, "problem_ids are required", http.StatusBadRequest)
@@ -180,12 +195,17 @@ func (h *Handler) GetProblemsBatch(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "problem "+problemID+" not found", http.StatusNotFound)
 			return
 		}
-		options := make([]ProblemSnapshotOptionResponse, 0, len(problem.Options))
-		for _, option := range problem.Options {
-			options = append(options, ProblemSnapshotOptionResponse{
-				ID:   option.ID,
-				Text: option.Text,
-			})
+		options := make([]ProblemSnapshotOptionResponse, 0)
+		if req.IncludeOptions == nil || *req.IncludeOptions {
+			options = make([]ProblemSnapshotOptionResponse, 0, len(problem.Options))
+			for _, option := range problem.Options {
+				responseOption := ProblemSnapshotOptionResponse{ID: option.ID, Text: option.Text}
+				if includeCorrectAnswers {
+					isCorrect := option.IsCorrect
+					responseOption.IsCorrect = &isCorrect
+				}
+				options = append(options, responseOption)
+			}
 		}
 		responses = append(responses, ProblemSnapshotResponse{
 			ID:          problem.ID,
@@ -236,7 +256,7 @@ func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
 
 	items := make([]ListProblemItemResponse, 0, len(out.Problems))
 	for _, item := range out.Problems {
-		items = append(items, ListProblemItemResponse{ID: item.ID, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, CreatedAt: item.CreatedAt})
+		items = append(items, ListProblemItemResponse{ID: item.ID, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, SourceType: item.SourceType, Tags: item.Tags, CreatedAt: item.CreatedAt})
 	}
 
 	w.Header().Set("Content-Type", "application/json")

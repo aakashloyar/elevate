@@ -26,6 +26,8 @@ type ListProblemItem struct {
 	Title      string
 	Type       domain.ProblemType
 	Difficulty domain.Difficulty
+	SourceType domain.SourceType
+	Tags       []string
 	CreatedAt  string
 }
 

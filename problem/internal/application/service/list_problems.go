@@ -49,6 +49,8 @@ func (s *ListProblemsService) Execute(ctx context.Context, input in.ListProblems
 			Title:      p.Title,
 			Type:       p.Type,
 			Difficulty: p.Difficulty,
+			SourceType: p.SourceType,
+			Tags:       p.Tags,
 			CreatedAt:  p.CreatedAt.Format(time.RFC3339),
 		})
 	}

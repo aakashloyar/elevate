@@ -6,6 +6,7 @@ import (
 
 	"github.com/aakashloyar/elevate/problem/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/problem/internal/domain"
+	"github.com/lib/pq"
 )
 
 type ProblemRepository struct {
@@ -109,7 +110,7 @@ func (r *ProblemRepository) FindByID(problemID string) (domain.Problem, []domain
 }
 
 func (r *ProblemRepository) List(offset, limit int, filters map[string]string) ([]domain.Problem, error) {
-	query := `SELECT id, created_by, title, statement, type, difficulty, source_type, created_at, updated_at FROM problems`
+	query := `SELECT id, created_by, title, statement, type, difficulty, source_type, COALESCE(ARRAY(SELECT tag FROM problem_tags WHERE problem_id = problems.id ORDER BY tag), '{}'), created_at, updated_at FROM problems`
 	args := []any{}
 	whereClauses := []string{}
 	if value, ok := filters["created_by"]; ok && value != "" {
@@ -151,7 +152,7 @@ func (r *ProblemRepository) List(offset, limit int, filters map[string]string) (
 	problems := []domain.Problem{}
 	for rows.Next() {
 		var problem domain.Problem
-		if err := rows.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, &problem.CreatedAt, &problem.UpdatedAt); err != nil {
+		if err := rows.Scan(&problem.ID, &problem.CreatedBy, &problem.Title, &problem.Statement, &problem.Type, &problem.Difficulty, &problem.SourceType, pq.Array(&problem.Tags), &problem.CreatedAt, &problem.UpdatedAt); err != nil {
 			return nil, err
 		}
 		problems = append(problems, problem)

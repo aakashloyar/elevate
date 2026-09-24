@@ -11,6 +11,7 @@ type Problem struct {
 	Type       ProblemType
 	Difficulty Difficulty
 	SourceType SourceType
+	Tags       []string
 	CreatedBy  string
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
