@@ -1,0 +1,16 @@
+problem/bruno/get-assessment-problem-for-author.yml
+  h_6fce61bebff0e2 1-41
+problem/bruno/get-problem-batch.yml
+  h_6fce61bebff0e2 9-11,17-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8ec6d930143801cf9fb0910d94b068952fb5a495",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
