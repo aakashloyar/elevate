@@ -18,6 +18,7 @@ func NewProblemRepository(db *sql.DB) out.ProblemRepository {
 }
 
 func (r *ProblemRepository) Save(problem domain.Problem, options []domain.ProblemOption, tags []domain.ProblemTag) error {
+	defer observeDB("problems.save")()
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -64,6 +65,7 @@ func (r *ProblemRepository) Save(problem domain.Problem, options []domain.Proble
 }
 
 func (r *ProblemRepository) FindByID(problemID string) (domain.Problem, []domain.ProblemOption, []domain.ProblemTag, error) {
+	defer observeDB("problems.find_by_id")()
 	problemQuery := `SELECT id, created_by, title, statement, type, difficulty, source_type, created_at, updated_at FROM problems WHERE id = $1`
 	row := r.db.QueryRow(problemQuery, problemID)
 
@@ -110,6 +112,7 @@ func (r *ProblemRepository) FindByID(problemID string) (domain.Problem, []domain
 }
 
 func (r *ProblemRepository) List(offset, limit int, filters map[string]string) ([]domain.Problem, error) {
+	defer observeDB("problems.list")()
 	query := `SELECT id, created_by, title, statement, type, difficulty, source_type, COALESCE(ARRAY(SELECT tag FROM problem_tags WHERE problem_id = problems.id ORDER BY tag), '{}'), created_at, updated_at FROM problems`
 	args := []any{}
 	whereClauses := []string{}
@@ -161,6 +164,7 @@ func (r *ProblemRepository) List(offset, limit int, filters map[string]string) (
 }
 
 func (r *ProblemRepository) Update(problem domain.Problem, options []domain.ProblemOption, tags []domain.ProblemTag) error {
+	defer observeDB("problems.update")()
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -205,6 +209,7 @@ func (r *ProblemRepository) Update(problem domain.Problem, options []domain.Prob
 }
 
 func (r *ProblemRepository) DeleteByID(problemID string) error {
+	defer observeDB("problems.delete")()
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err

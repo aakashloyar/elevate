@@ -19,6 +19,7 @@ func NewSubmissionRepository(db *sql.DB) out.SubmissionRepository {
 }
 
 func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domain.SubmissionAnswerDraft) error {
+	defer observeDB("submissions.save")()
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -57,6 +58,7 @@ func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domai
 }
 
 func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswerDraft) (bool, error) {
+	defer observeDB("submission_answers.save_one")()
 	updatedAt := time.Now().UTC()
 	if answer.AnswerUpdatedAt != nil {
 		updatedAt = *answer.AnswerUpdatedAt
@@ -106,6 +108,7 @@ func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswerDraft) (
 }
 
 func (r *SubmissionRepository) SaveAnswers(answers []domain.SubmissionAnswerDraft) (bool, error) {
+	defer observeDB("submission_answers.save_batch")()
 	if len(answers) == 0 {
 		return true, nil
 	}
@@ -169,6 +172,7 @@ func (r *SubmissionRepository) SaveAnswers(answers []domain.SubmissionAnswerDraf
 }
 
 func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.SubmissionStatus, []domain.SubmissionAnswerDraft, error) {
+	defer observeDB("submission_answers.find_snapshots")()
 	rows, err := r.db.Query(`
 		SELECT
 			submission.status,
@@ -226,6 +230,7 @@ func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.
 }
 
 func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswerDraft, error) {
+	defer observeDB("submissions.find_by_id")()
 	submissionQuery := `SELECT id, assessment_id, user_id, status, started_at, duration_seconds, expires_at, submitted_at, created_at, updated_at FROM submissions WHERE id = $1`
 	row := r.db.QueryRow(submissionQuery, submissionID)
 
@@ -281,6 +286,7 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 }
 
 func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission, error) {
+	defer observeDB("submissions.list_by_user_id")()
 	rows, err := r.db.Query(`
 		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
 		       expires_at, submitted_at, created_at, updated_at
@@ -315,6 +321,7 @@ func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission,
 }
 
 func (r *SubmissionRepository) ListAll() ([]domain.Submission, error) {
+	defer observeDB("submissions.list_all")()
 	rows, err := r.db.Query(`
 		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
 		       expires_at, submitted_at, created_at, updated_at
@@ -348,6 +355,7 @@ func (r *SubmissionRepository) ListAll() ([]domain.Submission, error) {
 }
 
 func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {
+	defer observeDB("submissions.find_status")()
 	var status domain.SubmissionStatus
 	var expiresAt sql.NullTime
 	if err := r.db.QueryRow(`SELECT status, expires_at FROM submissions WHERE id = $1`, submissionID).Scan(&status, &expiresAt); err != nil {
@@ -360,16 +368,19 @@ func (r *SubmissionRepository) FindStatus(submissionID string) (domain.Submissio
 }
 
 func (r *SubmissionRepository) UpdateStatus(submissionID string, status domain.SubmissionStatus) error {
+	defer observeDB("submissions.update_status")()
 	_, err := r.db.Exec(`UPDATE submissions SET status = $2, updated_at = NOW() WHERE id = $1`, submissionID, status)
 	return err
 }
 
 func (r *SubmissionRepository) UpdateStartTime(submissionID string, startedAt, expiresAt time.Time, status domain.SubmissionStatus) error {
+	defer observeDB("submissions.update_start_time")()
 	_, err := r.db.Exec(`UPDATE submissions SET started_at = $2, expires_at = $3, status = $4, updated_at = NOW() WHERE id = $1 AND status = 'CREATED'`, submissionID, startedAt, expiresAt, status)
 	return err
 }
 
 func (r *SubmissionRepository) Submit(submissionID string, submittedAt time.Time) (bool, error) {
+	defer observeDB("submissions.submit")()
 	result, err := r.db.Exec(`UPDATE submissions
 		SET status = 'SUBMITTED', submitted_at = $2, updated_at = $2
 		WHERE id = $1 AND status = 'IN_PROGRESS' AND expires_at >= $2`, submissionID, submittedAt)
@@ -381,6 +392,7 @@ func (r *SubmissionRepository) Submit(submissionID string, submittedAt time.Time
 }
 
 func (r *SubmissionRepository) ExpireSubmissions(expiredAt time.Time, limit int) ([]string, error) {
+	defer observeDB("submissions.expire")()
 	rows, err := r.db.Query(`WITH expired AS (
 		SELECT id
 		FROM submissions

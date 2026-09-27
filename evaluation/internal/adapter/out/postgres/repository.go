@@ -22,6 +22,7 @@ func Open(host, port, user, password, database, sslmode string) (*sql.DB, error)
 }
 
 func (r *Repository) Save(ctx context.Context, evaluation domain.Evaluation) error {
+	defer observeDB("evaluations.save")()
 	questions, err := json.Marshal(evaluation.Questions)
 	if err != nil {
 		return err
@@ -30,6 +31,7 @@ func (r *Repository) Save(ctx context.Context, evaluation domain.Evaluation) err
 	return err
 }
 func (r *Repository) FindBySubmissionID(ctx context.Context, submissionID string) (domain.Evaluation, error) {
+	defer observeDB("evaluations.find_by_submission_id")()
 	var result domain.Evaluation
 	var questions []byte
 	err := r.db.QueryRowContext(ctx, `SELECT submission_id, assessment_id, assessment_title, user_id, user_name, started_at, duration_seconds, submitted_at, score, total_marks, questions, evaluated_at FROM evaluations WHERE submission_id = $1`, submissionID).Scan(&result.SubmissionID, &result.AssessmentID, &result.AssessmentTitle, &result.UserID, &result.UserName, &result.StartedAt, &result.DurationSeconds, &result.SubmittedAt, &result.Score, &result.TotalMarks, &questions, &result.EvaluatedAt)

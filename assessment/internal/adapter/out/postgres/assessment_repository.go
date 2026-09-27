@@ -174,6 +174,7 @@ func (r *AssessmentRepository) FindProblemIDs(assessmentID string) ([]string, er
 }
 
 func (r *AssessmentRepository) FindMarkingScheme(assessmentID string) (domain.AssessmentMarkingScheme, error) {
+	defer observeDB("assessment_marking_scheme.find")()
 	row := r.db.QueryRow(`
 		SELECT
 			assessment_id,

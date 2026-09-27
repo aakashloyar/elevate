@@ -46,6 +46,6 @@ func (c *Consumer) Start(ctx context.Context) error {
 	}
 	return ctx.Err()
 }
-func (c *Consumer) Close() { 
+func (c *Consumer) Close() {
 	c.kafkaClient.client.Close()
 }

@@ -15,6 +15,7 @@ func NewUserRepository(db *sql.DB) out.UserRepository {
 }
 
 func (r *UserRepository) Save(user domain.User) error {
+	defer observeDB("users.save")()
 	query := `
 		INSERT INTO users (
 			id,
@@ -31,6 +32,7 @@ func (r *UserRepository) Save(user domain.User) error {
 }
 
 func (r *UserRepository) FindByID(userID string) (domain.User, error) {
+	defer observeDB("users.find_by_id")()
 	query := `
 		SELECT
 			id,
@@ -53,17 +55,20 @@ func (r *UserRepository) FindByID(userID string) (domain.User, error) {
 }
 
 func (r *UserRepository) Delete(userID string) (sql.Result, error) {
+	defer observeDB("users.delete")()
 	result, err := r.db.Exec(`DELETE FROM users WHERE id = $1`, userID)
 	return result, err
 }
 
 func (r *UserRepository) ExistsByUsername(username string) (bool, error) {
+	defer observeDB("users.exists_by_username")()
 	var exists bool
 	err := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE lower(username) = lower($1))`, username).Scan(&exists)
 	return exists, err
 }
 
 func (r *UserRepository) ExistsByEmail(email string) (bool, error) {
+	defer observeDB("users.exists_by_email")()
 	var exists bool
 	err := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE lower(email) = lower($1))`, email).Scan(&exists)
 	return exists, err

@@ -18,6 +18,7 @@ func NewGenerationJobRepository(db *sql.DB) *GenerationJobRepository {
 }
 
 func (r *GenerationJobRepository) Save(job domain.GenerationJob) error {
+	defer observeDB("generation_jobs.save")()
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -59,6 +60,7 @@ func (r *GenerationJobRepository) Save(job domain.GenerationJob) error {
 }
 
 func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, error) {
+	defer observeDB("generation_jobs.find_by_id")()
 	query := `
 		SELECT
 			id,
@@ -90,6 +92,7 @@ func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, 
 }
 
 func (r *GenerationJobRepository) SaveGeneratedProblemCount(jobID string, count int) error {
+	defer observeDB("generation_jobs.save_problem_count")()
 	result, err := r.db.Exec(`UPDATE generation_jobs SET generated_problem_count = $2, updated_at = NOW() WHERE id = $1`, jobID, count)
 	if err != nil {
 		return err
@@ -105,6 +108,7 @@ func (r *GenerationJobRepository) SaveGeneratedProblemCount(jobID string, count 
 }
 
 func (r *GenerationJobRepository) UpdateStatus(jobID string, status domain.GenerationJobStatus) error {
+	defer observeDB("generation_jobs.update_status")()
 	result, err := r.db.Exec(`
 		UPDATE generation_jobs
 		SET status = $2, updated_at = NOW()
