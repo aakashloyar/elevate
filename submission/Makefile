@@ -68,5 +68,4 @@ format-check:
 	gofmt -l .
 
 run:
-	go run ./cmd/server/main.go
-
+	go run ./cmd/server

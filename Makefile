@@ -18,7 +18,7 @@ run:
 			echo "$$service already running with PID $$(cat "$$pid_file")"; \
 		else \
 			echo "Starting $$service..."; \
-			( cd "$(ROOT_DIR)/$$service" && go run ./cmd/server/main.go > "$(LOG_DIR)/$$service.log" 2>&1 & echo $$! > "$$pid_file" ); \
+			( cd "$(ROOT_DIR)/$$service" && go run ./cmd/server > "$(LOG_DIR)/$$service.log" 2>&1 & echo $$! > "$$pid_file" ); \
 			echo "$$service started with PID $$(cat "$$pid_file")"; \
 		fi; \
 	done
