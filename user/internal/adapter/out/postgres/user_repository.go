@@ -59,17 +59,3 @@ func (r *UserRepository) Delete(userID string) (sql.Result, error) {
 	result, err := r.db.Exec(`DELETE FROM users WHERE id = $1`, userID)
 	return result, err
 }
-
-func (r *UserRepository) ExistsByUsername(username string) (bool, error) {
-	defer observeDB("users.exists_by_username")()
-	var exists bool
-	err := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE lower(username) = lower($1))`, username).Scan(&exists)
-	return exists, err
-}
-
-func (r *UserRepository) ExistsByEmail(email string) (bool, error) {
-	defer observeDB("users.exists_by_email")()
-	var exists bool
-	err := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM users WHERE lower(email) = lower($1))`, email).Scan(&exists)
-	return exists, err
-}

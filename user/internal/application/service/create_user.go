@@ -9,6 +9,7 @@ import (
 	in "github.com/aakashloyar/elevate/user/internal/application/ports/in"
 	"github.com/aakashloyar/elevate/user/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/user/internal/domain"
+	"github.com/lib/pq"
 )
 
 type CreateUserService struct {
@@ -37,22 +38,6 @@ func (s *CreateUserService) Execute(ctx context.Context, input in.CreateUserInpu
 		return in.CreateUserOutput{}, errors.New("invalid email")
 	}
 
-	exists, err := s.userRepo.ExistsByUsername(username)
-	if err != nil {
-		return in.CreateUserOutput{}, err
-	}
-	if exists {
-		return in.CreateUserOutput{}, errors.New("username already exists")
-	}
-
-	exists, err = s.userRepo.ExistsByEmail(email)
-	if err != nil {
-		return in.CreateUserOutput{}, err
-	}
-	if exists {
-		return in.CreateUserOutput{}, errors.New("email already exists")
-	}
-
 	now := s.clock.Now()
 	user := domain.User{
 		ID:        s.idGen.NewID(),
@@ -63,6 +48,15 @@ func (s *CreateUserService) Execute(ctx context.Context, input in.CreateUserInpu
 	}
 
 	if err := s.userRepo.Save(user); err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "23505" {
+			switch pqErr.Constraint {
+			case "users_username_lower_unique_idx":
+				return in.CreateUserOutput{}, errors.New("username already exists")
+			case "users_email_lower_unique_idx":
+				return in.CreateUserOutput{}, errors.New("email already exists")
+			}
+		}
 		return in.CreateUserOutput{}, err
 	}
 
