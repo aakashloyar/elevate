@@ -46,9 +46,6 @@ func load() Config {
 	}
 
 	server := ServerConfig{Port: os.Getenv("HTTP_PORT")}
-	if server.Port == "" {
-		server.Port = "8080"
-	}
 
 	return Config{Postgres: postgres, Server: server}
 }
