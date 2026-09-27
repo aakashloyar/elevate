@@ -40,7 +40,7 @@ func main() {
 	mux := http.NewServeMux()
 	httpapi.RegisterRoutes(mux, httpapi.NewHandler(getEvaluationService))
 	log.Printf("evaluation service listening on :%s", cfg.HTTPPort)
-	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, withCORS(mux)))
+	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, withHTTPLogging(withCORS(mux))))
 }
 
 func withCORS(next http.Handler) http.Handler {

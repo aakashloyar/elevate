@@ -104,7 +104,7 @@ func main() {
 
 	serverPort := config.App.Server.Port
 	log.Printf("problem_generation service starting on :%s", serverPort)
-	if err := http.ListenAndServe(":"+serverPort, withCORS(mux)); err != nil {
+	if err := http.ListenAndServe(":"+serverPort, withHTTPLogging(withCORS(mux))); err != nil {
 		log.Fatal(err)
 	}
 }
