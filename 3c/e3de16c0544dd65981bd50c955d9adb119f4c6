@@ -1,0 +1,24 @@
+user/internal/application/service/create_user.go
+  s_8c7c13500c0009::t_ea8648c8b0804d 12
+  s_8c7c13500c0009::t_9ef63c1d122dca 51-59
+user/migrations/000002_add_user_uniqueness.down.sql
+  s_8c7c13500c0009::t_9ef63c1d122dca 1-2
+user/migrations/000002_add_user_uniqueness.up.sql
+  s_8c7c13500c0009::t_9ef63c1d122dca 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3ce3de16c0544dd65981bd50c955d9adb119f4c6",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
