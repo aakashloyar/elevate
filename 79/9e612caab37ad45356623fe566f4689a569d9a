@@ -1,0 +1,43 @@
+problem_generation/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+problem/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+evaluation/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+assessment/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+submission/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+user/internal/adapter/out/postgres/user_repository.go
+  s_8c7c13500c0009::t_0735bcc849c9e4 18,35,58,64,71
+problem/internal/adapter/out/postgres/problem_repository.go
+  s_8c7c13500c0009::t_0735bcc849c9e4 21,68,115,167,212
+problem_generation/internal/adapter/out/postgres/generation_job_repository.go
+  s_8c7c13500c0009::t_0735bcc849c9e4 21,63,95,111
+evaluation/internal/adapter/out/postgres/repository.go
+  s_8c7c13500c0009::t_0735bcc849c9e4 25,34
+submission/internal/adapter/out/postgres/submission_repository.go
+  s_8c7c13500c0009::t_0735bcc849c9e4 22,61,111,175,233,289,324,358,371,377,383,395
+evaluation/internal/adapter/in/kafka/consumer.go
+  s_8c7c13500c0009::t_bd62942ed4cc40 49
+assessment/internal/domain/assessment_problems.go
+  s_8c7c13500c0009::t_bd62942ed4cc40 4-5
+user/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_0868dbb58b34bd 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "799e612caab37ad45356623fe566f4689a569d9a",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
