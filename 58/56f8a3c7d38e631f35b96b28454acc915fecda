@@ -1,0 +1,61 @@
+evaluation/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 12,33
+assessment_runner/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+user/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+problem/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+assessment/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+submission/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 11,28
+assessment/internal/adapter/out/problemhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 14,45,75
+problem/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 11,28
+submission/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 12,33
+submission/internal/adapter/out/problemhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 14,51
+evaluation/internal/adapter/out/problemhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 13,40
+assessment_runner/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 13,47
+assessment_runner/internal/adapter/out/problemhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 14,62
+assessment_runner/internal/adapter/out/submissionhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 13,63
+problem_generation/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+evaluation/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+problem_generation/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 11,28
+evaluation/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 13,64
+problem_generation/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 11,28
+submission/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_d346967b4e650a 1-18
+evaluation/internal/adapter/out/submissionhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 13,42
+assessment/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_00f6479dedc5e8 10,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5856f8a3c7d38e631f35b96b28454acc915fecda",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
