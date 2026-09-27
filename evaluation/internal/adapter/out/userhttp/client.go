@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/evaluation/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/evaluation/internal/httpobserve"
 )
 
 type Client struct {
@@ -29,7 +30,7 @@ func (c *Client) GetUserName(ctx context.Context, userID string) (string, error)
 	if err != nil {
 		return "", err
 	}
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "user.get")
 	if err != nil {
 		return "", err
 	}

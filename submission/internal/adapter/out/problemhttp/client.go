@@ -11,6 +11,7 @@ import (
 
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/submission/internal/domain"
+	"github.com/aakashloyar/elevate/submission/internal/httpobserve"
 )
 
 type Client struct {
@@ -47,7 +48,7 @@ func (c *Client) GetProblemSnapshots(ctx context.Context, problemIDs []string) (
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "problem.get_batch")
 	if err != nil {
 		return nil, err
 	}

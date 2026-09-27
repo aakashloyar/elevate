@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/assessment/internal/httpobserve"
 )
 
 type Client struct {
@@ -41,7 +42,7 @@ func (c *Client) CreateProblem(ctx context.Context, input out.CreateProblemInput
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := httpobserve.Do(c.httpClient, req, "problem.create")
 	if err != nil {
 		return out.CreateProblemOutput{}, err
 	}
@@ -71,7 +72,7 @@ func (c *Client) Exists(ctx context.Context, problemID string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := c.httpClient.Do(req)
+	resp, err := httpobserve.Do(c.httpClient, req, "problem.get")
 	if err != nil {
 		return err
 	}

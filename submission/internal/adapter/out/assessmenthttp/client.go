@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/submission/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/submission/internal/httpobserve"
 )
 
 type Client struct {
@@ -29,7 +30,7 @@ func (c *Client) GetProblemIDs(ctx context.Context, assessmentID string) ([]stri
 	if err != nil {
 		return nil, err
 	}
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "assessment.get_problems")
 	if err != nil {
 		return nil, err
 	}

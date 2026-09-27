@@ -10,6 +10,7 @@ import (
 
 	"github.com/aakashloyar/elevate/evaluation/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/evaluation/internal/domain"
+	"github.com/aakashloyar/elevate/evaluation/internal/httpobserve"
 )
 
 const defaultTimeout = 5 * time.Second
@@ -36,7 +37,7 @@ func (c *Client) doGetRequest(ctx context.Context, path string, output any) erro
 	if err != nil {
 		return err
 	}
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "problem.get")
 	if err != nil {
 		return err
 	}

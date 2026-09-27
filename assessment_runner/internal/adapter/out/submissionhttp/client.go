@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/assessment_runner/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/assessment_runner/internal/httpobserve"
 )
 
 type Client struct {
@@ -59,7 +60,7 @@ func (c *Client) doGetRequest(ctx context.Context, path string, output any) erro
 	if err != nil {
 		return err
 	}
-	response, err := c.http.Do(request)
+	response, err := httpobserve.Do(c.http, request, "submission.get")
 	if err != nil {
 		return err
 	}

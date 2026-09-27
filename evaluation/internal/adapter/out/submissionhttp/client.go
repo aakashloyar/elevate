@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/evaluation/internal/domain"
+	"github.com/aakashloyar/elevate/evaluation/internal/httpobserve"
 )
 
 type Client struct {
@@ -38,7 +39,7 @@ func (c *Client) UpdateSubmissionStatus(ctx context.Context, submissionID string
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "submission.update_status")
 	if err != nil {
 		return err
 	}

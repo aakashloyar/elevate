@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/assessment/internal/httpobserve"
 )
 
 type Client struct {
@@ -23,7 +24,7 @@ func (c *Client) Exists(ctx context.Context, userID string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := c.http.Do(req)
+	resp, err := httpobserve.Do(c.http, req, "user.get")
 	if err != nil {
 		return err
 	}
