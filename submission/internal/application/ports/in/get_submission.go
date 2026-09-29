@@ -22,6 +22,7 @@ type GetSubmissionOutput struct {
 	SubmittedAt     *time.Time
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	MarkingScheme   *domain.MarkingScheme
 	Answers         []SubmissionAnswerOutput
 	Problems        []SubmissionProblemOutput
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -35,10 +36,16 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 	if input.DurationSeconds <= 0 {
 		return in.CreateSubmissionOutput{}, errors.New("duration seconds must be greater than zero")
 	}
+	if input.MarkingScheme.AssessmentID != "" && input.MarkingScheme.AssessmentID != input.AssessmentID {
+		return in.CreateSubmissionOutput{}, errors.New("marking scheme assessment id does not match assessment")
+	}
+	input.MarkingScheme.AssessmentID = input.AssessmentID
+	if err := validateMarkingScheme(input.MarkingScheme); err != nil {
+		return in.CreateSubmissionOutput{}, err
+	}
 	if err := s.userClient.Exists(ctx, input.UserID); err != nil {
 		return in.CreateSubmissionOutput{}, fmt.Errorf("user id is invalid: %w", err)
 	}
-
 	problemIDs, err := s.assessmentClient.GetProblemIDs(ctx, input.AssessmentID)
 	if err != nil {
 		return in.CreateSubmissionOutput{}, fmt.Errorf("load assessment problems: %w", err)
@@ -60,6 +67,7 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 		DurationSeconds: input.DurationSeconds,
 		CreatedAt:       now,
 		UpdatedAt:       now,
+		MarkingScheme:   &input.MarkingScheme,
 	}
 
 	drafts := make([]domain.SubmissionAnswerDraft, 0, len(problemSnapshots))
@@ -83,4 +91,18 @@ func (s *CreateSubmissionService) Execute(ctx context.Context, input in.CreateSu
 	}
 
 	return in.CreateSubmissionOutput{SubmissionID: submission.ID, CreatedAt: now.Format(time.RFC3339)}, nil
+}
+
+func validateMarkingScheme(scheme domain.MarkingScheme) error {
+	marks := []float64{
+		scheme.Single.Correct, scheme.Single.Incorrect, scheme.Single.Skipped,
+		scheme.Multiple.Correct, scheme.Multiple.Incorrect, scheme.Multiple.Skipped,
+		scheme.Numerical.Correct, scheme.Numerical.Incorrect, scheme.Numerical.Skipped,
+	}
+	for _, mark := range marks {
+		if math.IsNaN(mark) || math.IsInf(mark, 0) {
+			return errors.New("mark values must be finite numbers")
+		}
+	}
+	return nil
 }

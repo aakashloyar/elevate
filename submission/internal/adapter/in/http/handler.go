@@ -11,9 +11,10 @@ import (
 )
 
 type CreateSubmissionRequest struct {
-	AssessmentID    string `json:"assessment_id"`
-	UserID          string `json:"user_id"`
-	DurationSeconds int    `json:"duration_seconds"`
+	AssessmentID    string                `json:"assessment_id"`
+	UserID          string                `json:"user_id"`
+	DurationSeconds int                   `json:"duration_seconds"`
+	MarkingScheme   *domain.MarkingScheme `json:"marking_scheme"`
 }
 
 type CreateSubmissionResponse struct {
@@ -69,6 +70,7 @@ type GetSubmissionResponse struct {
 	SubmittedAt     *string                     `json:"submitted_at,omitempty"`
 	CreatedAt       string                      `json:"created_at"`
 	UpdatedAt       string                      `json:"updated_at"`
+	MarkingScheme   *domain.MarkingScheme       `json:"marking_scheme,omitempty"`
 	Answers         []SubmissionAnswerResponse  `json:"answers"`
 	Problems        []SubmissionProblemResponse `json:"problems"`
 }
@@ -163,7 +165,11 @@ func (h *Handler) CreateSubmission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.createSubmissionService.Execute(r.Context(), in.CreateSubmissionInput{AssessmentID: req.AssessmentID, UserID: req.UserID, DurationSeconds: req.DurationSeconds})
+	markingScheme := domain.MarkingScheme{}
+	if req.MarkingScheme != nil {
+		markingScheme = *req.MarkingScheme
+	}
+	out, err := h.createSubmissionService.Execute(r.Context(), in.CreateSubmissionInput{AssessmentID: req.AssessmentID, UserID: req.UserID, DurationSeconds: req.DurationSeconds, MarkingScheme: markingScheme})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -284,6 +290,7 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		SubmittedAt:     submittedAt,
 		CreatedAt:       out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:       out.UpdatedAt.Format(http.TimeFormat),
+		MarkingScheme:   out.MarkingScheme,
 		Answers:         answers,
 		Problems:        problems,
 	})

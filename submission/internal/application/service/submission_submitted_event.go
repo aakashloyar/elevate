@@ -37,6 +37,14 @@ func newSubmissionSubmittedMessage(topic string, submission domain.Submission, d
 			DurationSeconds: submission.DurationSeconds,
 			SubmittedAt:     submission.SubmittedAt,
 			Answers:         eventAnswers,
+			MarkingScheme:   valueOrDefaultMarkingScheme(submission.MarkingScheme),
 		},
 	}
+}
+
+func valueOrDefaultMarkingScheme(scheme *domain.MarkingScheme) domain.MarkingScheme {
+	if scheme == nil {
+		return domain.MarkingScheme{}
+	}
+	return *scheme
 }

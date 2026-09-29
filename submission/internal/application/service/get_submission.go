@@ -55,6 +55,7 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 		SubmittedAt:     submission.SubmittedAt,
 		CreatedAt:       submission.CreatedAt,
 		UpdatedAt:       submission.UpdatedAt,
+		MarkingScheme:   submission.MarkingScheme,
 		Answers:         answerOutputs,
 		Problems:        problemOutputs,
 	}, nil

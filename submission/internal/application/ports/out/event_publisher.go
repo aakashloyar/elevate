@@ -3,6 +3,8 @@ package out
 import (
 	"context"
 	"time"
+
+	"github.com/aakashloyar/elevate/submission/internal/domain"
 )
 
 type SubmissionSubmittedEvent struct {
@@ -13,6 +15,7 @@ type SubmissionSubmittedEvent struct {
 	DurationSeconds int                     `json:"duration_seconds"`
 	SubmittedAt     *time.Time              `json:"submitted_at,omitempty"`
 	Answers         []SubmissionAnswerEvent `json:"answers"`
+	MarkingScheme   domain.MarkingScheme    `json:"marking_scheme"`
 }
 
 type SubmissionSubmittedMessage struct {

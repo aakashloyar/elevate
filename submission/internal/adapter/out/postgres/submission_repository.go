@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 
 	"github.com/lib/pq"
@@ -25,6 +26,10 @@ func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domai
 		return err
 	}
 	defer tx.Rollback()
+	markingScheme, err := json.Marshal(submission.MarkingScheme)
+	if err != nil {
+		return err
+	}
 	query := `
 		INSERT INTO submissions (
 			id,
@@ -36,11 +41,12 @@ func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domai
 			expires_at,
 			submitted_at,
 			created_at,
-			updated_at
+			updated_at,
+			marking_scheme
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
-	if _, err := tx.Exec(query, submission.ID, submission.AssessmentID, submission.UserID, submission.Status, submission.StartedAt, submission.DurationSeconds, submission.ExpiresAt, submission.SubmittedAt, submission.CreatedAt, submission.UpdatedAt); err != nil {
+	if _, err := tx.Exec(query, submission.ID, submission.AssessmentID, submission.UserID, submission.Status, submission.StartedAt, submission.DurationSeconds, submission.ExpiresAt, submission.SubmittedAt, submission.CreatedAt, submission.UpdatedAt, markingScheme); err != nil {
 		return err
 	}
 	for _, draft := range drafts {
@@ -231,15 +237,22 @@ func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.
 
 func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission, []domain.SubmissionAnswerDraft, error) {
 	defer observeDB("submissions.find_by_id")()
-	submissionQuery := `SELECT id, assessment_id, user_id, status, started_at, duration_seconds, expires_at, submitted_at, created_at, updated_at FROM submissions WHERE id = $1`
+	submissionQuery := `SELECT id, assessment_id, user_id, status, started_at, duration_seconds, expires_at, submitted_at, created_at, updated_at, marking_scheme FROM submissions WHERE id = $1`
 	row := r.db.QueryRow(submissionQuery, submissionID)
 
 	var submission domain.Submission
 	var startedAt sql.NullTime
 	var submittedAt sql.NullTime
 	var expiresAt sql.NullTime
-	if err := row.Scan(&submission.ID, &submission.AssessmentID, &submission.UserID, &submission.Status, &startedAt, &submission.DurationSeconds, &expiresAt, &submittedAt, &submission.CreatedAt, &submission.UpdatedAt); err != nil {
+	var markingSchemeJSON []byte
+	if err := row.Scan(&submission.ID, &submission.AssessmentID, &submission.UserID, &submission.Status, &startedAt, &submission.DurationSeconds, &expiresAt, &submittedAt, &submission.CreatedAt, &submission.UpdatedAt, &markingSchemeJSON); err != nil {
 		return domain.Submission{}, nil, err
+	}
+	if len(markingSchemeJSON) > 0 {
+		submission.MarkingScheme = &domain.MarkingScheme{}
+		if err := json.Unmarshal(markingSchemeJSON, submission.MarkingScheme); err != nil {
+			return domain.Submission{}, nil, err
+		}
 	}
 	if startedAt.Valid {
 		submission.StartedAt = &startedAt.Time

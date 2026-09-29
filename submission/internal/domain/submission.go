@@ -32,6 +32,20 @@ type Submission struct {
 	SubmittedAt     *time.Time
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	MarkingScheme   *MarkingScheme
+}
+
+type MarkingScheme struct {
+	AssessmentID string `json:"assessment_id"`
+	Single       Marks  `json:"single"`
+	Multiple     Marks  `json:"multiple"`
+	Numerical    Marks  `json:"numerical"`
+}
+
+type Marks struct {
+	Correct   float64 `json:"correct"`
+	Incorrect float64 `json:"incorrect"`
+	Skipped   float64 `json:"skipped"`
 }
 
 type SubmissionAnswerDraft struct {

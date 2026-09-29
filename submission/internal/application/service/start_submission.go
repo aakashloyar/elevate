@@ -32,6 +32,9 @@ func (s *StartSubmissionService) Execute(ctx context.Context, input in.StartSubm
 	if !submission.Status.IsStartable() {
 		return errors.New("submission must be in CREATED state")
 	}
+	if submission.MarkingScheme == nil {
+		return errors.New("assessment marking scheme is required before starting")
+	}
 
 	startedAt := s.clock.Now()
 	expiresAt := startedAt.Add(time.Duration(submission.DurationSeconds) * time.Second)
