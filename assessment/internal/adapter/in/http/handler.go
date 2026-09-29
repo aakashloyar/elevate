@@ -10,7 +10,6 @@ import (
 
 	in "github.com/aakashloyar/elevate/assessment/internal/application/ports/in"
 	outports "github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
-	assessmentsvc "github.com/aakashloyar/elevate/assessment/internal/application/service"
 	"github.com/aakashloyar/elevate/assessment/internal/domain"
 )
 
@@ -44,10 +43,9 @@ type Handler struct {
 	getAssessmentProblemsService in.GetAssessmentProblemsService
 	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
 	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
-	createMarkingSchemeService   in.CreateAssessmentMarkingSchemeService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, createMarkingSchemeService in.CreateAssessmentMarkingSchemeService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService) *Handler {
 	return &Handler{
 		createAssessmentService:      createAssessmentService,
 		listAssessmentsService:       listAssessmentsService,
@@ -57,7 +55,6 @@ func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessme
 		getAssessmentProblemsService: getAssessmentProblemsService,
 		getMarkingSchemeService:      getMarkingSchemeService,
 		upsertMarkingSchemeService:   upsertMarkingSchemeService,
-		createMarkingSchemeService:   createMarkingSchemeService,
 	}
 }
 
@@ -298,32 +295,6 @@ func (h *Handler) PutAssessmentMarkingScheme(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponseFromRequest(assessmentID, req))
-}
-
-func (h *Handler) CreateAssessmentMarkingScheme(w http.ResponseWriter, r *http.Request, assessmentID string) {
-	var req AssessmentMarkingSchemeRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	err := h.createMarkingSchemeService.Execute(r.Context(), toUpsertAssessmentMarkingSchemeInput(assessmentID, req))
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			http.Error(w, "assessment not found", http.StatusNotFound)
-			return
-		}
-		if errors.Is(err, assessmentsvc.ErrAssessmentMarkingSchemeAlreadyExists) {
-			http.Error(w, err.Error(), http.StatusConflict)
-			return
-		}
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(toAssessmentMarkingSchemeResponseFromRequest(assessmentID, req))
 }
 

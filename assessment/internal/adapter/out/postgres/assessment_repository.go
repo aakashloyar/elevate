@@ -17,7 +17,42 @@ func NewAssessmentRepository(db *sql.DB) out.AssessmentRepository {
 	return &AssessmentRepository{db: db}
 }
 
+func (r *AssessmentRepository) SaveWithMarkingScheme(assessment domain.Assessment, markingScheme domain.AssessmentMarkingScheme) error {
+	defer observeDB("assessments.save_with_marking_scheme")()
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec(`
+		INSERT INTO assessments (id, title, description, duration_seconds, created_by, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`, assessment.ID, assessment.Title, assessment.Description, assessment.DurationSeconds, assessment.CreatedBy, assessment.CreatedAt, assessment.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(`
+		INSERT INTO assessment_marking_schemes (
+			assessment_id,
+			single_correct_marks, single_incorrect_marks, single_skipped_marks,
+			multiple_correct_marks, multiple_incorrect_marks, multiple_skipped_marks,
+			numerical_correct_marks, numerical_incorrect_marks, numerical_skipped_marks
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	`, markingScheme.AssessmentID,
+		markingScheme.Single.Correct, markingScheme.Single.Incorrect, markingScheme.Single.Skipped,
+		markingScheme.Multiple.Correct, markingScheme.Multiple.Incorrect, markingScheme.Multiple.Skipped,
+		markingScheme.Numerical.Correct, markingScheme.Numerical.Incorrect, markingScheme.Numerical.Skipped)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
 func (r *AssessmentRepository) FindAll(filters out.FindAllAssessmentFilters) ([]domain.Assessment, error) {
+	defer observeDB("assessments.find_all")()
 	query := `
 		SELECT
 			id,
@@ -82,25 +117,8 @@ func (r *AssessmentRepository) FindAll(filters out.FindAllAssessmentFilters) ([]
 	return assessments, nil
 }
 
-func (r *AssessmentRepository) Save(assessment domain.Assessment) error {
-	query := `
-		INSERT INTO assessments (
-			id,
-			title,
-			description,
-			duration_seconds,
-			created_by,
-			created_at,
-			updated_at
-		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-	`
-
-	_, err := r.db.Exec(query, assessment.ID, assessment.Title, assessment.Description, assessment.DurationSeconds, assessment.CreatedBy, assessment.CreatedAt, assessment.UpdatedAt)
-	return err
-}
-
 func (r *AssessmentRepository) FindByID(assessmentID string) (domain.Assessment, error) {
+	defer observeDB("assessments.find_by_id")()
 	query := `
 		SELECT
 			id,
@@ -125,11 +143,13 @@ func (r *AssessmentRepository) FindByID(assessmentID string) (domain.Assessment,
 }
 
 func (r *AssessmentRepository) DeleteByID(assessmentID string) error {
+	defer observeDB("assessments.delete")()
 	_, err := r.db.Exec(`DELETE FROM assessments WHERE id = $1`, assessmentID)
 	return err
 }
 
 func (r *AssessmentRepository) AddProblems(assessmentID string, problemIDs []string) error {
+	defer observeDB("assessment_problems.add")()
 	if len(problemIDs) == 0 {
 		return nil
 	}
@@ -207,6 +227,7 @@ func (r *AssessmentRepository) FindMarkingScheme(assessmentID string) (domain.As
 }
 
 func (r *AssessmentRepository) UpsertMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error {
+	defer observeDB("assessment_marking_scheme.upsert")()
 	_, err := r.db.Exec(`
 		INSERT INTO assessment_marking_schemes (
 			assessment_id,
@@ -246,6 +267,7 @@ func (r *AssessmentRepository) UpsertMarkingScheme(markingScheme domain.Assessme
 }
 
 func (r *AssessmentRepository) CreateMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error {
+	defer observeDB("assessment_marking_scheme.create")()
 	_, err := r.db.Exec(`
 		INSERT INTO assessment_marking_schemes (
 			assessment_id,

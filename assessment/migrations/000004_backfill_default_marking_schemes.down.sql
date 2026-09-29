@@ -1,0 +1,2 @@
+-- This data backfill is intentionally not reversed because values may have
+-- been customized after the migration was applied.

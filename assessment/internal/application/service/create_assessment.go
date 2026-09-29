@@ -52,9 +52,18 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 		UpdatedAt:       now,
 	}
 
-	if err := s.assessmentRepo.Save(assessment); err != nil {
+	if err := s.assessmentRepo.SaveWithMarkingScheme(assessment, defaultMarkingScheme(assessment.ID)); err != nil {
 		return in.CreateAssessmentOutput{}, err
 	}
 
 	return in.CreateAssessmentOutput{AssessmentID: assessment.ID}, nil
+}
+
+func defaultMarkingScheme(assessmentID string) domain.AssessmentMarkingScheme {
+	return domain.AssessmentMarkingScheme{
+		AssessmentID: assessmentID,
+		Single:       domain.Marks{Correct: 4, Incorrect: -1, Skipped: 0},
+		Multiple:     domain.Marks{Correct: 4, Incorrect: -2, Skipped: 0},
+		Numerical:    domain.Marks{Correct: 4, Incorrect: 0, Skipped: 0},
+	}
 }
