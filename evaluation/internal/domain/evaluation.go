@@ -23,13 +23,14 @@ const (
 
 // submission submitted event
 type SubmissionSubmitted struct {
-	SubmissionID    string     `json:"submission_id"`
-	AssessmentID    string     `json:"assessment_id"`
-	UserID          string     `json:"user_id"`
-	StartedAt       time.Time  `json:"started_at"`
-	DurationSeconds int        `json:"duration_seconds"`
-	SubmittedAt     *time.Time `json:"submitted_at,omitempty"`
-	Answers         []Answer   `json:"answers"`
+	SubmissionID    string        `json:"submission_id"`
+	AssessmentID    string        `json:"assessment_id"`
+	UserID          string        `json:"user_id"`
+	StartedAt       time.Time     `json:"started_at"`
+	DurationSeconds int           `json:"duration_seconds"`
+	SubmittedAt     *time.Time    `json:"submitted_at,omitempty"`
+	Answers         []Answer      `json:"answers"`
+	MarkingScheme   MarkingScheme `json:"marking_scheme"`
 }
 type Answer struct {
 	ProblemID string    `json:"problem_id"`

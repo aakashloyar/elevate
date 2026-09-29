@@ -69,10 +69,7 @@ func (s *EvaluateSubmissionService) Execute(ctx context.Context, submission doma
 }
 
 func (s *EvaluateSubmissionService) evaluateSubmission(ctx context.Context, submission domain.SubmissionSubmitted) (domain.Evaluation, error) {
-	scheme, err := s.assessments.GetAssessmentMarkingScheme(ctx, submission.AssessmentID)
-	if err != nil {
-		return domain.Evaluation{}, fmt.Errorf("get marking scheme: %w", err)
-	}
+	scheme := submission.MarkingScheme
 	assessmentTitle, err := s.assessments.GetAssessmentTitle(ctx, submission.AssessmentID)
 	if err != nil {
 		return domain.Evaluation{}, fmt.Errorf("get assessment title: %w", err)
