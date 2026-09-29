@@ -1,0 +1,74 @@
+submission/migrations/000003_create_submission_marking_scheme_snapshot.up.sql
+  s_8c7c13500c0009::t_bd918d2e44dfa0 1-2
+submission/internal/application/ports/in/get_submission.go
+  s_8c7c13500c0009::t_d87dd5b9301db3 25
+submission/internal/application/service/create_submission.go
+  s_8c7c13500c0009::t_387efe6a6a9fc8 7,39-41,43-45,70,95-107
+  s_8c7c13500c0009::t_c38e02d8e70497 42
+  s_8c7c13500c0009::t_c37a3efefd1b5a 108
+submission/internal/application/ports/out/event_publisher.go
+  s_8c7c13500c0009::t_8dea6861a0fb50 6-7
+  s_8c7c13500c0009::t_11d94253c11304 18
+evaluation/internal/application/service/evaluate_submission.go
+  s_8c7c13500c0009::t_8dea6861a0fb50 72
+assessment/migrations/000004_backfill_default_marking_schemes.up.sql
+  s_8c7c13500c0009::t_846461b94afc44 1-17
+submission/migrations/000003_create_submission_marking_scheme_snapshot.down.sql
+  s_8c7c13500c0009::t_bd918d2e44dfa0 1
+submission/internal/application/service/get_submission.go
+  s_8c7c13500c0009::t_d87dd5b9301db3 58
+assessment/internal/application/ports/out/assessment_repository.go
+  s_8c7c13500c0009::t_846461b94afc44 6
+assessment/cmd/server/main.go
+  s_8c7c13500c0009::t_b02aeb02e84884 57
+assessment/internal/application/service/create_assessment.go
+  s_8c7c13500c0009::t_846461b94afc44 55,61-68
+  s_8c7c13500c0009::t_a13f05a7efa60d 69
+assessment/migrations/000004_backfill_default_marking_schemes.down.sql
+  s_8c7c13500c0009::t_cb2519162cfc85 1-2
+submission/internal/adapter/out/postgres/submission_repository.go
+  s_8c7c13500c0009::t_bd918d2e44dfa0 5,29-32,47,49,240,247-248,251-256
+  s_8c7c13500c0009::t_d93ca8eef3fc30 44-45
+submission/internal/application/service/start_submission.go
+  s_8c7c13500c0009::t_cc63910c1c5808 36
+  s_8c7c13500c0009::t_aee80e5dacaa2e 35
+  s_8c7c13500c0009::t_5cfa733bdb28b8 37
+assessment/internal/adapter/out/postgres/assessment_repository.go
+  s_8c7c13500c0009::t_846461b94afc44 20-53
+  s_8c7c13500c0009::t_0735bcc849c9e4 55,121,146,152,230,270
+submission/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_3f007546d7ce87 73,293
+  s_8c7c13500c0009::t_ca512709213d6c 14-16
+  s_8c7c13500c0009::t_387efe6a6a9fc8 17,168-172
+assessment/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_b02aeb02e84884 48
+assessment/internal/application/service/upsert_assessment_marking_scheme.go
+  s_8c7c13500c0009::t_f1950279c822e3 6,11,18-39
+  s_8c7c13500c0009::t_bbdc42c8d3dc12 40
+submission/internal/application/ports/in/create_submission.go
+  s_8c7c13500c0009::t_387efe6a6a9fc8 5-6,11
+submission/internal/application/service/submission_submitted_event.go
+  s_8c7c13500c0009::t_8dea6861a0fb50 40,44-49
+  s_8c7c13500c0009::t_833d9d226ccdae 50
+evaluation/internal/domain/evaluation.go
+  s_8c7c13500c0009::t_11d94253c11304 26-32
+  s_8c7c13500c0009::t_8dea6861a0fb50 33
+submission/internal/domain/submission.go
+  s_8c7c13500c0009::t_aee80e5dacaa2e 35-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e7d859b6df3f8adf0c5ec8014463b55eb8be746a",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
