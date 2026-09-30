@@ -1,0 +1,96 @@
+submission/internal/application/ports/out/reference_clients.go
+  s_8c7c13500c0009::t_6a3dd44c5920ec 30
+user/internal/adapter/out/postgres/user_repository.go
+  s_8c7c13500c0009::t_241af5026a884b 7,16-18,20-22,27-29,31-33
+  s_8c7c13500c0009::t_de4be472953ea7 14-15,19,23-26,30,34-35
+  s_8c7c13500c0009::t_2f813a2a7224e7 36-37
+user/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_241af5026a884b 29-38,41-43,53-56,58-61,63-65
+  s_8c7c13500c0009::t_de4be472953ea7 39,44-48,51-52,57,62,66-67
+user/internal/application/ports/in/get_users_batch.go
+  s_8c7c13500c0009::t_de4be472953ea7 1-20
+problem/internal/application/ports/out/problem_repository.go
+  s_8c7c13500c0009::t_091c33dfb2d1e3 19
+problem/internal/application/ports/in/list_problems.go
+  s_8c7c13500c0009::t_241af5026a884b 25-26,28-33
+  s_8c7c13500c0009::t_091c33dfb2d1e3 27
+assessment/internal/application/ports/out/problem_client.go
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 47
+submission/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_241af5026a884b 173
+  s_8c7c13500c0009::t_fe158ef9075491 145-162
+  s_8c7c13500c0009::t_f659384d2d2a9b 6
+  s_8c7c13500c0009::t_6a3dd44c5920ec 34,168-169,172
+submission/internal/adapter/out/postgres/submission_repository.go
+  s_8c7c13500c0009::t_7b7f3c06fc8fc4 6,302,304,309-311,339,341,345-347,375-385
+  s_8c7c13500c0009::t_d72791b4f8b3ff 386-387
+assessment/internal/application/service/list_assessments.go
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 15-16,31,35,47
+  s_8c7c13500c0009::t_241af5026a884b 12,32-34,36-38
+submission/internal/application/ports/out/submission_repository.go
+  s_8c7c13500c0009::t_fe158ef9075491 15-16
+submission/internal/application/service/list_submissions.go
+  s_8c7c13500c0009::t_12b2539a01d744 21
+  s_8c7c13500c0009::t_fe158ef9075491 25,27
+  s_8c7c13500c0009::t_6a3dd44c5920ec 14,17-18,44
+  s_8c7c13500c0009::t_241af5026a884b 32-43
+submission/internal/application/ports/in/list_submissions.go
+  s_8c7c13500c0009::t_6a3dd44c5920ec 16-18
+  s_8c7c13500c0009::t_241af5026a884b 19-21
+  s_8c7c13500c0009::t_fe158ef9075491 11-12
+user/internal/application/service/get_users_batch.go
+  s_8c7c13500c0009::t_de4be472953ea7 1-9,11-17,21,25-26
+  s_8c7c13500c0009::t_241af5026a884b 10,18-20,22-24
+assessment/internal/application/ports/in/get_assessment.go
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 18
+assessment/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_241af5026a884b 41-51,53-56,58-72
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 5,38-40,52,57,73
+  s_8c7c13500c0009::t_6c9496adcc9328 74
+problem/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_091c33dfb2d1e3 261
+  s_8c7c13500c0009::t_241af5026a884b 85-93
+submission/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_241af5026a884b 41-52,54-74
+  s_8c7c13500c0009::t_6a3dd44c5920ec 5,40,53
+  s_8c7c13500c0009::t_0cd5943564a8c4 75-76
+problem/internal/application/service/list_problems.go
+  s_8c7c13500c0009::t_091c33dfb2d1e3 16-17,46,50,59
+  s_8c7c13500c0009::t_241af5026a884b 13,47-49,51-53,57-58,60-65
+user/cmd/server/main.go
+  s_8c7c13500c0009::t_de4be472953ea7 47-48
+submission/cmd/server/main.go
+  s_8c7c13500c0009::t_6a3dd44c5920ec 64
+user/internal/application/ports/out/user_repository.go
+  s_8c7c13500c0009::t_de4be472953ea7 11
+user/internal/adapter/in/http/routes.go
+  s_8c7c13500c0009::t_de4be472953ea7 25,30-31
+  s_8c7c13500c0009::t_241af5026a884b 26-29
+assessment/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_12b2539a01d744 33
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 173
+assessment/cmd/server/main.go
+  s_8c7c13500c0009::t_33c9ebd3d0ed19 47
+problem/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_091c33dfb2d1e3 5,39-40,53
+  s_8c7c13500c0009::t_241af5026a884b 41-52,54-74
+  s_8c7c13500c0009::t_cae4d461fbf29c 75
+problem/cmd/server/main.go
+  s_8c7c13500c0009::t_091c33dfb2d1e3 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9ea700785b082247fd49864e744f1408af0a119d",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
