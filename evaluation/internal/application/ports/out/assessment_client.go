@@ -8,6 +8,7 @@ import (
 
 type AssessmentClient interface {
 	GetAssessmentTitle(ctx context.Context, assessmentID string) (string, error)
+	GetAssessmentTitles(ctx context.Context, assessmentIDs []string) (map[string]string, error)
 	GetAssessmentMarkingScheme(ctx context.Context, assessmentID string) (domain.MarkingScheme, error)
 	GetAssessmentProblemIDs(ctx context.Context, assessmentID string) ([]string, error)
 }

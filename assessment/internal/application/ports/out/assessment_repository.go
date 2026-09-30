@@ -6,6 +6,7 @@ type AssessmentRepository interface {
 	SaveWithMarkingScheme(assessment domain.Assessment, markingScheme domain.AssessmentMarkingScheme) error
 	FindAll(filters FindAllAssessmentFilters) ([]domain.Assessment, error)
 	FindByID(assessmentID string) (domain.Assessment, error)
+	FindByIDs(assessmentIDs []string) ([]domain.Assessment, error)
 	DeleteByID(assessmentID string) error
 	AddProblems(assessmentID string, problemIDs []string) error
 	FindProblemIDs(assessmentID string) ([]string, error)

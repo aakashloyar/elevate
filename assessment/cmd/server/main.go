@@ -53,8 +53,9 @@ func main() {
 	addProblemsBatchService := assessmentsvc.NewAddProblemsBatchService(assessmentRepo)
 	getMarkingSchemeService := assessmentsvc.NewGetAssessmentMarkingSchemeService(assessmentRepo)
 	upsertMarkingSchemeService := assessmentsvc.NewUpsertAssessmentMarkingSchemeService(assessmentRepo)
+	getAssessmentsBatchService := assessmentsvc.NewGetAssessmentsBatchService(assessmentRepo)
 
-	handler := httpassessment.NewHandler(createAssessmentService, listAssessmentsService, getAssessmentService, deleteAssessmentService, addProblemService, getAssessmentProblemsService, getMarkingSchemeService, upsertMarkingSchemeService)
+	handler := httpassessment.NewHandler(createAssessmentService, listAssessmentsService, getAssessmentService, deleteAssessmentService, addProblemService, getAssessmentProblemsService, getMarkingSchemeService, upsertMarkingSchemeService, getAssessmentsBatchService)
 
 	mux := http.NewServeMux()
 	httpassessment.RegisterRoutes(mux, handler)

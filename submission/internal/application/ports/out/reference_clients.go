@@ -23,6 +23,7 @@ type ProblemClient interface {
 
 type AssessmentClient interface {
 	GetProblemIDs(ctx context.Context, assessmentID string) ([]string, error)
+	GetAssessmentTitles(ctx context.Context, assessmentIDs []string) (map[string]string, error)
 }
 
 type UserClient interface {

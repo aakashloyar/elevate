@@ -30,6 +30,7 @@ type ListSubmissionsResponse struct {
 type SubmissionSummaryResponse struct {
 	ID              string  `json:"id"`
 	AssessmentID    string  `json:"assessment_id"`
+	AssessmentTitle string  `json:"assessment_title,omitempty"`
 	UserID          string  `json:"user_id"`
 	UserName        string  `json:"user_name,omitempty"`
 	Status          string  `json:"status"`
@@ -169,8 +170,9 @@ func (h *Handler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
 		submission := item.Submission
 		items = append(items, SubmissionSummaryResponse{
 			ID: submission.ID, AssessmentID: submission.AssessmentID, UserID: submission.UserID,
-			UserName: item.UserName,
-			Status:   string(submission.Status), DurationSeconds: submission.DurationSeconds,
+			UserName:        item.UserName,
+			AssessmentTitle: item.AssessmentTitle,
+			Status:          string(submission.Status), DurationSeconds: submission.DurationSeconds,
 			StartedAt: formatOptionalTime(submission.StartedAt), ExpiresAt: formatOptionalTime(submission.ExpiresAt),
 			SubmittedAt: formatOptionalTime(submission.SubmittedAt), CreatedAt: submission.CreatedAt.Format(http.TimeFormat),
 		})

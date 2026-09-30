@@ -17,8 +17,9 @@ type ListSubmissionsOutput struct {
 }
 
 type ListSubmissionItem struct {
-	Submission domain.Submission
-	UserName   string
+	Submission      domain.Submission
+	UserName        string
+	AssessmentTitle string
 }
 
 type ListSubmissionsService interface {

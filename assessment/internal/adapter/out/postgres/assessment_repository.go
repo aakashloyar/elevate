@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"github.com/lib/pq"
 	"strings"
 
 	"github.com/aakashloyar/elevate/assessment/internal/application/ports/out"
@@ -140,6 +141,30 @@ func (r *AssessmentRepository) FindByID(assessmentID string) (domain.Assessment,
 	}
 
 	return assessment, nil
+}
+
+func (r *AssessmentRepository) FindByIDs(assessmentIDs []string) ([]domain.Assessment, error) {
+	defer observeDB("assessments.find_by_ids")()
+	if len(assessmentIDs) == 0 {
+		return []domain.Assessment{}, nil
+	}
+	rows, err := r.db.Query(`SELECT id, title, description, duration_seconds, created_by, created_at, updated_at FROM assessments WHERE id = ANY($1) ORDER BY id`, pq.Array(assessmentIDs))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]domain.Assessment, 0, len(assessmentIDs))
+	for rows.Next() {
+		var assessment domain.Assessment
+		if err := rows.Scan(&assessment.ID, &assessment.Title, &assessment.Description, &assessment.DurationSeconds, &assessment.CreatedBy, &assessment.CreatedAt, &assessment.UpdatedAt); err != nil {
+			return nil, err
+		}
+		result = append(result, assessment)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (r *AssessmentRepository) DeleteByID(assessmentID string) error {

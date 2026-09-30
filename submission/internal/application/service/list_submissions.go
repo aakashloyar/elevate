@@ -10,12 +10,13 @@ import (
 )
 
 type ListSubmissionsService struct {
-	repository out.SubmissionRepository
-	userClient out.UserClient
+	repository       out.SubmissionRepository
+	userClient       out.UserClient
+	assessmentClient out.AssessmentClient
 }
 
-func NewListSubmissionsService(repository out.SubmissionRepository, userClient out.UserClient) in.ListSubmissionsService {
-	return &ListSubmissionsService{repository: repository, userClient: userClient}
+func NewListSubmissionsService(repository out.SubmissionRepository, userClient out.UserClient, assessmentClient out.AssessmentClient) in.ListSubmissionsService {
+	return &ListSubmissionsService{repository: repository, userClient: userClient, assessmentClient: assessmentClient}
 }
 
 func (s *ListSubmissionsService) Execute(ctx context.Context, input in.ListSubmissionsInput) (in.ListSubmissionsOutput, error) {
@@ -37,9 +38,17 @@ func (s *ListSubmissionsService) Execute(ctx context.Context, input in.ListSubmi
 	if err != nil {
 		return in.ListSubmissionsOutput{}, err
 	}
+	assessmentIDs := make([]string, 0, len(submissions))
+	for _, submission := range submissions {
+		assessmentIDs = append(assessmentIDs, submission.AssessmentID)
+	}
+	assessmentTitles, err := s.assessmentClient.GetAssessmentTitles(ctx, assessmentIDs)
+	if err != nil {
+		return in.ListSubmissionsOutput{}, err
+	}
 	items := make([]in.ListSubmissionItem, 0, len(submissions))
 	for _, submission := range submissions {
-		items = append(items, in.ListSubmissionItem{Submission: submission, UserName: usernames[submission.UserID]})
+		items = append(items, in.ListSubmissionItem{Submission: submission, UserName: usernames[submission.UserID], AssessmentTitle: assessmentTitles[submission.AssessmentID]})
 	}
 	return in.ListSubmissionsOutput{Submissions: items}, nil
 }

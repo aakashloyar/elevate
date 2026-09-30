@@ -44,9 +44,10 @@ type Handler struct {
 	getAssessmentProblemsService in.GetAssessmentProblemsService
 	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
 	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
+	getAssessmentsBatchService   in.GetAssessmentsBatchService
 }
 
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService) *Handler {
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, getAssessmentsBatchService in.GetAssessmentsBatchService) *Handler {
 	return &Handler{
 		createAssessmentService:      createAssessmentService,
 		listAssessmentsService:       listAssessmentsService,
@@ -56,7 +57,27 @@ func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessme
 		getAssessmentProblemsService: getAssessmentProblemsService,
 		getMarkingSchemeService:      getMarkingSchemeService,
 		upsertMarkingSchemeService:   upsertMarkingSchemeService,
+		getAssessmentsBatchService:   getAssessmentsBatchService,
 	}
+}
+
+func (h *Handler) GetAssessmentsBatch(w http.ResponseWriter, r *http.Request) {
+	var req GetAssessmentsBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	out, err := h.getAssessmentsBatchService.Execute(r.Context(), in.GetAssessmentsBatchInput{AssessmentIDs: req.AssessmentIDs})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	items := make([]AssessmentSummaryResponse, 0, len(out.Assessments))
+	for _, assessment := range out.Assessments {
+		items = append(items, AssessmentSummaryResponse{ID: assessment.ID, Title: assessment.Title})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(GetAssessmentsBatchResponse{Assessments: items})
 }
 
 type ListAssessmentsResponse struct {
@@ -65,6 +86,19 @@ type ListAssessmentsResponse struct {
 
 type GetAssessmentProblemsResponse struct {
 	ProblemIDs []string `json:"problem_ids"`
+}
+
+type GetAssessmentsBatchRequest struct {
+	AssessmentIDs []string `json:"assessment_ids"`
+}
+
+type AssessmentSummaryResponse struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+}
+
+type GetAssessmentsBatchResponse struct {
+	Assessments []AssessmentSummaryResponse `json:"assessments"`
 }
 
 type AddProblemRequest struct {
