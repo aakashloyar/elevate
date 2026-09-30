@@ -45,7 +45,7 @@ func main() {
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	createProblemService := problemservice.NewCreateProblemService(problemRepo, userClient, idGen, clock)
 	getProblemService := problemservice.NewGetProblemService(problemRepo)
-	listProblemsService := problemservice.NewListProblemsService(problemRepo)
+	listProblemsService := problemservice.NewListProblemsService(problemRepo, userClient)
 	updateProblemService := problemservice.NewUpdateProblemService(problemRepo, userClient, idGen, clock)
 	deleteProblemService := problemservice.NewDeleteProblemService(problemRepo)
 

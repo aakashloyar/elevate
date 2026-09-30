@@ -10,10 +10,11 @@ import (
 
 type ListProblemsService struct {
 	problemRepo out.ProblemRepository
+	userClient  out.UserClient
 }
 
-func NewListProblemsService(problemRepo out.ProblemRepository) in.ListProblemsService {
-	return &ListProblemsService{problemRepo: problemRepo}
+func NewListProblemsService(problemRepo out.ProblemRepository, userClient out.UserClient) in.ListProblemsService {
+	return &ListProblemsService{problemRepo: problemRepo, userClient: userClient}
 }
 
 func (s *ListProblemsService) Execute(ctx context.Context, input in.ListProblemsInput) (in.ListProblemsOutput, error) {
@@ -42,16 +43,26 @@ func (s *ListProblemsService) Execute(ctx context.Context, input in.ListProblems
 		return in.ListProblemsOutput{}, err
 	}
 
+	userIDs := make([]string, 0, len(problems))
+	for _, p := range problems {
+		userIDs = append(userIDs, p.CreatedBy)
+	}
+	usernames, err := s.userClient.GetUsernames(ctx, userIDs)
+	if err != nil {
+		return in.ListProblemsOutput{}, err
+	}
 	items := make([]in.ListProblemItem, 0, len(problems))
 	for _, p := range problems {
 		items = append(items, in.ListProblemItem{
-			ID:         p.ID,
-			Title:      p.Title,
-			Type:       p.Type,
-			Difficulty: p.Difficulty,
-			SourceType: p.SourceType,
-			Tags:       p.Tags,
-			CreatedAt:  p.CreatedAt.Format(time.RFC3339),
+			ID:            p.ID,
+			CreatedBy:     p.CreatedBy,
+			CreatedByName: usernames[p.CreatedBy],
+			Title:         p.Title,
+			Type:          p.Type,
+			Difficulty:    p.Difficulty,
+			SourceType:    p.SourceType,
+			Tags:          p.Tags,
+			CreatedAt:     p.CreatedAt.Format(time.RFC3339),
 		})
 	}
 

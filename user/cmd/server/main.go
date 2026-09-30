@@ -44,7 +44,8 @@ func main() {
 	createUserService := usersvc.NewCreateUserService(userRepo, idGen, clock)
 	getUserService := usersvc.NewGetUserService(userRepo)
 	deleteUserService := usersvc.NewDeleteUserService(userRepo)
-	handler := httpuser.NewHandler(createUserService, getUserService, deleteUserService)
+	getUsersBatchService := usersvc.NewGetUsersBatchService(userRepo)
+	handler := httpuser.NewHandler(createUserService, getUserService, deleteUserService, getUsersBatchService)
 
 	mux := http.NewServeMux()
 	httpuser.RegisterRoutes(mux, handler)

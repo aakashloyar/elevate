@@ -16,4 +16,5 @@ type ProblemRepository interface {
 
 type UserClient interface {
 	Exists(ctx context.Context, userID string) error
+	GetUsernames(ctx context.Context, userIDs []string) (map[string]string, error)
 }

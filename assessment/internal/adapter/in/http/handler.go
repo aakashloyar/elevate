@@ -30,6 +30,7 @@ type GetAssessmentResponse struct {
 	Description     string `json:"description"`
 	DurationSeconds int    `json:"duration_seconds"`
 	CreatedBy       string `json:"created_by"`
+	CreatedByName   string `json:"created_by_name,omitempty"`
 	CreatedAt       string `json:"created_at"`
 	UpdatedAt       string `json:"updated_at"`
 }
@@ -169,6 +170,7 @@ func (h *Handler) ListAssessments(w http.ResponseWriter, r *http.Request) {
 			Description:     assessment.Description,
 			DurationSeconds: assessment.DurationSeconds,
 			CreatedBy:       assessment.CreatedBy,
+			CreatedByName:   assessment.CreatedByName,
 			CreatedAt:       assessment.CreatedAt.Format(http.TimeFormat),
 			UpdatedAt:       assessment.UpdatedAt.Format(http.TimeFormat),
 		})

@@ -82,13 +82,15 @@ type ListProblemsResponse struct {
 }
 
 type ListProblemItemResponse struct {
-	ID         string             `json:"id"`
-	Title      string             `json:"title"`
-	Type       domain.ProblemType `json:"type"`
-	Difficulty domain.Difficulty  `json:"difficulty"`
-	SourceType domain.SourceType  `json:"source_type"`
-	Tags       []string           `json:"tags"`
-	CreatedAt  string             `json:"created_at"`
+	ID            string             `json:"id"`
+	CreatedBy     string             `json:"created_by"`
+	CreatedByName string             `json:"created_by_name,omitempty"`
+	Title         string             `json:"title"`
+	Type          domain.ProblemType `json:"type"`
+	Difficulty    domain.Difficulty  `json:"difficulty"`
+	SourceType    domain.SourceType  `json:"source_type"`
+	Tags          []string           `json:"tags"`
+	CreatedAt     string             `json:"created_at"`
 }
 
 type Handler struct {
@@ -256,7 +258,7 @@ func (h *Handler) ListProblems(w http.ResponseWriter, r *http.Request) {
 
 	items := make([]ListProblemItemResponse, 0, len(out.Problems))
 	for _, item := range out.Problems {
-		items = append(items, ListProblemItemResponse{ID: item.ID, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, SourceType: item.SourceType, Tags: item.Tags, CreatedAt: item.CreatedAt})
+		items = append(items, ListProblemItemResponse{ID: item.ID, CreatedBy: item.CreatedBy, CreatedByName: item.CreatedByName, Title: item.Title, Type: item.Type, Difficulty: item.Difficulty, SourceType: item.SourceType, Tags: item.Tags, CreatedAt: item.CreatedAt})
 	}
 
 	w.Header().Set("Content-Type", "application/json")

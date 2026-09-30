@@ -8,10 +8,17 @@ import (
 
 type ListSubmissionsInput struct {
 	UserID string
+	Limit  *int
+	Offset *int
 }
 
 type ListSubmissionsOutput struct {
-	Submissions []domain.Submission
+	Submissions []ListSubmissionItem
+}
+
+type ListSubmissionItem struct {
+	Submission domain.Submission
+	UserName   string
 }
 
 type ListSubmissionsService interface {

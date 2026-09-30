@@ -22,13 +22,15 @@ type ListProblemsOutput struct {
 }
 
 type ListProblemItem struct {
-	ID         string
-	Title      string
-	Type       domain.ProblemType
-	Difficulty domain.Difficulty
-	SourceType domain.SourceType
-	Tags       []string
-	CreatedAt  string
+	ID            string
+	CreatedBy     string
+	CreatedByName string
+	Title         string
+	Type          domain.ProblemType
+	Difficulty    domain.Difficulty
+	SourceType    domain.SourceType
+	Tags          []string
+	CreatedAt     string
 }
 
 type ListProblemsService interface {

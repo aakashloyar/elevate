@@ -22,6 +22,13 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	mux.HandleFunc("/users/batch", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		h.GetUsersBatch(w, r)
+	})
 
 	mux.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/users/")

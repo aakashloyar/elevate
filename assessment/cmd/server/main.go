@@ -44,7 +44,7 @@ func main() {
 
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, userClient, idGen, clock)
-	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo)
+	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo, userClient)
 	getAssessmentService := assessmentsvc.NewGetAssessmentService(assessmentRepo)
 	deleteAssessmentService := assessmentsvc.NewDeleteAssessmentService(assessmentRepo)
 	problemClient := problemhttp.NewClient(config.App.Services.ProblemServiceURL)

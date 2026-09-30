@@ -26,14 +26,45 @@ type GetUserResponse struct {
 
 type DeleteUserResponse struct{}
 
-type Handler struct {
-	createUserService in.CreateUserService
-	getUserService    in.GetUserService
-	deleteUserService in.DeleteUserService
+type GetUsersBatchRequest struct {
+	UserIDs []string `json:"user_ids"`
+}
+type UserSummaryResponse struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+}
+type GetUsersBatchResponse struct {
+	Users []UserSummaryResponse `json:"users"`
 }
 
-func NewHandler(createUserService in.CreateUserService, getUserService in.GetUserService, deleteUserService in.DeleteUserService) *Handler {
-	return &Handler{createUserService: createUserService, getUserService: getUserService, deleteUserService: deleteUserService}
+type Handler struct {
+	createUserService    in.CreateUserService
+	getUserService       in.GetUserService
+	deleteUserService    in.DeleteUserService
+	getUsersBatchService in.GetUsersBatchService
+}
+
+func NewHandler(createUserService in.CreateUserService, getUserService in.GetUserService, deleteUserService in.DeleteUserService, getUsersBatchService in.GetUsersBatchService) *Handler {
+	return &Handler{createUserService: createUserService, getUserService: getUserService, deleteUserService: deleteUserService, getUsersBatchService: getUsersBatchService}
+}
+
+func (h *Handler) GetUsersBatch(w http.ResponseWriter, r *http.Request) {
+	var req GetUsersBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	out, err := h.getUsersBatchService.Execute(r.Context(), in.GetUsersBatchInput{UserIDs: req.UserIDs})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	users := make([]UserSummaryResponse, 0, len(out.Users))
+	for _, user := range out.Users {
+		users = append(users, UserSummaryResponse{ID: user.ID, Username: user.Username})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(GetUsersBatchResponse{Users: users})
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {

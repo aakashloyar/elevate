@@ -15,6 +15,7 @@ type GetAssessmentOutput struct {
 	Description     string
 	DurationSeconds int
 	CreatedBy       string
+	CreatedByName   string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 }

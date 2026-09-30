@@ -61,7 +61,7 @@ func main() {
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
 	createSubmissionService := submissionservice.NewCreateSubmissionService(submissionRepo, problemClient, assessmentClient, userClient, idGen, clock)
-	listSubmissionsService := submissionservice.NewListSubmissionsService(submissionRepo)
+	listSubmissionsService := submissionservice.NewListSubmissionsService(submissionRepo, userClient)
 	startSubmissionService := submissionservice.NewStartSubmissionService(submissionRepo, clock)
 	saveAnswerService := submissionservice.NewSaveAnswerService(submissionRepo, clock)
 	saveAnswerBatchService := submissionservice.NewSaveAnswerBatchService(submissionRepo, clock)

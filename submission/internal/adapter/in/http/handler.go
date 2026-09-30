@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,6 +31,7 @@ type SubmissionSummaryResponse struct {
 	ID              string  `json:"id"`
 	AssessmentID    string  `json:"assessment_id"`
 	UserID          string  `json:"user_id"`
+	UserName        string  `json:"user_name,omitempty"`
 	Status          string  `json:"status"`
 	DurationSeconds int     `json:"duration_seconds"`
 	StartedAt       *string `json:"started_at,omitempty"`
@@ -140,16 +142,35 @@ func NewHandler(createSubmissionService in.CreateSubmissionService, listSubmissi
 }
 
 func (h *Handler) ListSubmissions(w http.ResponseWriter, r *http.Request) {
-	out, err := h.listSubmissionsService.Execute(r.Context(), in.ListSubmissionsInput{UserID: r.URL.Query().Get("user_id")})
+	input := in.ListSubmissionsInput{UserID: r.URL.Query().Get("user_id")}
+	if value := strings.TrimSpace(r.URL.Query().Get("limit")); value != "" {
+		limit, err := strconv.Atoi(value)
+		if err != nil || limit < 0 {
+			http.Error(w, "invalid limit", http.StatusBadRequest)
+			return
+		}
+		input.Limit = &limit
+	}
+	if value := strings.TrimSpace(r.URL.Query().Get("offset")); value != "" {
+		offset, err := strconv.Atoi(value)
+		if err != nil || offset < 0 {
+			http.Error(w, "invalid offset", http.StatusBadRequest)
+			return
+		}
+		input.Offset = &offset
+	}
+	out, err := h.listSubmissionsService.Execute(r.Context(), input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	items := make([]SubmissionSummaryResponse, 0, len(out.Submissions))
-	for _, submission := range out.Submissions {
+	for _, item := range out.Submissions {
+		submission := item.Submission
 		items = append(items, SubmissionSummaryResponse{
 			ID: submission.ID, AssessmentID: submission.AssessmentID, UserID: submission.UserID,
-			Status: string(submission.Status), DurationSeconds: submission.DurationSeconds,
+			UserName: item.UserName,
+			Status:   string(submission.Status), DurationSeconds: submission.DurationSeconds,
 			StartedAt: formatOptionalTime(submission.StartedAt), ExpiresAt: formatOptionalTime(submission.ExpiresAt),
 			SubmittedAt: formatOptionalTime(submission.SubmittedAt), CreatedAt: submission.CreatedAt.Format(http.TimeFormat),
 		})

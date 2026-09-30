@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/lib/pq"
@@ -298,14 +299,16 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	return submission, drafts, nil
 }
 
-func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission, error) {
+func (r *SubmissionRepository) ListByUserID(userID string, limit, offset *int) ([]domain.Submission, error) {
 	defer observeDB("submissions.list_by_user_id")()
-	rows, err := r.db.Query(`
+	query := `
 		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
 		       expires_at, submitted_at, created_at, updated_at
 		FROM submissions
 		WHERE user_id = $1
-		ORDER BY created_at DESC`, userID)
+		ORDER BY created_at DESC`
+	query, args := withPagination(query, []any{userID}, 2, limit, offset)
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -333,13 +336,15 @@ func (r *SubmissionRepository) ListByUserID(userID string) ([]domain.Submission,
 	return submissions, rows.Err()
 }
 
-func (r *SubmissionRepository) ListAll() ([]domain.Submission, error) {
+func (r *SubmissionRepository) ListAll(limit, offset *int) ([]domain.Submission, error) {
 	defer observeDB("submissions.list_all")()
-	rows, err := r.db.Query(`
+	query := `
 		SELECT id, assessment_id, user_id, status, started_at, duration_seconds,
 		       expires_at, submitted_at, created_at, updated_at
 		FROM submissions
-		ORDER BY created_at DESC`)
+		ORDER BY created_at DESC`
+	query, args := withPagination(query, nil, 1, limit, offset)
+	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -365,6 +370,19 @@ func (r *SubmissionRepository) ListAll() ([]domain.Submission, error) {
 		submissions = append(submissions, submission)
 	}
 	return submissions, rows.Err()
+}
+
+func withPagination(query string, args []any, nextArg int, limit, offset *int) (string, []any) {
+	if limit != nil {
+		query += fmt.Sprintf(" LIMIT $%d", nextArg)
+		args = append(args, *limit)
+		nextArg++
+	}
+	if offset != nil {
+		query += fmt.Sprintf(" OFFSET $%d", nextArg)
+		args = append(args, *offset)
+	}
+	return query, args
 }
 
 func (r *SubmissionRepository) FindStatus(submissionID string) (domain.SubmissionStatus, *time.Time, error) {

@@ -9,10 +9,11 @@ import (
 
 type ListAssessmentsService struct {
 	assessmentRepo out.AssessmentRepository
+	userClient     out.UserClient
 }
 
-func NewListAssessmentsService(assessmentRepo out.AssessmentRepository) in.ListAssessmentsService {
-	return &ListAssessmentsService{assessmentRepo: assessmentRepo}
+func NewListAssessmentsService(assessmentRepo out.AssessmentRepository, userClient out.UserClient) in.ListAssessmentsService {
+	return &ListAssessmentsService{assessmentRepo: assessmentRepo, userClient: userClient}
 }
 
 func (s *ListAssessmentsService) Execute(ctx context.Context, input in.ListAssessmentsInput) (in.ListAssessmentsOutput, error) {
@@ -27,6 +28,14 @@ func (s *ListAssessmentsService) Execute(ctx context.Context, input in.ListAsses
 		return in.ListAssessmentsOutput{}, err
 	}
 
+	userIDs := make([]string, 0, len(assessments))
+	for _, assessment := range assessments {
+		userIDs = append(userIDs, assessment.CreatedBy)
+	}
+	usernames, err := s.userClient.GetUsernames(ctx, userIDs)
+	if err != nil {
+		return in.ListAssessmentsOutput{}, err
+	}
 	outputs := make([]in.GetAssessmentOutput, 0, len(assessments))
 	for _, assessment := range assessments {
 		outputs = append(outputs, in.GetAssessmentOutput{
@@ -35,6 +44,7 @@ func (s *ListAssessmentsService) Execute(ctx context.Context, input in.ListAsses
 			Description:     assessment.Description,
 			DurationSeconds: assessment.DurationSeconds,
 			CreatedBy:       assessment.CreatedBy,
+			CreatedByName:   usernames[assessment.CreatedBy],
 			CreatedAt:       assessment.CreatedAt,
 			UpdatedAt:       assessment.UpdatedAt,
 		})
