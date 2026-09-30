@@ -1,0 +1,64 @@
+submission/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_2e6e2dc302d263 30,55,68
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 24-29,56-67,69-85
+  s_8c7c13500c0009::t_f5761ffdefedac 86
+evaluation/internal/application/ports/out/assessment_client.go
+  s_8c7c13500c0009::t_113fa517d39f0d 11
+assessment/internal/application/service/get_assessments_batch.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 9-13,15-22
+  s_8c7c13500c0009::t_b04bcd3d3aa86b 1-8,14,23-24
+submission/cmd/server/main.go
+  s_8c7c13500c0009::t_2e6e2dc302d263 64
+submission/internal/application/ports/out/reference_clients.go
+  s_8c7c13500c0009::t_2e6e2dc302d263 26
+evaluation/internal/adapter/out/assessmenthttp/client.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 31-36,51-62,64-80
+  s_8c7c13500c0009::t_113fa517d39f0d 37,50,63
+  s_8c7c13500c0009::t_e3864ab2c6f952 81
+submission/internal/application/ports/in/list_submissions.go
+  s_8c7c13500c0009::t_2e6e2dc302d263 22
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 20-21
+evaluation/internal/application/service/evaluate_submission.go
+  s_8c7c13500c0009::t_113fa517d39f0d 73,77
+assessment/cmd/server/main.go
+  s_8c7c13500c0009::t_a9788e9e01c5a1 56,58
+assessment/internal/application/ports/in/get_assessments_batch.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 5-13
+  s_8c7c13500c0009::t_b04bcd3d3aa86b 1-4
+assessment/internal/application/ports/out/assessment_repository.go
+  s_8c7c13500c0009::t_b04bcd3d3aa86b 9
+submission/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 173,175
+  s_8c7c13500c0009::t_2e6e2dc302d263 33,174
+assessment/internal/adapter/out/postgres/assessment_repository.go
+  s_8c7c13500c0009::t_d1adc5449a8cc4 146-169
+  s_8c7c13500c0009::t_b04bcd3d3aa86b 6
+assessment/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_56e7584798d5da 47
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 66-69,71-74,76-78,96
+  s_8c7c13500c0009::t_0040ecb0374ab3 81,91-95,97-103
+  s_8c7c13500c0009::t_981cc52d8fe4c3 50,60,64-65,70,75,79-80
+  s_8c7c13500c0009::t_b05cc42b8971c0 82
+submission/internal/application/service/list_submissions.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 13-14,41-44,46-48
+  s_8c7c13500c0009::t_2e6e2dc302d263 15,18-19,45,51
+assessment/internal/adapter/in/http/routes.go
+  s_8c7c13500c0009::t_11c8b1ec9fb86c 28-31
+  s_8c7c13500c0009::t_a9788e9e01c5a1 27,32-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b2da1758c90e5eccce36f87a182d21dd86e0623c",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
