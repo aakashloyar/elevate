@@ -5,8 +5,8 @@ RUN_DIR := $(ROOT_DIR)/.run
 PID_DIR := $(RUN_DIR)/pids
 LOG_DIR := $(RUN_DIR)/logs
 
-SERVICES := user assessment problem submission evaluation assessment_runner problem_generation
-PORTS := 8081 8082 8083 8084 8085 8086 8087
+SERVICES := user assessment problem submission evaluation assessment_runner problem_generation auth notification
+PORTS := 8081 8082 8083 8084 8085 8086 8087 8088 8089
 
 .PHONY: run stop
 
