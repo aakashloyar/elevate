@@ -1,0 +1,103 @@
+auth/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_3cdfbea469465b 51
+  s_8c7c13500c0009::t_4b4e0cce07cac6 6-7,10-12,14-16
+  s_8c7c13500c0009::t_9641cffd7638c4 1-2
+  s_8c7c13500c0009::t_0161d82df3ec74 18,22-28,30-34,36-37,40-46,50,55,62,65-66,70,77,80-81,85,92-97
+  s_8c7c13500c0009::t_82d2733738239b 52,57,67,72,82,87
+  s_8c7c13500c0009::t_2519e4ed4b0f34 60-61,75-76,91
+  s_8c7c13500c0009::t_773235f156d14e 3-5,8-9,13,17,19-21,29,35,38-39,47-49,53-54,56,58-59,63-64,68-69,71,73-74,78-79,83-84,86,88-90,98-102
+auth/internal/httpobserve/httpobserve.go
+  s_8c7c13500c0009::t_da7a918000cb1e 1-18
+  s_8c7c13500c0009::t_48cec2de944697 19-37
+auth/token/token.go
+  s_8c7c13500c0009::t_753057aedfc85a 1-19
+  s_8c7c13500c0009::t_c3936d21a7c20e 20-22
+auth/migrations/000002_create_email_otps.down.sql
+  s_8c7c13500c0009::t_823141f7bd3bab 1
+auth/internal/adapter/in/http/routes.go
+  s_8c7c13500c0009::t_8d8c71174cf1c5 8,15,22
+  s_8c7c13500c0009::t_37e078de7a13af 1,3
+  s_8c7c13500c0009::t_82d2733738239b 9,16,23
+  s_8c7c13500c0009::t_773235f156d14e 21,24-27
+  s_8c7c13500c0009::t_9641cffd7638c4 2,4-7,10-14,17-20,28
+auth/internal/adapter/out/postgres/config.go
+  s_8c7c13500c0009::t_86f41d9b83fcce 2-12
+  s_8c7c13500c0009::t_37e078de7a13af 1
+auth/migrations/000001_create_credentials.down.sql
+  s_8c7c13500c0009::t_4d902578b924bc 1
+auth/migrations/000001_create_credentials.up.sql
+  s_8c7c13500c0009::t_2de4de66eb828c 3
+  s_8c7c13500c0009::t_4d902578b924bc 1-2,4-7
+auth/Makefile
+  s_8c7c13500c0009::t_58d7c04cc6a816 1-66
+auth/internal/adapter/out/postgres/db_timing.go
+  s_8c7c13500c0009::t_da7a918000cb1e 1-13
+auth/internal/adapter/out/kafka/config.go
+  s_8c7c13500c0009::t_d7c99f008401aa 1-38
+auth/go.mod
+  s_8c7c13500c0009::t_c93d21553a3fea 11-16
+  s_8c7c13500c0009::t_4d902578b924bc 1-5,7-8,10
+  s_8c7c13500c0009::t_deba361afe8b73 6
+  s_8c7c13500c0009::t_57ce5296b3cd63 9
+auth/cmd/server/main.go
+  s_8c7c13500c0009::t_37e078de7a13af 1
+  s_8c7c13500c0009::t_bacb73bb1d241c 28
+  s_8c7c13500c0009::t_63ac90a974c9d7 46-49
+  s_8c7c13500c0009::t_e36255c2ebd828 25-27,29-31,33-34
+  s_8c7c13500c0009::t_b034cb034e0bc2 4-7
+  s_8c7c13500c0009::t_b004604077475d 2-3,8-9,12,14-24,35-37,39-45,50-52
+  s_8c7c13500c0009::t_3b86bd581f90d4 10,32
+  s_8c7c13500c0009::t_48cec2de944697 13,38
+  s_8c7c13500c0009::t_a1be7859ec0f8b 11
+auth/internal/adapter/out/userhttp/client.go
+  s_8c7c13500c0009::t_37e078de7a13af 1
+  s_8c7c13500c0009::t_a2b72fee35f11e 2-9,12-29,31-45
+  s_8c7c13500c0009::t_da7a918000cb1e 10-11,30
+auth/internal/service/service.go
+  s_8c7c13500c0009::t_7ee0679cd22b31 21,26-27,79,82,87,90,94,100-109
+  s_8c7c13500c0009::t_2519e4ed4b0f34 44-47
+  s_8c7c13500c0009::t_d4337005c592e1 22-25
+  s_8c7c13500c0009::t_39a37aace7b3eb 1-20,32-34,36-39,41-43,48-78,80-81,83-86,88-89,91-93,95-99,110-135
+  s_8c7c13500c0009::t_b547e8d37b97bb 28-31,35,40
+auth/.env.example
+  s_8c7c13500c0009::t_d35aab183623ca 1-2,4-11
+  s_8c7c13500c0009::t_9641cffd7638c4 3
+auth/migrations/000002_create_email_otps.up.sql
+  s_8c7c13500c0009::t_823141f7bd3bab 1-12
+auth/internal/adapter/out/postgres/repository.go
+  s_8c7c13500c0009::t_da7a918000cb1e 30,40,53,61,71
+  s_8c7c13500c0009::t_324ae08df43a88 1-29,31-39,41-52,54-60,62-70,72-100
+auth/config/config.go
+  s_8c7c13500c0009::t_1a60aca178f45e 7
+  s_8c7c13500c0009::t_2de4de66eb828c 12-13,31-32,45-50,54-70,72
+  s_8c7c13500c0009::t_4d902578b924bc 1-6,8,11,33-34,71,73
+  s_8c7c13500c0009::t_86f41d9b83fcce 9-10,24-30,35,44
+  s_8c7c13500c0009::t_294fb700deed03 14-23,36-43
+  s_8c7c13500c0009::t_dee538fb57a6aa 51-52
+  s_8c7c13500c0009::t_773235f156d14e 53
+auth/internal/adapter/out/kafka/producer.go
+  s_8c7c13500c0009::t_d7c99f008401aa 1-5,7-32,34-41,43-44,46-48
+  s_8c7c13500c0009::t_da7a918000cb1e 6,33,42,45
+auth/README.md
+  s_8c7c13500c0009::t_abddcf2e9d9a1e 16-18
+  s_8c7c13500c0009::t_d5a9e8f9e470f0 1-2,4-11,14-15,19-21
+  s_8c7c13500c0009::t_74cf299b5e3691 12
+  s_8c7c13500c0009::t_7b3ce4e595e325 3
+  s_8c7c13500c0009::t_f6564b04a7e363 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "adde06202cee1fb6e6de19ce5937172ad8cbea4e",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
