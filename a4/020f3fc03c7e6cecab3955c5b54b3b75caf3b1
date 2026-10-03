@@ -1,0 +1,26 @@
+assessment/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_f292e4a4e3999d 233
+  s_8c7c13500c0009::t_d6ababcbc6b29b 108
+  s_8c7c13500c0009::t_76d149f85beefb 105-107
+  s_8c7c13500c0009::t_7bf70a12f31407 109-111
+assessment/internal/application/service/get_assessment.go
+  s_8c7c13500c0009::t_f292e4a4e3999d 12,15-16,24-27,35
+assessment/cmd/server/main.go
+  s_8c7c13500c0009::t_f292e4a4e3999d 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a4020f3fc03c7e6cecab3955c5b54b3b75caf3b1",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
