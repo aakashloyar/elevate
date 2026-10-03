@@ -35,51 +35,6 @@ type GetAssessmentResponse struct {
 	UpdatedAt       string `json:"updated_at"`
 }
 
-type Handler struct {
-	createAssessmentService      in.CreateAssessmentService
-	listAssessmentsService       in.ListAssessmentsService
-	getAssessmentService         in.GetAssessmentService
-	deleteAssessmentService      in.DeleteAssessmentService
-	addProblemService            in.AddProblemService
-	getAssessmentProblemsService in.GetAssessmentProblemsService
-	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
-	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
-	getAssessmentsBatchService   in.GetAssessmentsBatchService
-}
-
-func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, getAssessmentsBatchService in.GetAssessmentsBatchService) *Handler {
-	return &Handler{
-		createAssessmentService:      createAssessmentService,
-		listAssessmentsService:       listAssessmentsService,
-		getAssessmentService:         getAssessmentService,
-		deleteAssessmentService:      deleteAssessmentService,
-		addProblemService:            addProblemService,
-		getAssessmentProblemsService: getAssessmentProblemsService,
-		getMarkingSchemeService:      getMarkingSchemeService,
-		upsertMarkingSchemeService:   upsertMarkingSchemeService,
-		getAssessmentsBatchService:   getAssessmentsBatchService,
-	}
-}
-
-func (h *Handler) GetAssessmentsBatch(w http.ResponseWriter, r *http.Request) {
-	var req GetAssessmentsBatchRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
-		return
-	}
-	out, err := h.getAssessmentsBatchService.Execute(r.Context(), in.GetAssessmentsBatchInput{AssessmentIDs: req.AssessmentIDs})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	items := make([]AssessmentSummaryResponse, 0, len(out.Assessments))
-	for _, assessment := range out.Assessments {
-		items = append(items, AssessmentSummaryResponse{ID: assessment.ID, Title: assessment.Title})
-	}
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(GetAssessmentsBatchResponse{Assessments: items})
-}
-
 type ListAssessmentsResponse struct {
 	Assessments []GetAssessmentResponse `json:"assessments"`
 }
@@ -136,6 +91,51 @@ type MarksRequest struct {
 type AssessmentMarkingSchemeResponse struct {
 	AssessmentID string `json:"assessment_id"`
 	AssessmentMarkingSchemeRequest
+}
+
+type Handler struct {
+	createAssessmentService      in.CreateAssessmentService
+	listAssessmentsService       in.ListAssessmentsService
+	getAssessmentService         in.GetAssessmentService
+	deleteAssessmentService      in.DeleteAssessmentService
+	addProblemService            in.AddProblemService
+	getAssessmentProblemsService in.GetAssessmentProblemsService
+	getMarkingSchemeService      in.GetAssessmentMarkingSchemeService
+	upsertMarkingSchemeService   in.UpsertAssessmentMarkingSchemeService
+	getAssessmentsBatchService   in.GetAssessmentsBatchService
+}
+
+func NewHandler(createAssessmentService in.CreateAssessmentService, listAssessmentsService in.ListAssessmentsService, getAssessmentService in.GetAssessmentService, deleteAssessmentService in.DeleteAssessmentService, addProblemService in.AddProblemService, getAssessmentProblemsService in.GetAssessmentProblemsService, getMarkingSchemeService in.GetAssessmentMarkingSchemeService, upsertMarkingSchemeService in.UpsertAssessmentMarkingSchemeService, getAssessmentsBatchService in.GetAssessmentsBatchService) *Handler {
+	return &Handler{
+		createAssessmentService:      createAssessmentService,
+		listAssessmentsService:       listAssessmentsService,
+		getAssessmentService:         getAssessmentService,
+		deleteAssessmentService:      deleteAssessmentService,
+		addProblemService:            addProblemService,
+		getAssessmentProblemsService: getAssessmentProblemsService,
+		getMarkingSchemeService:      getMarkingSchemeService,
+		upsertMarkingSchemeService:   upsertMarkingSchemeService,
+		getAssessmentsBatchService:   getAssessmentsBatchService,
+	}
+}
+
+func (h *Handler) GetAssessmentsBatch(w http.ResponseWriter, r *http.Request) {
+	var req GetAssessmentsBatchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	out, err := h.getAssessmentsBatchService.Execute(r.Context(), in.GetAssessmentsBatchInput{AssessmentIDs: req.AssessmentIDs})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	items := make([]AssessmentSummaryResponse, 0, len(out.Assessments))
+	for _, assessment := range out.Assessments {
+		items = append(items, AssessmentSummaryResponse{ID: assessment.ID, Title: assessment.Title})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(GetAssessmentsBatchResponse{Assessments: items})
 }
 
 func (h *Handler) CreateAssessment(w http.ResponseWriter, r *http.Request) {
@@ -230,6 +230,7 @@ func (h *Handler) GetAssessmentByID(w http.ResponseWriter, r *http.Request, asse
 		Description:     out.Description,
 		DurationSeconds: out.DurationSeconds,
 		CreatedBy:       out.CreatedBy,
+		CreatedByName:   out.CreatedByName,
 		CreatedAt:       out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:       out.UpdatedAt.Format(http.TimeFormat),
 	})
