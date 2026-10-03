@@ -59,7 +59,8 @@ func main() {
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
 	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, userClient, assessmentClient, idGen, clock)
-	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo)
+	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo, assessmentClient)
+	listJobsService := generationjobsvc.NewListGenerationJobsService(jobRepo, assessmentClient)
 
 	if config.App.Worker.Enabled {
 		aiClient, err := aiadapter.NewClient(aiadapter.Config{
@@ -97,7 +98,7 @@ func main() {
 		log.Printf("generation worker disabled; set GENERATION_WORKER_ENABLED=true to consume generation requests")
 	}
 
-	handler := httpgenerationjob.NewHandler(createJobService, getJobService)
+	handler := httpgenerationjob.NewHandler(createJobService, getJobService, listJobsService)
 
 	mux := http.NewServeMux()
 	httpgenerationjob.RegisterRoutes(mux, handler)

@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/lib/pq"
 
@@ -89,6 +90,52 @@ func (r *GenerationJobRepository) FindByID(jobID string) (domain.GenerationJob, 
 	}
 
 	return job, nil
+}
+
+func (r *GenerationJobRepository) FindAll(limit, offset int, search string) ([]domain.GenerationJob, error) {
+	defer observeDB("generation_jobs.find_all")()
+	query := `
+		SELECT
+			id,
+			user_id,
+			single_correct_count,
+			multi_correct_count,
+			numerical_count,
+			document_id,
+			assessment_id,
+			level,
+			description,
+			status,
+			topic_ids,
+			generated_problem_count,
+			created_at,
+			updated_at
+		FROM generation_jobs
+	`
+	args := []any{limit, offset}
+	if strings.TrimSpace(search) != "" {
+		query += " WHERE description ILIKE $3"
+		args = append(args, "%"+strings.TrimSpace(search)+"%")
+	}
+	query += " ORDER BY created_at DESC LIMIT $1 OFFSET $2"
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	jobs := make([]domain.GenerationJob, 0, limit)
+	for rows.Next() {
+		var job domain.GenerationJob
+		if err := rows.Scan(&job.ID, &job.UserID, &job.SingleCorrectCount, &job.MultiCorrectCount, &job.NumericalCount, &job.DocumentID, &job.AssessmentID, &job.Level, &job.Description, &job.Status, pq.Array(&job.TopicIDs), &job.GeneratedProblemCount, &job.CreatedAt, &job.UpdatedAt); err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, job)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return jobs, nil
 }
 
 func (r *GenerationJobRepository) SaveGeneratedProblemCount(jobID string, count int) error {

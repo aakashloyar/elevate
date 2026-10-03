@@ -17,6 +17,8 @@ func RegisterRoutes(mux *http.ServeMux, h *Handler) {
 
 	mux.HandleFunc("/generation-jobs", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
+		case http.MethodGet:
+			h.ListGenerationJobs(w, r)
 		case http.MethodPost:
 			h.CreateGenerationJob(w, r)
 		default:

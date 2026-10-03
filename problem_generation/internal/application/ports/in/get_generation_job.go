@@ -19,6 +19,7 @@ type GetGenerationJobOutput struct {
 	NumericalCount        int
 	DocumentID            *string
 	AssessmentID          *string
+	AssessmentTitle       string
 	Level                 domain.GenerationLevel
 	Description           string
 	Status                domain.GenerationJobStatus

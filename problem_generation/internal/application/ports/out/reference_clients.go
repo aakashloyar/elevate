@@ -8,4 +8,5 @@ type UserClient interface {
 
 type AssessmentClient interface {
 	Exists(ctx context.Context, assessmentID string) error
+	GetTitles(ctx context.Context, assessmentIDs []string) (map[string]string, error)
 }

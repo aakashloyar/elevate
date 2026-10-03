@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	in "github.com/aakashloyar/elevate/problem_generation/internal/application/ports/in"
@@ -34,6 +35,7 @@ type GetGenerationJobResponse struct {
 	NumericalCount        int      `json:"numerical_count"`
 	DocumentID            *string  `json:"document_id"`
 	AssessmentID          *string  `json:"assessment_id"`
+	AssessmentTitle       string   `json:"assessment_title,omitempty"`
 	Level                 string   `json:"level"`
 	Description           string   `json:"description"`
 	Status                string   `json:"status"`
@@ -43,16 +45,56 @@ type GetGenerationJobResponse struct {
 	UpdatedAt             string   `json:"updated_at"`
 }
 
+type ListGenerationJobsResponse struct {
+	GenerationJobs []GetGenerationJobResponse `json:"generation_jobs"`
+}
+
 type Handler struct {
 	createGenerationJobService in.CreateGenerationJobService
 	getGenerationJobService    in.GetGenerationJobService
+	listGenerationJobsService  in.ListGenerationJobsService
 }
 
-func NewHandler(createGenerationJobService in.CreateGenerationJobService, getGenerationJobService in.GetGenerationJobService) *Handler {
+func NewHandler(createGenerationJobService in.CreateGenerationJobService, getGenerationJobService in.GetGenerationJobService, listGenerationJobsService in.ListGenerationJobsService) *Handler {
 	return &Handler{
 		createGenerationJobService: createGenerationJobService,
 		getGenerationJobService:    getGenerationJobService,
+		listGenerationJobsService:  listGenerationJobsService,
 	}
+}
+
+func (h *Handler) ListGenerationJobs(w http.ResponseWriter, r *http.Request) {
+	limit := 10
+	offset := 0
+	if value := strings.TrimSpace(r.URL.Query().Get("limit")); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed <= 0 {
+			http.Error(w, "invalid limit", http.StatusBadRequest)
+			return
+		}
+		limit = parsed
+	}
+	if value := strings.TrimSpace(r.URL.Query().Get("offset")); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed < 0 {
+			http.Error(w, "invalid offset", http.StatusBadRequest)
+			return
+		}
+		offset = parsed
+	}
+
+	out, err := h.listGenerationJobsService.Execute(r.Context(), in.ListGenerationJobsInput{Limit: limit, Offset: offset, Search: r.URL.Query().Get("search")})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jobs := make([]GetGenerationJobResponse, 0, len(out.Jobs))
+	for _, job := range out.Jobs {
+		jobs = append(jobs, generationJobResponse(job))
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(ListGenerationJobsResponse{GenerationJobs: jobs})
 }
 
 func (h *Handler) CreateGenerationJob(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +134,11 @@ func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, j
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(GetGenerationJobResponse{
+	_ = json.NewEncoder(w).Encode(generationJobResponse(out))
+}
+
+func generationJobResponse(out in.GetGenerationJobOutput) GetGenerationJobResponse {
+	return GetGenerationJobResponse{
 		ID:                    out.ID,
 		UserID:                out.UserID,
 		SingleCorrectCount:    out.SingleCorrectCount,
@@ -100,6 +146,7 @@ func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, j
 		NumericalCount:        out.NumericalCount,
 		DocumentID:            out.DocumentID,
 		AssessmentID:          out.AssessmentID,
+		AssessmentTitle:       out.AssessmentTitle,
 		Level:                 string(out.Level),
 		Description:           out.Description,
 		Status:                string(out.Status),
@@ -107,7 +154,7 @@ func (h *Handler) GetGenerationJobByID(w http.ResponseWriter, r *http.Request, j
 		GeneratedProblemCount: out.GeneratedProblemCount,
 		CreatedAt:             out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:             out.UpdatedAt.Format(http.TimeFormat),
-	})
+	}
 }
 
 func (h *Handler) IsGenerationJobRoute(path string) bool {
