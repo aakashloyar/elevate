@@ -1,0 +1,43 @@
+document/.env.example
+  s_8c7c13500c0009::t_0bab7b9347fd92 22-26
+document/internal/adapter/out/s3/s3_storage.go
+  s_8c7c13500c0009::t_058c3229bf2f8c 5,84-93
+  s_8c7c13500c0009::t_9530f05aef4465 94
+document/internal/application/service/process_document/chunker.go
+  s_8c7c13500c0009::t_1fc17052108b30 1-51
+document/internal/adapter/out/ai/gemini/config.go
+  s_8c7c13500c0009::t_2a373ba210f330 1-27
+document/config/config.go
+  s_8c7c13500c0009::t_0bab7b9347fd92 7,39-45,51,87-96,115
+document/internal/application/service/process_document/process.go
+  s_8c7c13500c0009::t_1fc17052108b30 1-15,17,20-68,70-84
+  s_8c7c13500c0009::t_1fe1fc6539a4ae 16,18-19,69
+document/internal/application/ports/out/embedder.go
+  s_8c7c13500c0009::t_058c3229bf2f8c 1-8
+document/internal/adapter/out/ai/gemini/client.go
+  s_8c7c13500c0009::t_1fe1fc6539a4ae 39-40,53-54,81
+  s_8c7c13500c0009::t_9e38e75c01dfd5 72,78,92
+  s_8c7c13500c0009::t_2a373ba210f330 1-38,41-52,55-71,73-77,79-80,82-91,93-127
+document/cmd/server/main.go
+  s_8c7c13500c0009::t_6104624e32d3ed 13,20,75-98
+  s_8c7c13500c0009::t_0eaf3e57dd44ea 17,74
+  s_8c7c13500c0009::t_1fe1fc6539a4ae 12
+document/internal/application/ports/out/storage.go
+  s_8c7c13500c0009::t_058c3229bf2f8c 5,14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "bba3164cf8fec3381ca75fe22120d6978e80826b",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
