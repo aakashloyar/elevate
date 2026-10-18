@@ -1,9 +1,9 @@
 package domain
 
 type Chunk struct {
-	UploadID   string
+	UploadID    string
 	ChunkNumber int
-	ETag       string
-	CreatedAt  int64
-	UpdatedAt  int64
+	ETag        string
+	CreatedAt   int64
+	UpdatedAt   int64
 }

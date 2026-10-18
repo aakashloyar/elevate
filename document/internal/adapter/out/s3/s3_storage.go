@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/document/config"
+	"github.com/aakashloyar/elevate/document/internal/domain"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/aakashloyar/elevate/document/internal/domain"
 )
 
 type S3Storage struct {
@@ -47,7 +47,7 @@ func (s *S3Storage) GeneratePresignedPartURL(ctx context.Context, key string, up
 		Key:        &key,
 		UploadId:   &uploadID,
 		PartNumber: &partNumber,
-	}, s3.WithPresignExpires(time.Duration(config.App.Upload.PresignExpirty) * time.Minute))
+	}, s3.WithPresignExpires(time.Duration(config.App.Upload.PresignExpirty)*time.Minute))
 
 	if err != nil {
 		return "", err

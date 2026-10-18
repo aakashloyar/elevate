@@ -8,8 +8,8 @@ import (
 )
 
 type Config struct {
-	Region          string
-	Bucket          string
+	Region string
+	Bucket string
 }
 
 type S3Client struct {

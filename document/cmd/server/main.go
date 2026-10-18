@@ -1,19 +1,20 @@
 package main
 
 import (
-	"strconv"
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	config "github.com/aakashloyar/elevate/document/config"
 	chunkhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/chunk"
 	uploadhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/upload"
+	kafkaproducer "github.com/aakashloyar/elevate/document/internal/adapter/out/kafka"
+	"github.com/aakashloyar/elevate/document/internal/adapter/out/postgres"
 	s3adapter "github.com/aakashloyar/elevate/document/internal/adapter/out/s3"
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out/system"
-	uploadsvc "github.com/aakashloyar/elevate/document/internal/application/service/upload"
 	chunkSvc "github.com/aakashloyar/elevate/document/internal/application/service/chunk"
-	"github.com/aakashloyar/elevate/document/internal/adapter/out/postgres"
+	uploadsvc "github.com/aakashloyar/elevate/document/internal/application/service/upload"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	appConfig := config.App
 
 	s3Config := s3adapter.Config{
-		Region: appConfig.S3.Region, 
+		Region: appConfig.S3.Region,
 		Bucket: appConfig.S3.Bucket,
 	}
 	s3Client, err := s3Config.NewS3Client(ctx)
@@ -30,6 +31,17 @@ func main() {
 	}
 
 	storage := s3adapter.NewS3Storage(s3Client.Client, s3Client.Bucket)
+	eventPublisher, err := kafkaproducer.NewProducer(kafkaproducer.Config{
+		Brokers:   config.App.Kafka.Brokers,
+		Topic:     config.App.Kafka.Topic,
+		ClientID:  config.App.Kafka.ClientID,
+		APIKey:    config.App.Kafka.APIKey,
+		APISecret: config.App.Kafka.APISecret,
+	})
+	if err != nil {
+		log.Fatalf("failed to create Kafka producer: %v", err)
+	}
+	defer eventPublisher.Close()
 
 	port, err := strconv.Atoi(config.App.Postgres.Port)
 	if err != nil {
@@ -50,29 +62,26 @@ func main() {
 		log.Fatalf("failed to open DB: %v", err)
 	}
 
-
 	clock := system.SystemClock{}
 	idGen := system.UUIDGenerator{}
-
 
 	uploadRepo := postgres.NewUploadRepository(db)
 	chunkRepo := postgres.NewChunkRepository(db)
 
 	initUploadService := uploadsvc.NewInitUploadService(uploadRepo, storage, idGen, clock)
-	completeUploadService := uploadsvc.NewCompleteUploadService(uploadRepo, storage)
+	completeUploadService := uploadsvc.NewCompleteUploadService(uploadRepo, storage, eventPublisher)
 	markChunkService := chunkSvc.NewMarkChunkService(chunkRepo, idGen, clock)
-
 
 	uploadHandler := uploadhttp.NewHandler(initUploadService, completeUploadService)
 	chunkHandler := chunkhttp.NewHandler(markChunkService)
 
-	mux:= http.NewServeMux()
+	mux := http.NewServeMux()
 
 	uploadhttp.RegisterRoutes(mux, uploadHandler)
 	chunkhttp.RegisterRoutes(mux, chunkHandler)
-	
+
 	log.Println("Routes registered successfully. Starting server on :8080...")
-	http.ListenAndServe(":8080",mux)
+	http.ListenAndServe(":8080", mux)
 }
 
 func withCORS(next http.Handler) http.Handler {

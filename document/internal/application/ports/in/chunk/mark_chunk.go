@@ -1,4 +1,4 @@
-package in 
+package in
 
 import (
 	"context"
@@ -11,9 +11,8 @@ type MarkChunkInput struct {
 }
 
 type MarkChunkOutput struct {
-	
 }
 
-type MarkChunkService interface{
+type MarkChunkService interface {
 	Execute(ctx context.Context, input MarkChunkInput) (MarkChunkOutput, error)
 }

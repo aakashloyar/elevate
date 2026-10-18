@@ -46,7 +46,7 @@ func (s *InitUploadService) Execute(ctx context.Context, input in.InitUploadInpu
 		}
 		uploadURLs = append(uploadURLs, in.UploadURL{
 			ChunkNumber: i,
-			URL:        url,
+			URL:         url,
 		})
 	}
 	upload := domain.Upload{

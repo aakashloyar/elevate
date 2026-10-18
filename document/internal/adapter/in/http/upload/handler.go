@@ -7,13 +7,13 @@ import (
 )
 
 type Handler struct {
-	initUploadService in.InitUploadService
+	initUploadService     in.InitUploadService
 	completeUploadService in.CompleteUploadService
 }
 
 type initUploadRequest struct {
-	FileName      string          `json:"file_name"`
-	FileSize      int64           `json:"file_size"`
+	FileName string `json:"file_name"`
+	FileSize int64  `json:"file_size"`
 }
 
 type initUploadResponse struct {
@@ -22,15 +22,14 @@ type initUploadResponse struct {
 	UploadURLs   []UploadURL `json:"chunks"`
 }
 type UploadURL struct {
-	ChunkNumber int   `json:"chunk_number"`
-	URL        string `json:"url"`
+	ChunkNumber int    `json:"chunk_number"`
+	URL         string `json:"url"`
 }
 
 type completeUploadRequest struct {
 	UploadID string `json:"upload_id"`
 }
 type completUploadResponse struct {
-
 }
 
 func NewHandler(initUploadService in.InitUploadService, completeUploadService in.CompleteUploadService) *Handler {
@@ -45,8 +44,8 @@ func (h *Handler) InitUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 	}
 	input := in.InitUploadInput{
-		FileName:      req.FileName,
-		FileSize:      req.FileSize,
+		FileName: req.FileName,
+		FileSize: req.FileSize,
 	}
 
 	out, err := h.initUploadService.Execute(r.Context(), input)
@@ -54,23 +53,22 @@ func (h *Handler) InitUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	uploadURLs := make([]UploadURL,0,len(out.UploadURLs))
-	for _,u := range out.UploadURLs {
+	uploadURLs := make([]UploadURL, 0, len(out.UploadURLs))
+	for _, u := range out.UploadURLs {
 		uploadURLs = append(uploadURLs, UploadURL{
 			ChunkNumber: u.ChunkNumber,
-			URL:         u.URL, 
+			URL:         u.URL,
 		})
 	}
 	res := initUploadResponse{
-		UploadID: out.UploadID,
+		UploadID:     out.UploadID,
 		MaxChunkSize: out.MaxChunkSize,
-		UploadURLs: uploadURLs,
+		UploadURLs:   uploadURLs,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(res)
 }
-
 
 func (h *Handler) CompleteUpload(w http.ResponseWriter, r *http.Request) {
 	var req completeUploadRequest

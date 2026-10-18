@@ -11,13 +11,12 @@ type Handler struct {
 }
 
 type markChunkRequest struct {
-	UploadID    string     `json:"artist_id"`
-	ChunkNumber int     `json:"file_name"`
-	ETag        string     `json:"file_size"`
+	UploadID    string `json:"artist_id"`
+	ChunkNumber int    `json:"file_name"`
+	ETag        string `json:"file_size"`
 }
 
 type markChunkResponse struct {
-
 }
 
 func NewHandler(markChunkService in.MarkChunkService) *Handler {
@@ -32,9 +31,9 @@ func (h *Handler) MarkChunk(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 	}
 	input := in.MarkChunkInput{
-		UploadID: req.UploadID,
+		UploadID:    req.UploadID,
 		ChunkNumber: req.ChunkNumber,
-		ETag: req.ETag,
+		ETag:        req.ETag,
 	}
 
 	_, err := h.markChunkService.Execute(r.Context(), input)
@@ -42,7 +41,7 @@ func (h *Handler) MarkChunk(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	res := markChunkResponse{}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

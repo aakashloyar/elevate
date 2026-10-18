@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	in "github.com/aakashloyar/elevate/document/internal/application/ports/in/upload"
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
@@ -10,12 +11,13 @@ import (
 )
 
 type CompleteUploadService struct {
-	repo	out.UploadRespository
-	storage out.Storage
+	repo      out.UploadRespository
+	storage   out.Storage
+	publisher out.DocumentUploadedPublisher
 }
 
-func NewCompleteUploadService(repo out.UploadRespository, storage out.Storage) in.CompleteUploadService {
-	return &CompleteUploadService{repo: repo, storage: storage}
+func NewCompleteUploadService(repo out.UploadRespository, storage out.Storage, publisher out.DocumentUploadedPublisher) in.CompleteUploadService {
+	return &CompleteUploadService{repo: repo, storage: storage, publisher: publisher}
 }
 
 func (s *CompleteUploadService) Execute(ctx context.Context, input in.CompleteUploadInput) (in.CompleteUploadOutput, error) {
@@ -68,6 +70,13 @@ func (s *CompleteUploadService) Execute(ctx context.Context, input in.CompleteUp
 	if err != nil {
 		return in.CompleteUploadOutput{}, err
 	}
-	
+	if err := s.publisher.PublishDocumentUploaded(ctx, domain.DocumentUploadedEvent{
+		EventID: input.UploadID, EventType: "document.uploaded", DocumentID: upload.ID,
+		FileName: upload.FileName, FileSize: upload.FileSize, StorageKey: upload.StorageKey,
+		UploadedAt: time.Now().UTC(),
+	}); err != nil {
+		return in.CompleteUploadOutput{}, fmt.Errorf("publish document uploaded event: %w", err)
+	}
+
 	return in.CompleteUploadOutput{}, nil
 }

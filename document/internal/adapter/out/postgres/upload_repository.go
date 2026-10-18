@@ -49,7 +49,6 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 	return err
 }
 
-
 func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus) error {
 	query := `
 		Update uploads SET status = $1
@@ -63,7 +62,7 @@ func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus)
 	return err
 }
 
-func (r *UploadRepository) FindByID(uploadID string) (domain.Upload,error) {
+func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 	query := `
 		SELECT 
 			id,
