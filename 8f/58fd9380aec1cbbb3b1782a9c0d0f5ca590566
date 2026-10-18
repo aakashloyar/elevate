@@ -1,0 +1,79 @@
+document/Makefile
+  s_8c7c13500c0009::t_c728e67f43edd1 1-8
+Makefile
+  s_8c7c13500c0009::t_bbfbc73c659f17 8-9
+document/internal/domain/id_generator.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-5
+document/README.md
+  s_8c7c13500c0009::t_c728e67f43edd1 1-2,4-15,17,38-39,42-45,47,49-51
+  s_8c7c13500c0009::t_1559159617394b 46
+  s_8c7c13500c0009::t_37444625e987f5 26,31,36,40-41
+  s_8c7c13500c0009::t_56931c6cb35366 3,16,18-25,27-30,32-35,37,48
+document/internal/adapter/in/http/upload/route.go
+  s_8c7c13500c0009::t_b905a3b5f65082 1-28,30
+  s_8c7c13500c0009::t_ebe5202d9fafaa 29
+document/internal/adapter/out/s3/s3.go
+  s_8c7c13500c0009::t_9ba9642617699e 1-28
+  s_8c7c13500c0009::t_e9ea712fb59aca 29-31
+document/internal/application/service/upload/init_upload.go
+  s_8c7c13500c0009::t_63f9fb3a4a6cd9 26,30
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-25,27-29,31-58,61
+  s_8c7c13500c0009::t_9a165034e338de 59-60
+  s_8c7c13500c0009::t_3b5cd4ab936469 62-64
+document/internal/application/ports/out/storage.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-14
+document/config/config.go
+  s_8c7c13500c0009::t_63f9fb3a4a6cd9 22
+  s_8c7c13500c0009::t_461d66481e9d67 1-13,16-21,23-77
+  s_8c7c13500c0009::t_32f966234136c8 14-15
+  s_8c7c13500c0009::t_9df8f66294ab98 78-79
+document/go.mod
+  s_8c7c13500c0009::t_8b7f67ec230c4a 9-10
+  s_8c7c13500c0009::t_8da20831ae9fef 12-35
+  s_8c7c13500c0009::t_b393252d7f98e4 1-8,11
+document/internal/application/ports/out/system/uuid_generator.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-9
+document/internal/application/ports/in/upload/init_upload.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-23
+document/internal/adapter/in/http/upload/handler.go
+  s_8c7c13500c0009::t_b905a3b5f65082 1-31,35-90,94
+  s_8c7c13500c0009::t_ca9c93f25a2add 32-34
+  s_8c7c13500c0009::t_0451eae0680e4f 91-93
+document/.env.example
+  s_8c7c13500c0009::t_bcb36bd0ac29cf 12
+  s_8c7c13500c0009::t_b393252d7f98e4 1-5,7-11,13-14
+  s_8c7c13500c0009::t_1559159617394b 6
+document/internal/adapter/out/s3/s3_storage.go
+  s_8c7c13500c0009::t_9ba9642617699e 1-54,56-78,80
+  s_8c7c13500c0009::t_63f9fb3a4a6cd9 55
+  s_8c7c13500c0009::t_ac7ebc531d813b 79
+  s_8c7c13500c0009::t_5fddb2fd43c042 81-82
+document/cmd/server/main.go
+  s_8c7c13500c0009::t_ea7df02e6dbe46 9-13,22-25,27-29,32-36,39
+  s_8c7c13500c0009::t_aae5b0589bb053 1-8,14-21,26,30-31,37-38,40-59
+  s_8c7c13500c0009::t_9cc5ab0d45f898 60-62
+document/internal/application/service/upload/complete_upload.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-39
+  s_8c7c13500c0009::t_be623352599b01 40-42
+document/internal/domain/chunk.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-6
+  s_8c7c13500c0009::t_c7436d3336bafd 7-9
+document/internal/application/ports/in/upload/complete_upload.go
+  s_8c7c13500c0009::t_ed2c80be30d8b1 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8f58fd9380aec1cbbb3b1782a9c0d0f5ca590566",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
