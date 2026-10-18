@@ -2,6 +2,7 @@ package s3
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"github.com/aakashloyar/elevate/document/config"
@@ -79,4 +80,15 @@ func (s *S3Storage) CompleteMultipartUpload(ctx context.Context, key string, upl
 	})
 
 	return err
+}
+
+func (s *S3Storage) Download(ctx context.Context, key string) (io.ReadCloser, error) {
+	result, err := s.client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: &s.bucketName,
+		Key:    &key,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.Body, nil
 }

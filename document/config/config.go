@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -35,11 +36,19 @@ type KafkaConfig struct {
 	APISecret string
 }
 
+type GeminiConfig struct {
+	BaseURL          string
+	APIKey           string
+	EmbeddingModel   string
+	OutputDimensions int
+}
+
 type Config struct {
 	S3       S3Config
 	Upload   UploadConfig
 	Postgres PostgresConfig
 	Kafka    KafkaConfig
+	Gemini   GeminiConfig
 }
 
 func load() Config {
@@ -75,6 +84,16 @@ func load() Config {
 		APIKey:    os.Getenv("KAFKA_API_KEY"),
 		APISecret: os.Getenv("KAFKA_API_SECRET"),
 	}
+	outputDimensions := 768
+	if value, err := strconv.Atoi(os.Getenv("GEMINI_EMBEDDING_DIMENSIONS")); err == nil && value > 0 {
+		outputDimensions = value
+	}
+	gemini := GeminiConfig{
+		BaseURL:          os.Getenv("GEMINI_API_BASE_URL"),
+		APIKey:           os.Getenv("GEMINI_API_KEY"),
+		EmbeddingModel:   os.Getenv("GEMINI_EMBEDDING_MODEL"),
+		OutputDimensions: outputDimensions,
+	}
 	if len(kafka.Brokers) == 0 || kafka.Brokers[0] == "" {
 		kafka.Brokers = []string{os.Getenv("KAFKA_BROKER")}
 	}
@@ -93,6 +112,7 @@ func load() Config {
 		Upload:   upload,
 		Postgres: postgres,
 		Kafka:    kafka,
+		Gemini:   gemini,
 	}
 }
 

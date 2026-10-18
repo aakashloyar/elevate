@@ -9,11 +9,15 @@ import (
 	config "github.com/aakashloyar/elevate/document/config"
 	chunkhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/chunk"
 	uploadhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/upload"
+	kafkaconsumer "github.com/aakashloyar/elevate/document/internal/adapter/in/kafka"
+	gemini "github.com/aakashloyar/elevate/document/internal/adapter/out/ai/gemini"
 	kafkaproducer "github.com/aakashloyar/elevate/document/internal/adapter/out/kafka"
 	"github.com/aakashloyar/elevate/document/internal/adapter/out/postgres"
 	s3adapter "github.com/aakashloyar/elevate/document/internal/adapter/out/s3"
+	"github.com/aakashloyar/elevate/document/internal/adapter/out/vectordb"
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out/system"
 	chunkSvc "github.com/aakashloyar/elevate/document/internal/application/service/chunk"
+	processSvc "github.com/aakashloyar/elevate/document/internal/application/service/process_document"
 	uploadsvc "github.com/aakashloyar/elevate/document/internal/application/service/upload"
 )
 
@@ -67,6 +71,31 @@ func main() {
 
 	uploadRepo := postgres.NewUploadRepository(db)
 	chunkRepo := postgres.NewChunkRepository(db)
+	vectorRepo := vectordb.NewChunkRepository(db)
+	embedder := gemini.NewClient(gemini.Config{
+		BaseURL:          appConfig.Gemini.BaseURL,
+		APIKey:           appConfig.Gemini.APIKey,
+		Model:            appConfig.Gemini.EmbeddingModel,
+		OutputDimensions: appConfig.Gemini.OutputDimensions,
+	})
+	processDocumentService := processSvc.NewService(storage, embedder, vectorRepo, idGen)
+	documentConsumer, err := kafkaconsumer.NewConsumer(kafkaconsumer.Config{
+		Brokers:   appConfig.Kafka.Brokers,
+		Topic:     appConfig.Kafka.Topic,
+		ClientID:  appConfig.Kafka.ClientID + "-processor",
+		GroupID:   appConfig.Kafka.GroupID,
+		APIKey:    appConfig.Kafka.APIKey,
+		APISecret: appConfig.Kafka.APISecret,
+	}, processDocumentService)
+	if err != nil {
+		log.Fatalf("failed to create document processing consumer: %v", err)
+	}
+	defer documentConsumer.Close()
+	go func() {
+		if err := documentConsumer.Start(ctx); err != nil && err != context.Canceled {
+			log.Printf("document processing consumer stopped: %v", err)
+		}
+	}()
 
 	initUploadService := uploadsvc.NewInitUploadService(uploadRepo, storage, idGen, clock)
 	completeUploadService := uploadsvc.NewCompleteUploadService(uploadRepo, storage, eventPublisher)
