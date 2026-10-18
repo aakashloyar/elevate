@@ -1,0 +1,30 @@
+document/README.md
+  s_8c7c13500c0009::t_20a0d4f7dd8e57 52-60
+document/internal/application/ports/out/vector_repository.go
+  s_8c7c13500c0009::t_6b25bce377e426 1-8
+document/migrations/000003_create_document_chunks.up.sql
+  s_8c7c13500c0009::t_8d05108cfe31f4 1-18
+document/internal/domain/document_chunk.go
+  s_8c7c13500c0009::t_6b25bce377e426 1-13
+document/migrations/000003_create_document_chunks.down.sql
+  s_8c7c13500c0009::t_8d05108cfe31f4 1
+document/internal/adapter/out/vectordb/chunk_repository.go
+  s_8c7c13500c0009::t_9ce615b4b71791 33-36,47
+  s_8c7c13500c0009::t_6b25bce377e426 1-32,37-46,48-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e89c03a0b4167bd5083b4f1c56be843e5ed29f36",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
