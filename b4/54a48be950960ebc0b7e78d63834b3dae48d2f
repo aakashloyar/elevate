@@ -1,0 +1,91 @@
+document/internal/domain/chunk.go
+  s_8c7c13500c0009::t_49d83126372a60 4,6-8
+document/cmd/server/main.go
+  s_8c7c13500c0009::t_49d83126372a60 7,13,17,25,35-38,78,82,84
+  s_8c7c13500c0009::t_007972fd21803f 12,34,39-44,72
+document/internal/adapter/out/postgres/db.go
+  s_8c7c13500c0009::t_49d83126372a60 6,37
+document/internal/application/ports/in/upload/init_upload.go
+  s_8c7c13500c0009::t_49d83126372a60 6-7
+document/internal/adapter/out/kafka/config.go
+  s_8c7c13500c0009::t_a38ef90c3cec8a 1-38
+document/internal/adapter/in/kafka/config.go
+  s_8c7c13500c0009::t_a38ef90c3cec8a 1-38
+document/internal/adapter/out/postgres/upload_repository.go
+  s_8c7c13500c0009::t_49d83126372a60 65,147
+document/internal/adapter/in/http/upload/handler.go
+  s_8c7c13500c0009::t_49d83126372a60 15-16,25-26,47-48,56-57,60,64,66
+  s_8c7c13500c0009::t_b618ad8f3e5dff 10
+document/internal/adapter/in/http/chunk/handler.go
+  s_8c7c13500c0009::t_49d83126372a60 14-16,34,36,44
+document/internal/domain/upload.go
+  s_8c7c13500c0009::t_ee045480a7ca0a 26-35
+  s_8c7c13500c0009::t_49d83126372a60 16,21
+document/internal/adapter/out/s3/s3.go
+  s_8c7c13500c0009::t_49d83126372a60 11-12
+document/internal/application/service/upload/init_upload.go
+  s_8c7c13500c0009::t_49d83126372a60 49
+document/internal/application/ports/out/upload_respository.go
+  s_8c7c13500c0009::t_5a48fbcba06b89 2,4-5
+  s_8c7c13500c0009::t_49d83126372a60 8,10,12
+  s_8c7c13500c0009::t_ee045480a7ca0a 16-19
+document/.env.example
+  s_8c7c13500c0009::t_b190cc7f907cc8 15-21
+document/internal/adapter/out/s3/s3_storage.go
+  s_8c7c13500c0009::t_49d83126372a60 50
+  s_8c7c13500c0009::t_9ba9642617699e 8
+document/internal/application/service/upload/complete_upload.go
+  s_8c7c13500c0009::t_49d83126372a60 14-15,80
+  s_8c7c13500c0009::t_b0d0f662cb8a34 6,16,19-20,73-78
+  s_8c7c13500c0009::t_cd23412e313689 79
+document/internal/application/ports/in/chunk/mark_chunk.go
+  s_8c7c13500c0009::t_49d83126372a60 1,16,18
+document/internal/application/ports/in/upload/complete_upload.go
+  s_8c7c13500c0009::t_49d83126372a60 11
+document/internal/application/ports/in/process_document.go
+  s_8c7c13500c0009::t_a38ef90c3cec8a 1-11
+document/go.mod
+  s_8c7c13500c0009::t_1330fd182e8975 9,15,34-36
+  s_8c7c13500c0009::t_007972fd21803f 11
+document/internal/adapter/in/http/chunk/route.go
+  s_8c7c13500c0009::t_49d83126372a60 1,10-17
+document/internal/adapter/out/postgres/chunk_repository.go
+  s_8c7c13500c0009::t_49d83126372a60 1
+document/internal/application/service/chunk/mark_chunk.go
+  s_8c7c13500c0009::t_49d83126372a60 1,11-13,18-20,25-26,28-30,33-34
+document/internal/application/ports/out/chunk_repository.go
+  s_8c7c13500c0009::t_49d83126372a60 2,6
+document/internal/application/ports/out/system/clock.go
+  s_8c7c13500c0009::t_49d83126372a60 9
+document/internal/domain/clock.go
+  s_8c7c13500c0009::t_49d83126372a60 7
+document/internal/adapter/out/kafka/document_producer.go
+  s_8c7c13500c0009::t_a38ef90c3cec8a 1-31
+document/config/config.go
+  s_8c7c13500c0009::t_461d66481e9d67 7,99
+  s_8c7c13500c0009::t_ee045480a7ca0a 30-35,76-88
+  s_8c7c13500c0009::t_49d83126372a60 4,9,11-12,41-42,45,52-53,56,71-75,92-93,95
+document/internal/adapter/in/http/upload/route.go
+  s_8c7c13500c0009::t_49d83126372a60 10-17,22-29
+  s_8c7c13500c0009::t_eebf15bd5a0c15 2,32
+document/internal/adapter/in/kafka/consumer.go
+  s_8c7c13500c0009::t_a38ef90c3cec8a 1-47
+document/go.sum
+  s_8c7c13500c0009::t_f16e4841e32c2b 38-39,52-56,61-68,75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b454a48be950960ebc0b7e78d63834b3dae48d2f",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
