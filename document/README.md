@@ -49,3 +49,12 @@ Configuration:
 - `S3_CHUNK_SIZE_MB`: part size, default `8` MB.
 - `S3_MAX_FILE_SIZE_MB`: request limit, default `512` MB.
 - `S3_ENDPOINT` and `S3_FORCE_PATH_STYLE`: optional S3-compatible storage settings.
+
+## Vector storage
+
+The document service uses Neon/PostgreSQL with the `pgvector` extension for document chunks and embeddings. The repository is implemented in `internal/adapter/out/vectordb` and supports:
+
+- Upserting a document chunk with its embedding and metadata.
+- Cosine-similarity search for the nearest chunks.
+
+Run `document/migrations/000003_create_document_chunks.up.sql` after enabling `pgvector`. The table currently uses `VECTOR(768)`, so the Gemini embedding request must use the same output dimension.
