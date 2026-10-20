@@ -1,0 +1,36 @@
+document/internal/adapter/out/kafka/config.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 33
+  s_8c7c13500c0009::t_b173be65129a4c 11-15
+document/cmd/server/main.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 39-43,83-88
+document/internal/application/ports/out/event_publisher.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 1-16
+document/internal/adapter/out/kafka/document_producer.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 8,12-13,20
+document/internal/application/ports/out/upload_respository.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 3
+document/config/config.go
+  s_8c7c13500c0009::t_b173be65129a4c 31-36,81,83-86
+  s_8c7c13500c0009::t_641ac7c358e5d0 82,101-102,104-105
+document/internal/adapter/in/kafka/config.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 29
+  s_8c7c13500c0009::t_b173be65129a4c 12-17
+document/internal/application/service/upload/complete_upload.go
+  s_8c7c13500c0009::t_641ac7c358e5d0 73,77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "52ec5ea4c5f87526d30ca0b06e3d0450927842cb",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
