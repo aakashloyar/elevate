@@ -1,0 +1,20 @@
+document/cmd/server/main.go
+  h_6fce61bebff0e2 113
+document/config/config.go
+  h_6fce61bebff0e2 52,117
+document/internal/adapter/in/http/upload/handler.go
+  h_6fce61bebff0e2 32-33,45
+document/internal/adapter/out/postgres/upload_repository.go
+  h_6fce61bebff0e2 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8847022aafe351104b0b96ce028b11ec76e5f2d5",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
