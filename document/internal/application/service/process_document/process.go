@@ -81,9 +81,12 @@ func (s *Service) Execute(ctx context.Context, event domain.DocumentUploadedEven
 				return fmt.Errorf("marshal chunk metadata: %w", err)
 			}
 			if err := s.vectors.SaveChunk(domain.DocumentChunk{
-				ID: s.idGen.NewID(), DocumentID: event.DocumentID,
-				ChunkIndex: start + i, Content: chunks[start+i],
-				Embedding: embedding, Metadata: metadata,
+				ID: s.idGen.NewID(), 
+				DocumentID: event.DocumentID,
+				ChunkIndex: start + i,
+				Content: chunks[start+i],
+				Embedding: embedding,
+				Metadata: metadata,
 			}); err != nil {
 				return fmt.Errorf("save document %s chunk %d: %w", event.DocumentID, start+i, err)
 			}
