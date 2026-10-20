@@ -1,0 +1,14 @@
+document/internal/application/service/process_document/process.go
+  h_6fce61bebff0e2 84-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2b0aa84af8588806d337859f68aada669a2e5b95",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
