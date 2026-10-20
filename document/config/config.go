@@ -49,6 +49,7 @@ type Config struct {
 	Postgres PostgresConfig
 	Kafka    KafkaConfig
 	Gemini   GeminiConfig
+	HTTPPort string
 }
 
 func load() Config {
@@ -113,6 +114,7 @@ func load() Config {
 		Postgres: postgres,
 		Kafka:    kafka,
 		Gemini:   gemini,
+		HTTPPort: os.Getenv("HTTP_PORT"),
 	}
 }
 

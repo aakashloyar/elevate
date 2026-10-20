@@ -13,7 +13,6 @@ const (
 
 type Upload struct {
 	ID              string
-	Title           string
 	FileName        string
 	FileSize        int64
 	Status          UploadStatus

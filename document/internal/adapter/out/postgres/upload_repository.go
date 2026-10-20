@@ -18,7 +18,6 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 	query := `
 		INSERT INTO uploads {
 			id,
-			title,
 			artist_ids,
 			album_id,
 			cover_image_url,
@@ -31,12 +30,11 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 			created_at,
 			updated_at
 		}
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
 	_, err := r.db.Exec(
 		query,
 		upload.ID,
-		upload.Title,
 		upload.FileName,
 		upload.FileSize,
 		upload.Status,

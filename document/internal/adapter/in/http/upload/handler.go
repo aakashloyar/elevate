@@ -29,8 +29,8 @@ type UploadURL struct {
 type completeUploadRequest struct {
 	UploadID string `json:"upload_id"`
 }
-type completUploadResponse struct {
-}
+
+type completUploadResponse struct {}
 
 func NewHandler(initUploadService in.InitUploadService, completeUploadService in.CompleteUploadService) *Handler {
 	return &Handler{
@@ -42,6 +42,7 @@ func (h *Handler) InitUpload(w http.ResponseWriter, r *http.Request) {
 	var req initUploadRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
 	}
 	input := in.InitUploadInput{
 		FileName: req.FileName,
