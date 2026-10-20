@@ -28,12 +28,12 @@ type PostgresConfig struct {
 }
 
 type KafkaConfig struct {
-	Brokers   []string
-	Topic     string
-	ClientID  string
-	GroupID   string
-	APIKey    string
-	APISecret string
+	Brokers               []string
+	DocumentUploadedTopic string
+	ClientID              string
+	GroupID               string
+	APIKey                string
+	APISecret             string
 }
 
 type GeminiConfig struct {
@@ -78,12 +78,12 @@ func load() Config {
 	}
 
 	kafka := KafkaConfig{
-		Brokers:   strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
-		Topic:     os.Getenv("KAFKA_DOCUMENT_UPLOADED_TOPIC"),
-		ClientID:  os.Getenv("KAFKA_CLIENT_ID"),
-		GroupID:   os.Getenv("KAFKA_DOCUMENT_GROUP_ID"),
-		APIKey:    os.Getenv("KAFKA_API_KEY"),
-		APISecret: os.Getenv("KAFKA_API_SECRET"),
+		Brokers:               strings.Split(os.Getenv("KAFKA_BROKERS"), ","),
+		DocumentUploadedTopic: os.Getenv("KAFKA_DOCUMENT_UPLOADED_TOPIC"),
+		ClientID:              os.Getenv("KAFKA_CLIENT_ID"),
+		GroupID:               os.Getenv("KAFKA_DOCUMENT_GROUP_ID"),
+		APIKey:                os.Getenv("KAFKA_API_KEY"),
+		APISecret:             os.Getenv("KAFKA_API_SECRET"),
 	}
 	outputDimensions := 768
 	if value, err := strconv.Atoi(os.Getenv("GEMINI_EMBEDDING_DIMENSIONS")); err == nil && value > 0 {
@@ -98,11 +98,11 @@ func load() Config {
 	if len(kafka.Brokers) == 0 || kafka.Brokers[0] == "" {
 		kafka.Brokers = []string{os.Getenv("KAFKA_BROKER")}
 	}
-	if kafka.Topic == "" {
-		kafka.Topic = os.Getenv("KAFKA_TOPIC")
+	if kafka.DocumentUploadedTopic == "" {
+		kafka.DocumentUploadedTopic = os.Getenv("KAFKA_TOPIC")
 	}
-	if kafka.Topic == "" {
-		kafka.Topic = "document.uploaded"
+	if kafka.DocumentUploadedTopic == "" {
+		kafka.DocumentUploadedTopic = "document.uploaded"
 	}
 	if kafka.GroupID == "" {
 		kafka.GroupID = "document-processing-service"

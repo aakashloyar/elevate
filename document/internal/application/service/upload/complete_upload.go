@@ -70,11 +70,11 @@ func (s *CompleteUploadService) Execute(ctx context.Context, input in.CompleteUp
 	if err != nil {
 		return in.CompleteUploadOutput{}, err
 	}
-	if err := s.publisher.PublishDocumentUploaded(ctx, domain.DocumentUploadedEvent{
+	if err := s.publisher.PublishDocumentUploaded(ctx, out.DocumentUploadedMessage{Event: domain.DocumentUploadedEvent{
 		EventID: input.UploadID, EventType: "document.uploaded", DocumentID: upload.ID,
 		FileName: upload.FileName, FileSize: upload.FileSize, StorageKey: upload.StorageKey,
 		UploadedAt: time.Now().UTC(),
-	}); err != nil {
+	}}); err != nil {
 		return in.CompleteUploadOutput{}, fmt.Errorf("publish document uploaded event: %w", err)
 	}
 

@@ -9,12 +9,12 @@ import (
 )
 
 type Config struct {
-	Brokers   []string
-	Topic     string
-	ClientID  string
-	GroupID   string
-	APIKey    string
-	APISecret string
+	Brokers               []string
+	DocumentUploadedTopic string
+	ClientID              string
+	GroupID               string
+	APIKey                string
+	APISecret             string
 }
 
 type Consumer struct {
@@ -26,7 +26,7 @@ func NewConsumer(cfg Config, service in.ProcessDocumentService) (*Consumer, erro
 	client, err := kgo.NewClient(
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),
-		kgo.ConsumeTopics(cfg.Topic),
+		kgo.ConsumeTopics(cfg.DocumentUploadedTopic),
 		kgo.ClientID(cfg.ClientID),
 		kgo.DialTLSConfig(&tls.Config{}),
 		kgo.SASL(plain.Auth{User: cfg.APIKey, Pass: cfg.APISecret}.AsMechanism()),

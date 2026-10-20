@@ -5,19 +5,19 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/aakashloyar/elevate/document/internal/domain"
+	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-func (p *Producer) PublishDocumentUploaded(ctx context.Context, event domain.DocumentUploadedEvent) error {
-	value, err := json.Marshal(event)
+func (p *Producer) PublishDocumentUploaded(ctx context.Context, message out.DocumentUploadedMessage) error {
+	value, err := json.Marshal(message.Event)
 	if err != nil {
 		return err
 	}
 
 	done := make(chan error, 1)
 	p.client.Produce(ctx, &kgo.Record{
-		Topic: p.topic, Key: []byte(event.DocumentID), Value: value, Timestamp: time.Now().UTC(),
+		Topic: p.topic, Key: []byte(message.Event.DocumentID), Value: value, Timestamp: time.Now().UTC(),
 	}, func(_ *kgo.Record, err error) {
 		done <- err
 	})

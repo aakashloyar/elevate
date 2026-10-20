@@ -36,11 +36,11 @@ func main() {
 
 	storage := s3adapter.NewS3Storage(s3Client.Client, s3Client.Bucket)
 	eventPublisher, err := kafkaproducer.NewProducer(kafkaproducer.Config{
-		Brokers:   config.App.Kafka.Brokers,
-		Topic:     config.App.Kafka.Topic,
-		ClientID:  config.App.Kafka.ClientID,
-		APIKey:    config.App.Kafka.APIKey,
-		APISecret: config.App.Kafka.APISecret,
+		Brokers:               config.App.Kafka.Brokers,
+		DocumentUploadedTopic: config.App.Kafka.DocumentUploadedTopic,
+		ClientID:              config.App.Kafka.ClientID,
+		APIKey:                config.App.Kafka.APIKey,
+		APISecret:             config.App.Kafka.APISecret,
 	})
 	if err != nil {
 		log.Fatalf("failed to create Kafka producer: %v", err)
@@ -80,12 +80,12 @@ func main() {
 	})
 	processDocumentService := processSvc.NewService(storage, embedder, vectorRepo, idGen)
 	documentConsumer, err := kafkaconsumer.NewConsumer(kafkaconsumer.Config{
-		Brokers:   appConfig.Kafka.Brokers,
-		Topic:     appConfig.Kafka.Topic,
-		ClientID:  appConfig.Kafka.ClientID + "-processor",
-		GroupID:   appConfig.Kafka.GroupID,
-		APIKey:    appConfig.Kafka.APIKey,
-		APISecret: appConfig.Kafka.APISecret,
+		Brokers:               appConfig.Kafka.Brokers,
+		DocumentUploadedTopic: appConfig.Kafka.DocumentUploadedTopic,
+		ClientID:              appConfig.Kafka.ClientID + "-processor",
+		GroupID:               appConfig.Kafka.GroupID,
+		APIKey:                appConfig.Kafka.APIKey,
+		APISecret:             appConfig.Kafka.APISecret,
 	}, processDocumentService)
 	if err != nil {
 		log.Fatalf("failed to create document processing consumer: %v", err)

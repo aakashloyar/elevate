@@ -1,10 +1,6 @@
 package out
 
-import (
-	"context"
-
-	"github.com/aakashloyar/elevate/document/internal/domain"
-)
+import "github.com/aakashloyar/elevate/document/internal/domain"
 
 type UploadRespository interface {
 	FindByID(uploadID string) (domain.Upload, error)
@@ -12,8 +8,4 @@ type UploadRespository interface {
 	Complete(uploadID string, status domain.UploadStatus) error
 	GetChunksByUpload(uploadID string) ([]domain.Chunk, error)
 	DeleteUploadParts(uploadID string) error
-}
-
-type DocumentUploadedPublisher interface {
-	PublishDocumentUploaded(ctx context.Context, event domain.DocumentUploadedEvent) error
 }
