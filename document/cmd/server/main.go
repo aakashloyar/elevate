@@ -78,7 +78,7 @@ func main() {
 		Model:            appConfig.Gemini.EmbeddingModel,
 		OutputDimensions: appConfig.Gemini.OutputDimensions,
 	})
-	processDocumentService := processSvc.NewService(storage, embedder, vectorRepo, idGen)
+	processDocumentService := processSvc.NewService(uploadRepo, storage, embedder, vectorRepo, idGen)
 	documentConsumer, err := kafkaconsumer.NewConsumer(kafkaconsumer.Config{
 		Brokers:               appConfig.Kafka.Brokers,
 		DocumentUploadedTopic: appConfig.Kafka.DocumentUploadedTopic,

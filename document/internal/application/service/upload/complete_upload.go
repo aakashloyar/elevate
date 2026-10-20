@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"time"
 
 	in "github.com/aakashloyar/elevate/document/internal/application/ports/in/upload"
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
@@ -71,9 +70,7 @@ func (s *CompleteUploadService) Execute(ctx context.Context, input in.CompleteUp
 		return in.CompleteUploadOutput{}, err
 	}
 	if err := s.publisher.PublishDocumentUploaded(ctx, out.DocumentUploadedMessage{Event: domain.DocumentUploadedEvent{
-		EventID: input.UploadID, EventType: "document.uploaded", DocumentID: upload.ID,
-		FileName: upload.FileName, FileSize: upload.FileSize, StorageKey: upload.StorageKey,
-		UploadedAt: time.Now().UTC(),
+		DocumentID: upload.ID,
 	}}); err != nil {
 		return in.CompleteUploadOutput{}, fmt.Errorf("publish document uploaded event: %w", err)
 	}

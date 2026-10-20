@@ -22,7 +22,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 		for !iter.Done() {
 			record := iter.Next()
 			var event domain.DocumentUploadedEvent
-			if err := json.Unmarshal(record.Value, &event); err != nil || event.DocumentID == "" || event.StorageKey == "" {
+			if err := json.Unmarshal(record.Value, &event); err != nil || event.DocumentID == "" {
 				log.Printf("invalid document uploaded event: %v", err)
 				if commitErr := c.client.CommitRecords(ctx, record); commitErr != nil {
 					log.Printf("commit invalid document event: %v", commitErr)
