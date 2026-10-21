@@ -1,0 +1,14 @@
+document/cmd/server/main.go
+  h_6fce61bebff0e2 112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "800c776873401873ac8499307d8f4393dd1bf4d6",
+  "prompts": {},
+  "humans": {
+    "h_6fce61bebff0e2": {
+      "author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
