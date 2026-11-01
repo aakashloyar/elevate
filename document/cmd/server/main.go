@@ -26,8 +26,10 @@ func main() {
 	appConfig := config.App
 
 	s3Config := s3adapter.Config{
-		Region: appConfig.S3.Region,
-		Bucket: appConfig.S3.Bucket,
+		Region:          appConfig.S3.Region,
+		Bucket:          appConfig.S3.Bucket,
+		AccessKeyID:     appConfig.S3.AccessKeyID,
+		SecretAccessKey: appConfig.S3.SecretAccessKey,
 	}
 	s3Client, err := s3Config.NewS3Client(ctx)
 	if err != nil {
@@ -109,7 +111,7 @@ func main() {
 	uploadhttp.RegisterRoutes(mux, uploadHandler)
 	chunkhttp.RegisterRoutes(mux, chunkHandler)
 
-	log.Println("Routes registered successfully. Starting server on :"+config.App.HTTPPort+"...")
+	log.Println("Routes registered successfully. Starting server on :" + config.App.HTTPPort + "...")
 	http.ListenAndServe(":"+config.App.HTTPPort, withCORS(mux))
 }
 

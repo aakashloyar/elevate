@@ -14,8 +14,10 @@ type UploadConfig struct {
 }
 
 type S3Config struct {
-	Region string
-	Bucket string
+	Region          string
+	Bucket          string
+	AccessKeyID     string
+	SecretAccessKey string
 }
 
 type PostgresConfig struct {
@@ -64,8 +66,10 @@ func load() Config {
 	}
 
 	s3 := S3Config{
-		Region: os.Getenv("AWS_REGION"),
-		Bucket: os.Getenv("AWS_BUCKET"),
+		Region:          os.Getenv("AWS_REGION"),
+		Bucket:          os.Getenv("AWS_BUCKET"),
+		AccessKeyID:     os.Getenv("AWS_ACCESS_KEY_ID"),
+		SecretAccessKey: os.Getenv("AWS_SECRET_ACCESS_KEY"),
 	}
 
 	postgres := PostgresConfig{
