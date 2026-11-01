@@ -8,4 +8,14 @@ type UploadRespository interface {
 	Complete(uploadID string, status domain.UploadStatus) error
 	GetChunksByUpload(uploadID string) ([]domain.Chunk, error)
 	DeleteUploadParts(uploadID string) error
+	List(filters UploadListFilters) ([]domain.Upload, int, error)
+	FindByIDs(uploadIDs []string) ([]domain.Upload, error)
+}
+
+type UploadListFilters struct {
+	CreatedBy *string
+	Status    *domain.UploadStatus
+	Search    *string
+	Limit     int
+	Offset    int
 }

@@ -21,6 +21,10 @@ func (s *GetAssessmentService) Execute(ctx context.Context, input in.GetAssessme
 	if err != nil {
 		return in.GetAssessmentOutput{}, err
 	}
+	documentIDs, err := s.assessmentRepo.FindDocumentIDs(assessment.ID)
+	if err != nil {
+		return in.GetAssessmentOutput{}, err
+	}
 	usernames, err := s.userClient.GetUsernames(ctx, []string{assessment.CreatedBy})
 	if err != nil {
 		return in.GetAssessmentOutput{}, err
@@ -35,5 +39,6 @@ func (s *GetAssessmentService) Execute(ctx context.Context, input in.GetAssessme
 		CreatedByName:   usernames[assessment.CreatedBy],
 		CreatedAt:       assessment.CreatedAt,
 		UpdatedAt:       assessment.UpdatedAt,
+		DocumentIDs:     documentIDs,
 	}, nil
 }

@@ -173,6 +173,47 @@ func (r *AssessmentRepository) DeleteByID(assessmentID string) error {
 	return err
 }
 
+func (r *AssessmentRepository) AddDocuments(assessmentID string, documentIDs []string) error {
+	defer observeDB("assessment_documents.add")()
+	if len(documentIDs) == 0 {
+		return nil
+	}
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	stmt, err := tx.Prepare(`INSERT INTO assessment_documents (assessment_id, document_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	for _, documentID := range documentIDs {
+		if _, err := stmt.Exec(assessmentID, documentID); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
+}
+
+func (r *AssessmentRepository) FindDocumentIDs(assessmentID string) ([]string, error) {
+	defer observeDB("assessment_documents.find_ids")()
+	rows, err := r.db.Query(`SELECT document_id FROM assessment_documents WHERE assessment_id = $1 ORDER BY document_id`, assessmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	documentIDs := make([]string, 0)
+	for rows.Next() {
+		var documentID string
+		if err := rows.Scan(&documentID); err != nil {
+			return nil, err
+		}
+		documentIDs = append(documentIDs, documentID)
+	}
+	return documentIDs, rows.Err()
+}
+
 func (r *AssessmentRepository) AddProblems(assessmentID string, problemIDs []string) error {
 	defer observeDB("assessment_problems.add")()
 	if len(problemIDs) == 0 {

@@ -3,8 +3,10 @@ package upload
 import "context"
 
 type InitUploadInput struct {
-	FileName string
-	FileSize int64
+	CreatedBy   string
+	FileName    string
+	ContentType string
+	FileSize    int64
 }
 
 type UploadURL struct {

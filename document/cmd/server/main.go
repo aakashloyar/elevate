@@ -101,9 +101,11 @@ func main() {
 
 	initUploadService := uploadsvc.NewInitUploadService(uploadRepo, storage, idGen, clock)
 	completeUploadService := uploadsvc.NewCompleteUploadService(uploadRepo, storage, eventPublisher)
+	listDocumentsService := uploadsvc.NewListDocumentsService(uploadRepo)
+	getDocumentsService := uploadsvc.NewGetDocumentsService(uploadRepo)
 	markChunkService := chunkSvc.NewMarkChunkService(chunkRepo, idGen, clock)
 
-	uploadHandler := uploadhttp.NewHandler(initUploadService, completeUploadService)
+	uploadHandler := uploadhttp.NewHandler(initUploadService, completeUploadService, listDocumentsService, getDocumentsService)
 	chunkHandler := chunkhttp.NewHandler(markChunkService)
 
 	mux := http.NewServeMux()

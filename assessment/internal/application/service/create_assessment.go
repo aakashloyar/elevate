@@ -14,12 +14,13 @@ import (
 type CreateAssessmentService struct {
 	assessmentRepo out.AssessmentRepository
 	userClient     out.UserClient
+	documentClient out.DocumentClient
 	idGen          out.IDGenerator
 	clock          out.Clock
 }
 
-func NewCreateAssessmentService(assessmentRepo out.AssessmentRepository, userClient out.UserClient, idGen out.IDGenerator, clock out.Clock) in.CreateAssessmentService {
-	return &CreateAssessmentService{assessmentRepo: assessmentRepo, userClient: userClient, idGen: idGen, clock: clock}
+func NewCreateAssessmentService(assessmentRepo out.AssessmentRepository, userClient out.UserClient, documentClient out.DocumentClient, idGen out.IDGenerator, clock out.Clock) in.CreateAssessmentService {
+	return &CreateAssessmentService{assessmentRepo: assessmentRepo, userClient: userClient, documentClient: documentClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAssessmentInput) (in.CreateAssessmentOutput, error) {
@@ -40,6 +41,9 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 	if err := s.userClient.Exists(ctx, input.CreatedBy); err != nil {
 		return in.CreateAssessmentOutput{}, fmt.Errorf("created by user is invalid: %w", err)
 	}
+	if err := s.validateDocuments(ctx, input.DocumentIDs, input.CreatedBy); err != nil {
+		return in.CreateAssessmentOutput{}, err
+	}
 
 	now := s.clock.Now()
 	assessment := domain.Assessment{
@@ -55,8 +59,33 @@ func (s *CreateAssessmentService) Execute(ctx context.Context, input in.CreateAs
 	if err := s.assessmentRepo.SaveWithMarkingScheme(assessment, defaultMarkingScheme(assessment.ID)); err != nil {
 		return in.CreateAssessmentOutput{}, err
 	}
+	if err := s.assessmentRepo.AddDocuments(assessment.ID, input.DocumentIDs); err != nil {
+		return in.CreateAssessmentOutput{}, fmt.Errorf("attach documents: %w", err)
+	}
 
 	return in.CreateAssessmentOutput{AssessmentID: assessment.ID}, nil
+}
+
+func (s *CreateAssessmentService) validateDocuments(ctx context.Context, documentIDs []string, createdBy string) error {
+	if len(documentIDs) == 0 {
+		return nil
+	}
+	documents, err := s.documentClient.GetDocuments(ctx, documentIDs)
+	if err != nil {
+		return fmt.Errorf("validate documents: %w", err)
+	}
+	if len(documents) != len(documentIDs) {
+		return errors.New("one or more documents were not found")
+	}
+	for _, document := range documents {
+		if document.Status != "READY" {
+			return fmt.Errorf("document %s is not ready", document.ID)
+		}
+		if document.CreatedBy != "" && document.CreatedBy != createdBy {
+			return fmt.Errorf("document %s does not belong to the assessment creator", document.ID)
+		}
+	}
+	return nil
 }
 
 func defaultMarkingScheme(assessmentID string) domain.AssessmentMarkingScheme {

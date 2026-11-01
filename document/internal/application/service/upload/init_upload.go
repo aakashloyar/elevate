@@ -51,7 +51,9 @@ func (s *InitUploadService) Execute(ctx context.Context, input in.InitUploadInpu
 	}
 	upload := domain.Upload{
 		ID:              uploadID,
+		CreatedBy:       input.CreatedBy,
 		FileName:        input.FileName,
+		ContentType:     input.ContentType,
 		FileSize:        input.FileSize,
 		Status:          domain.StatusInitiated,
 		StorageUploadID: storageUploadID,

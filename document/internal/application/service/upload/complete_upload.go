@@ -61,7 +61,7 @@ func (s *CompleteUploadService) Execute(ctx context.Context, input in.CompleteUp
 		return in.CompleteUploadOutput{}, err
 	}
 
-	err = s.repo.Complete(input.UploadID, domain.StatusMerging)
+	err = s.repo.Complete(input.UploadID, domain.StatusProcessing)
 	if err != nil {
 		return in.CompleteUploadOutput{}, err
 	}

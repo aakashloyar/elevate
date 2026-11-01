@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/document/internal/domain"
 )
@@ -17,7 +18,7 @@ func NewChunkRepository(db *sql.DB) out.ChunkRespository {
 func (r *ChunkRepository) Mark(chunk domain.Chunk) error {
 	defer observeDB("chunks.mark")()
 	query := `
-		INSERT INTO chunks {
+		INSERT INTO chunks (
 			upload_id,
 			chunk_number,
 			etag,

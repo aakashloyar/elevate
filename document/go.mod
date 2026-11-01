@@ -32,6 +32,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
+	github.com/ledongthuc/pdf v0.0.0-20261020125853-5e46805f718e // indirect
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/twmb/franz-go/pkg/kmsg v1.11.2 // indirect
 	golang.org/x/sync v0.17.0 // indirect

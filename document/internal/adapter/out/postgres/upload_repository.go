@@ -2,6 +2,9 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
+
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
 	"github.com/aakashloyar/elevate/document/internal/domain"
 )
@@ -17,12 +20,11 @@ func NewUploadRepository(db *sql.DB) out.UploadRespository {
 func (r *UploadRepository) Init(upload domain.Upload) error {
 	defer observeDB("uploads.init")()
 	query := `
-		INSERT INTO uploads {
+		INSERT INTO uploads (
 			id,
-			artist_ids,
-			album_id,
-			cover_image_url,
+			created_by,
 			file_name,
+			content_type,
 			file_size,
 			status,
 			storage_upload_id,
@@ -31,12 +33,14 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 			created_at,
 			updated_at
 		}
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 	_, err := r.db.Exec(
 		query,
 		upload.ID,
+		upload.CreatedBy,
 		upload.FileName,
+		upload.ContentType,
 		upload.FileSize,
 		upload.Status,
 		upload.StorageUploadID,
@@ -67,8 +71,9 @@ func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 	query := `
 		SELECT 
 			id,
-			artist_id,
+			created_by,
 			file_name,
+			content_type,
 			file_size,
 			status,
 			storage_upload_id,
@@ -84,7 +89,9 @@ func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 	var upload domain.Upload
 	err := row.Scan(
 		&upload.ID,
+		&upload.CreatedBy,
 		&upload.FileName,
+		&upload.ContentType,
 		&upload.FileSize,
 		&upload.Status,
 		&upload.StorageUploadID,
@@ -142,9 +149,99 @@ func (r *UploadRepository) GetChunksByUpload(uploadID string) ([]domain.Chunk, e
 func (r *UploadRepository) DeleteUploadParts(uploadID string) error {
 	defer observeDB("upload_parts.delete")()
 	query := `
-		DELETE FROM upload_parts
+		DELETE FROM chunks
 		WHERE upload_id = $1
 	`
 	_, err := r.db.Exec(query, uploadID)
 	return err
+}
+
+func (r *UploadRepository) List(filters out.UploadListFilters) ([]domain.Upload, int, error) {
+	defer observeDB("uploads.list")()
+
+	where := []string{"1 = 1"}
+	args := make([]any, 0, 4)
+	argIndex := 1
+	if filters.CreatedBy != nil {
+		where = append(where, fmt.Sprintf("created_by = $%d", argIndex))
+		args = append(args, *filters.CreatedBy)
+		argIndex++
+	}
+	if filters.Status != nil {
+		where = append(where, fmt.Sprintf("status = $%d", argIndex))
+		args = append(args, *filters.Status)
+		argIndex++
+	}
+	if filters.Search != nil && strings.TrimSpace(*filters.Search) != "" {
+		where = append(where, fmt.Sprintf("file_name ILIKE $%d", argIndex))
+		args = append(args, "%"+strings.TrimSpace(*filters.Search)+"%")
+		argIndex++
+	}
+
+	countQuery := "SELECT COUNT(*) FROM uploads WHERE " + strings.Join(where, " AND ")
+	var total int
+	if err := r.db.QueryRow(countQuery, args...).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	query := `SELECT id, created_by, file_name, content_type, file_size, status,
+		storage_upload_id, storage_key, total_chunks, created_at, updated_at
+		FROM uploads WHERE ` + strings.Join(where, " AND ") + " ORDER BY created_at DESC"
+	if filters.Limit > 0 {
+		query += fmt.Sprintf(" LIMIT $%d", argIndex)
+		args = append(args, filters.Limit)
+		argIndex++
+	}
+	if filters.Offset > 0 {
+		query += fmt.Sprintf(" OFFSET $%d", argIndex)
+		args = append(args, filters.Offset)
+	}
+
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.Upload, 0)
+	for rows.Next() {
+		var upload domain.Upload
+		if err := rows.Scan(&upload.ID, &upload.CreatedBy, &upload.FileName, &upload.ContentType, &upload.FileSize, &upload.Status, &upload.StorageUploadID, &upload.StorageKey, &upload.TotalChunks, &upload.CreatedAt, &upload.UpdatedAt); err != nil {
+			return nil, 0, err
+		}
+		items = append(items, upload)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return items, total, nil
+}
+
+func (r *UploadRepository) FindByIDs(uploadIDs []string) ([]domain.Upload, error) {
+	defer observeDB("uploads.find_by_ids")()
+	if len(uploadIDs) == 0 {
+		return []domain.Upload{}, nil
+	}
+	placeholders := make([]string, len(uploadIDs))
+	args := make([]any, len(uploadIDs))
+	for i, id := range uploadIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+	rows, err := r.db.Query(`SELECT id, created_by, file_name, content_type, file_size, status,
+		storage_upload_id, storage_key, total_chunks, created_at, updated_at
+		FROM uploads WHERE id IN (`+strings.Join(placeholders, ",")+") ORDER BY id", args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := make([]domain.Upload, 0, len(uploadIDs))
+	for rows.Next() {
+		var upload domain.Upload
+		if err := rows.Scan(&upload.ID, &upload.CreatedBy, &upload.FileName, &upload.ContentType, &upload.FileSize, &upload.Status, &upload.StorageUploadID, &upload.StorageKey, &upload.TotalChunks, &upload.CreatedAt, &upload.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, upload)
+	}
+	return items, rows.Err()
 }

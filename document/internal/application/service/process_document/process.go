@@ -36,23 +36,31 @@ func (s *Service) Execute(ctx context.Context, event domain.DocumentUploadedEven
 	if strings.TrimSpace(upload.StorageKey) == "" {
 		return fmt.Errorf("uploaded document %s has no storage key", event.DocumentID)
 	}
+	if err := s.uploads.Complete(event.DocumentID, domain.StatusProcessing); err != nil {
+		return fmt.Errorf("mark document %s processing: %w", event.DocumentID, err)
+	}
 
 	body, err := s.storage.Download(ctx, upload.StorageKey)
 	if err != nil {
+		_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
 		return fmt.Errorf("download document %s: %w", event.DocumentID, err)
 	}
 	defer body.Close()
 
 	data, err := io.ReadAll(body)
 	if err != nil {
+		_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
 		return fmt.Errorf("read document %s: %w", event.DocumentID, err)
 	}
-	if !validText(data) {
-		return fmt.Errorf("document %s is not UTF-8 text; add a file extractor before embedding it", event.DocumentID)
+	text, err := extractText(data, upload.FileName, upload.ContentType)
+	if err != nil {
+		_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
+		return fmt.Errorf("extract text from document %s: %w", event.DocumentID, err)
 	}
 
-	chunks := splitText(string(data))
+	chunks := splitText(text)
 	if len(chunks) == 0 {
+		_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
 		return fmt.Errorf("document %s has no text to embed", event.DocumentID)
 	}
 
@@ -66,6 +74,7 @@ func (s *Service) Execute(ctx context.Context, event domain.DocumentUploadedEven
 		}
 		embeddings, err := s.embedder.EmbedDocuments(ctx, chunks[start:end])
 		if err != nil {
+			_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
 			return fmt.Errorf("embed document %s chunks %d-%d: %w", event.DocumentID, start, end-1, err)
 		}
 		if len(embeddings) != end-start {
@@ -81,16 +90,20 @@ func (s *Service) Execute(ctx context.Context, event domain.DocumentUploadedEven
 				return fmt.Errorf("marshal chunk metadata: %w", err)
 			}
 			if err := s.vectors.SaveChunk(domain.DocumentChunk{
-				ID: s.idGen.NewID(), 
+				ID:         s.idGen.NewID(),
 				DocumentID: event.DocumentID,
 				ChunkIndex: start + i,
-				Content: chunks[start+i],
-				Embedding: embedding,
-				Metadata: metadata,
+				Content:    chunks[start+i],
+				Embedding:  embedding,
+				Metadata:   metadata,
 			}); err != nil {
+				_ = s.uploads.Complete(event.DocumentID, domain.StatusFailed)
 				return fmt.Errorf("save document %s chunk %d: %w", event.DocumentID, start+i, err)
 			}
 		}
+	}
+	if err := s.uploads.Complete(event.DocumentID, domain.StatusReady); err != nil {
+		return fmt.Errorf("mark document %s ready: %w", event.DocumentID, err)
 	}
 	return nil
 }

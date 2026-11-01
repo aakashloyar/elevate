@@ -9,6 +9,7 @@ import (
 	"github.com/aakashloyar/elevate/assessment/config"
 	httpassessment "github.com/aakashloyar/elevate/assessment/internal/adapter/in/http"
 	kafkaconsumer "github.com/aakashloyar/elevate/assessment/internal/adapter/in/kafka"
+	documenthttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/documenthttp"
 	postgres "github.com/aakashloyar/elevate/assessment/internal/adapter/out/postgres"
 	problemhttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/problemhttp"
 	userhttp "github.com/aakashloyar/elevate/assessment/internal/adapter/out/userhttp"
@@ -43,7 +44,8 @@ func main() {
 	idGen := system.UUIDGenerator{}
 
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
-	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, userClient, idGen, clock)
+	documentClient := documenthttp.NewClient(config.App.Services.DocumentServiceURL)
+	createAssessmentService := assessmentsvc.NewCreateAssessmentService(assessmentRepo, userClient, documentClient, idGen, clock)
 	listAssessmentsService := assessmentsvc.NewListAssessmentsService(assessmentRepo, userClient)
 	getAssessmentService := assessmentsvc.NewGetAssessmentService(assessmentRepo, userClient)
 	deleteAssessmentService := assessmentsvc.NewDeleteAssessmentService(assessmentRepo)
