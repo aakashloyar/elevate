@@ -19,6 +19,7 @@ func NewChunkRepository(db *sql.DB) out.VectorRepository {
 }
 
 func (r *ChunkRepository) SaveChunk(chunk domain.DocumentChunk) error {
+	defer observeDB("document_chunks.save")()
 	if chunk.ID == "" || chunk.DocumentID == "" || strings.TrimSpace(chunk.Content) == "" {
 		return fmt.Errorf("chunk id, document id, and content are required")
 	}
@@ -49,6 +50,7 @@ func (r *ChunkRepository) SaveChunk(chunk domain.DocumentChunk) error {
 }
 
 func (r *ChunkRepository) SearchSimilar(embedding []float32, limit int) ([]domain.DocumentChunk, error) {
+	defer observeDB("document_chunks.search_similar")()
 	if len(embedding) == 0 {
 		return nil, fmt.Errorf("query embedding is required")
 	}

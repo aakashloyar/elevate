@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/document/internal/observe"
 )
 
 type Client struct {
@@ -61,6 +62,7 @@ type batchEmbedResponse struct {
 }
 
 func (c *Client) EmbedDocuments(ctx context.Context, texts []string) ([][]float32, error) {
+	defer observe.Dependency("gemini.batch_embed_contents")()
 	if len(texts) == 0 {
 		return [][]float32{}, nil
 	}

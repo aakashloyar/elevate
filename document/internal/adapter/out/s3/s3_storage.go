@@ -7,6 +7,7 @@ import (
 
 	"github.com/aakashloyar/elevate/document/config"
 	"github.com/aakashloyar/elevate/document/internal/domain"
+	"github.com/aakashloyar/elevate/document/internal/observe"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
@@ -30,6 +31,7 @@ func (s *S3Storage) BuildStorageKey(uploadID, fileName string) string {
 }
 
 func (s *S3Storage) CreateMultipartUpload(ctx context.Context, key string) (string, error) {
+	defer observe.Dependency("s3.create_multipart_upload")()
 
 	resp, err := s.client.CreateMultipartUpload(ctx, &s3.CreateMultipartUploadInput{
 		Bucket: &s.bucketName,
@@ -42,6 +44,7 @@ func (s *S3Storage) CreateMultipartUpload(ctx context.Context, key string) (stri
 }
 
 func (s *S3Storage) GeneratePresignedPartURL(ctx context.Context, key string, uploadID string, partNumber int32) (string, error) {
+	defer observe.Dependency("s3.presign_upload_part")()
 
 	req, err := s.presigner.PresignUploadPart(ctx, &s3.UploadPartInput{
 		Bucket:     &s.bucketName,
@@ -58,6 +61,7 @@ func (s *S3Storage) GeneratePresignedPartURL(ctx context.Context, key string, up
 }
 
 func (s *S3Storage) CompleteMultipartUpload(ctx context.Context, key string, uploadID string, parts []domain.Chunk) error {
+	defer observe.Dependency("s3.complete_multipart_upload")()
 
 	var completedParts []types.CompletedPart
 
@@ -83,6 +87,7 @@ func (s *S3Storage) CompleteMultipartUpload(ctx context.Context, key string, upl
 }
 
 func (s *S3Storage) Download(ctx context.Context, key string) (io.ReadCloser, error) {
+	defer observe.Dependency("s3.get_object")()
 	result, err := s.client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: &s.bucketName,
 		Key:    &key,

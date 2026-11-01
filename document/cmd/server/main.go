@@ -112,7 +112,7 @@ func main() {
 	chunkhttp.RegisterRoutes(mux, chunkHandler)
 
 	log.Println("Routes registered successfully. Starting server on :" + config.App.HTTPPort + "...")
-	http.ListenAndServe(":"+config.App.HTTPPort, withCORS(mux))
+	http.ListenAndServe(":"+config.App.HTTPPort, withHTTPLogging(withCORS(mux)))
 }
 
 func withCORS(next http.Handler) http.Handler {

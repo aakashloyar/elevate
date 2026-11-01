@@ -15,6 +15,7 @@ func NewUploadRepository(db *sql.DB) out.UploadRespository {
 }
 
 func (r *UploadRepository) Init(upload domain.Upload) error {
+	defer observeDB("uploads.init")()
 	query := `
 		INSERT INTO uploads {
 			id,
@@ -48,6 +49,7 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 }
 
 func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus) error {
+	defer observeDB("uploads.complete")()
 	query := `
 		Update uploads SET status = $1
 		WHERE id = $2 
@@ -61,6 +63,7 @@ func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus)
 }
 
 func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
+	defer observeDB("uploads.find_by_id")()
 	query := `
 		SELECT 
 			id,
@@ -98,6 +101,7 @@ func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 }
 
 func (r *UploadRepository) GetChunksByUpload(uploadID string) ([]domain.Chunk, error) {
+	defer observeDB("chunks.find_by_upload")()
 	query := `
 		SELECT
 			upload_id,
@@ -136,6 +140,7 @@ func (r *UploadRepository) GetChunksByUpload(uploadID string) ([]domain.Chunk, e
 }
 
 func (r *UploadRepository) DeleteUploadParts(uploadID string) error {
+	defer observeDB("upload_parts.delete")()
 	query := `
 		DELETE FROM upload_parts
 		WHERE upload_id = $1

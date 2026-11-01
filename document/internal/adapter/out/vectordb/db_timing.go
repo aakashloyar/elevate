@@ -1,0 +1,13 @@
+package vectordb
+
+import (
+	"log"
+	"time"
+)
+
+func observeDB(operation string) func() {
+	startedAt := time.Now()
+	return func() {
+		log.Printf("service=document db_operation=%s duration_ms=%.3f", operation, float64(time.Since(startedAt).Microseconds())/1000)
+	}
+}

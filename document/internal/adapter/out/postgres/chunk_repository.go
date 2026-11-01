@@ -15,6 +15,7 @@ func NewChunkRepository(db *sql.DB) out.ChunkRespository {
 }
 
 func (r *ChunkRepository) Mark(chunk domain.Chunk) error {
+	defer observeDB("chunks.mark")()
 	query := `
 		INSERT INTO chunks {
 			upload_id,

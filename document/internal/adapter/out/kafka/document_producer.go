@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out"
+	"github.com/aakashloyar/elevate/document/internal/observe"
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
 func (p *Producer) PublishDocumentUploaded(ctx context.Context, message out.DocumentUploadedMessage) error {
+	defer observe.Dependency("kafka.publish_document_uploaded")()
 	value, err := json.Marshal(message.Event)
 	if err != nil {
 		return err
