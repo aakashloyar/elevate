@@ -37,9 +37,10 @@ type batchEmbedRequest struct {
 }
 
 type embedRequest struct {
-	Model              string             `json:"model"`
-	Content            embedContent       `json:"content"`
-	EmbedContentConfig embedContentConfig `json:"embedContentConfig,omitempty"`
+	Model                string       `json:"model"`
+	Content              embedContent `json:"content"`
+	TaskType             string       `json:"taskType,omitempty"`
+	OutputDimensionality int          `json:"outputDimensionality,omitempty"`
 }
 
 type embedContent struct {
@@ -48,11 +49,6 @@ type embedContent struct {
 
 type embedPart struct {
 	Text string `json:"text"`
-}
-
-type embedContentConfig struct {
-	TaskType             string `json:"taskType,omitempty"`
-	OutputDimensionality int    `json:"outputDimensionality,omitempty"`
 }
 
 type batchEmbedResponse struct {
@@ -77,12 +73,10 @@ func (c *Client) EmbedDocuments(ctx context.Context, texts []string) ([][]float3
 			return nil, fmt.Errorf("document chunk %d is empty", i)
 		}
 		requests[i] = embedRequest{
-			Model:   modelResource,
-			Content: embedContent{Parts: []embedPart{{Text: text}}},
-			EmbedContentConfig: embedContentConfig{
-				TaskType:             "RETRIEVAL_DOCUMENT",
-				OutputDimensionality: c.outputDimensions,
-			},
+			Model:                modelResource,
+			Content:              embedContent{Parts: []embedPart{{Text: text}}},
+			TaskType:             "RETRIEVAL_DOCUMENT",
+			OutputDimensionality: c.outputDimensions,
 		}
 	}
 

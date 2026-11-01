@@ -1,9 +1,11 @@
 package domain
 
+import "time"
+
 type Chunk struct {
 	UploadID    string
 	ChunkNumber int
 	ETag        string
-	CreatedAt   int64
-	UpdatedAt   int64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

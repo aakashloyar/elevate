@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/aakashloyar/elevate/document/internal/domain"
+	"github.com/aakashloyar/elevate/document/internal/observe"
 )
 
 func (c *Consumer) Start(ctx context.Context) error {
@@ -30,8 +31,13 @@ func (c *Consumer) Start(ctx context.Context) error {
 				continue
 			}
 
-			if err := c.service.Execute(ctx, event); err != nil {
-				log.Printf("document processing failed for %s: %v", event.DocumentID, err)
+			log.Printf("service=document kafka_consumer event=document.uploaded document_id=%s partition=%d offset=%d", event.DocumentID, record.Partition, record.Offset)
+			processingErr := func() error {
+				defer observe.Dependency("kafka.consume_document_uploaded")()
+				return c.service.Execute(ctx, event)
+			}()
+			if processingErr != nil {
+				log.Printf("document processing failed for %s: %v", event.DocumentID, processingErr)
 				continue
 			}
 			if err := c.client.CommitRecords(ctx, record); err != nil {

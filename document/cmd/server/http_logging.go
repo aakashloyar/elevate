@@ -25,6 +25,11 @@ func (w *loggingResponseWriter) Write(body []byte) (int, error) {
 
 func withHTTPLogging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		startedAt := time.Now()
 		writer := &loggingResponseWriter{ResponseWriter: w}
 		next.ServeHTTP(writer, r)

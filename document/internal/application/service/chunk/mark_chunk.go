@@ -26,8 +26,8 @@ func (s *MarkChunkService) Execute(ctx context.Context, input in.MarkChunkInput)
 		UploadID:    input.UploadID,
 		ChunkNumber: input.ChunkNumber,
 		ETag:        input.ETag,
-		CreatedAt:   s.clock.Now().UTC().Unix(),
-		UpdatedAt:   s.clock.Now().UTC().Unix(),
+		CreatedAt:   s.clock.Now().UTC(),
+		UpdatedAt:   s.clock.Now().UTC(),
 	}
 
 	err := s.repo.Mark(chunk)

@@ -32,7 +32,7 @@ func (r *UploadRepository) Init(upload domain.Upload) error {
 			total_chunks,
 			created_at,
 			updated_at
-		}
+        )
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 	_, err := r.db.Exec(
@@ -60,8 +60,8 @@ func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus)
 	`
 	_, err := r.db.Exec(
 		query,
-		uploadID,
 		status,
+		uploadID,
 	)
 	return err
 }
