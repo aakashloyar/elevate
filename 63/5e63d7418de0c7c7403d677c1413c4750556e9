@@ -1,0 +1,105 @@
+assessment/internal/adapter/out/postgres/assessment_repository.go
+  s_8c7c13500c0009::t_f3c969f1152bcf 176-216
+document/cmd/server/main.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 105,108
+  s_8c7c13500c0009::t_08f843d15ec3b4 104
+assessment/internal/adapter/out/documenthttp/client.go
+  s_8c7c13500c0009::t_d787a9305aed9f 1-49
+assessment/cmd/server/main.go
+  s_8c7c13500c0009::t_d787a9305aed9f 12,47-48
+assessment/internal/application/service/get_assessment.go
+  s_8c7c13500c0009::t_cc10370085efb4 24-27,42
+document/internal/application/service/process_document/extractor.go
+  s_8c7c13500c0009::t_60469da5c6be5c 1-38
+assessment/internal/application/service/create_assessment.go
+  s_8c7c13500c0009::t_cc10370085efb4 17,22-23,44-46,62-64,69-88
+  s_8c7c13500c0009::t_4c918f2844a2af 89-90
+assessment/internal/application/ports/out/assessment_repository.go
+  s_8c7c13500c0009::t_cc10370085efb4 16-17
+document/migrations/000001_create_uploads_table.up.sql
+  s_8c7c13500c0009::t_2fffc31f8a66c8 1-16
+assessment/migrations/000005_create_assessment_document_table.down.sql
+  s_8c7c13500c0009::t_f3c969f1152bcf 1
+document/internal/adapter/in/http/chunk/handler.go
+  s_8c7c13500c0009::t_de681406b0bd06 6-7,15-17,33
+document/go.mod
+  s_8c7c13500c0009::t_118cc7f64debf0 35
+document/internal/application/service/upload/get_documents.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 1-40
+document/internal/application/service/upload/init_upload.go
+  s_8c7c13500c0009::t_5c72701ab9a2d5 54,56
+document/internal/adapter/in/http/upload/handler.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 17,43,48,138-154,159
+  s_8c7c13500c0009::t_0f18d05e6688a9 41
+  s_8c7c13500c0009::t_08f843d15ec3b4 6-10,16,21-24,45-46,59-60,89,106-107,109-111,113-137,155-158
+  s_8c7c13500c0009::t_fd79f66f1ba264 108,112
+  s_8c7c13500c0009::t_9f92faf968d320 47
+assessment/internal/application/ports/in/create_assessment.go
+  s_8c7c13500c0009::t_cc10370085efb4 10
+assessment/internal/adapter/in/http/handler.go
+  s_8c7c13500c0009::t_89a203e77b421a 21,37,155,240
+  s_8c7c13500c0009::t_88de379018db83 17-20,29-36,213
+assessment/internal/application/ports/out/document_client.go
+  s_8c7c13500c0009::t_cc10370085efb4 1-13
+document/internal/application/ports/in/upload/get_documents.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 1-17
+assessment/config/config.go
+  s_8c7c13500c0009::t_d787a9305aed9f 29-31,71-73,78-79
+  s_8c7c13500c0009::t_0d585ac7e81c53 80
+document/internal/application/service/process_document/process.go
+  s_8c7c13500c0009::t_0f18d05e6688a9 93,96-98
+  s_8c7c13500c0009::t_5c72701ab9a2d5 39-41,45,52,57,63,77,100,105-107
+  s_8c7c13500c0009::t_60469da5c6be5c 55-56,58,61
+document/internal/application/service/upload/complete_upload.go
+  s_8c7c13500c0009::t_5c72701ab9a2d5 64
+assessment/migrations/000005_create_assessment_document_table.up.sql
+  s_8c7c13500c0009::t_f3c969f1152bcf 1-9
+document/internal/domain/upload.go
+  s_8c7c13500c0009::t_0f18d05e6688a9 8,11
+  s_8c7c13500c0009::t_5c72701ab9a2d5 9-10,16,18
+document/migrations/000002_create_chunks_table.down.sql
+  s_8c7c13500c0009::t_2fffc31f8a66c8 1
+document/internal/application/ports/in/upload/list_documents.go
+  s_8c7c13500c0009::t_0f18d05e6688a9 19-23,25-26
+  s_8c7c13500c0009::t_54b618e12690a5 1-18,24,27-38
+document/internal/application/ports/out/upload_respository.go
+  s_8c7c13500c0009::t_5c72701ab9a2d5 11,13-20
+  s_8c7c13500c0009::t_de4e8db11f0cc1 12
+document/internal/application/service/upload/list_documents.go
+  s_8c7c13500c0009::t_54b618e12690a5 1-45
+document/migrations/000002_create_chunks_table.up.sql
+  s_8c7c13500c0009::t_2fffc31f8a66c8 1-8
+document/internal/application/ports/in/upload/init_upload.go
+  s_8c7c13500c0009::t_5c72701ab9a2d5 6-9
+document/internal/adapter/out/postgres/upload_repository.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 218-247
+  s_8c7c13500c0009::t_da01242d8764ae 5-7,23,25,27,36,41,43,74,76,92,94,152,158-175,177-217
+  s_8c7c13500c0009::t_54b618e12690a5 176
+document/migrations/000001_create_uploads_table.down.sql
+  s_8c7c13500c0009::t_2fffc31f8a66c8 1
+document/internal/adapter/in/http/upload/route.go
+  s_8c7c13500c0009::t_de4e8db11f0cc1 15-21
+  s_8c7c13500c0009::t_08f843d15ec3b4 8-14
+assessment/internal/application/ports/in/get_assessment.go
+  s_8c7c13500c0009::t_cc10370085efb4 21
+document/internal/adapter/out/postgres/chunk_repository.go
+  s_8c7c13500c0009::t_9792e7693906fe 5,21
+document/go.sum
+  s_8c7c13500c0009::t_a86e2b0bc36926 54-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "635e63d7418de0c7c7403d677c1413c4750556e9",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
