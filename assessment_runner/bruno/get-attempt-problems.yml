@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8086/attempts/aba9dfa2-d4f6-4694-8b41-2230ecf48571/problems?offset=0&limit=10
+  url: http://localhost:8086/attempts/cc38906c-4e7e-4826-a54f-53b43763f8d3/problems?offset=0&limit=10
   params:
     - name: offset
       value: "0"

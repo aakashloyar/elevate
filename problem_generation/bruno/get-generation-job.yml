@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8087/generation-jobs/
+  url: http://localhost:8087/generation-jobs/933297e6-4e2b-4bbe-a8ba-947585c116e3
   auth: inherit
 
 settings:

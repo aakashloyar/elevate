@@ -12,7 +12,13 @@ http:
       {
         "assessment_id": "f207db6a-c9bc-4743-96f3-56028ec6cfa2",
         "user_id": "019fd16d-8296-7039-949f-65044c31d28f",
-          "duration_seconds": 36000
+        "duration_seconds": 36000,
+        "marking_scheme": {
+          "assessment_id": "f207db6a-c9bc-4743-96f3-56028ec6cfa2",
+          "single": { "correct": 4, "incorrect": -1, "skipped": 0 },
+          "multiple": { "correct": 4, "incorrect": -2, "skipped": 0 },
+          "numerical": { "correct": 4, "incorrect": 0, "skipped": 0 }
+        }
       }
   auth: inherit
 

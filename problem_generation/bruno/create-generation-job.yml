@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "user_id": "019fd16d-8296-7039-949f-65044c31d28f",
+        "user_id": "01a09427-5792-7192-a6b6-d1fce684767d",
         "single_correct_count": 2,
         "multi_correct_count": 1,
         "numerical_count": 1,

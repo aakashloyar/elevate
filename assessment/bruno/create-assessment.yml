@@ -10,10 +10,11 @@ http:
     type: json
     data: |-
       {
-        "title": "Assessment1",
-        "description": "For testing purpose 1",
-        "duration_seconds": 120,
-        "created_by": "01a09427-5792-7192-a6b6-d1fce684767d"
+        "title": "Assessment11",
+        "description": "For testing purpose 11",
+        "duration_seconds": 15,
+        "created_by": "01a09427-5792-7192-a6b6-d1fce684767d",
+        "document_ids": []
       }
   auth: inherit
 

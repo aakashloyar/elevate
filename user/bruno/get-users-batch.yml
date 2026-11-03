@@ -1,0 +1,23 @@
+info:
+  name: get_users_batch
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:8081/users/batch
+  body:
+    type: json
+    data: |-
+      {
+        "user_ids": [
+          "01a0e3bb-fef1-7d04-ab84-10f613c76d27"
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

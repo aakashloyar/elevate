@@ -1,7 +1,7 @@
 info:
   name: get-marking-scheme
   type: http
-  seq: 9
+  seq: 8
 
 http:
   method: GET

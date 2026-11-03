@@ -1,0 +1,23 @@
+info:
+  name: get_assessments_batch
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: http://localhost:8082/assessments/batch
+  body:
+    type: json
+    data: |-
+      {
+        "assessment_ids": [
+          "f207db6a-c9bc-4743-96f3-56028ec6cfa2"
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

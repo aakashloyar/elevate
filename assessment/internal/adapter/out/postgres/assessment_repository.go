@@ -64,7 +64,7 @@ func (r *AssessmentRepository) FindAll(filters out.FindAllAssessmentFilters) ([]
 			created_at,
 			updated_at
 		FROM assessments
-		WHERE 1 = 1`
+		`
 	args := make([]any, 0)
 	argIndex := 1
 
