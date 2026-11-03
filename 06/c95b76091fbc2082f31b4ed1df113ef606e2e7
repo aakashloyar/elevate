@@ -1,0 +1,27 @@
+document/bruno/get-documents-batch.yml
+  s_8c7c13500c0009::t_6edba58af92301 1-23
+user/bruno/get-users-batch.yml
+  s_8c7c13500c0009::t_84035087ae8ea8 1-23
+document/bruno/list-documents.yml
+  s_8c7c13500c0009::t_6edba58af92301 1-15
+assessment/bruno/get-assessments-batch.yml
+  s_8c7c13500c0009::t_412d211e9867a3 1-23
+assessment/bruno/create-assessment.yml
+  s_8c7c13500c0009::t_6edba58af92301 13-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "06c95b76091fbc2082f31b4ed1df113ef606e2e7",
+  "prompts": {},
+  "sessions": {
+    "s_8c7c13500c0009": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a5c7-d3c8-7252-b417-cd54c02a5219",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "aakashloyar <aakashloyar@gmail.com>"
+    }
+  }
+}
