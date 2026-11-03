@@ -14,11 +14,10 @@ import (
 )
 
 type CreateAssessmentRequest struct {
-	Title           string   `json:"title"`
-	Description     string   `json:"description"`
-	DurationSeconds int      `json:"duration_seconds"`
-	CreatedBy       string   `json:"created_by"`
-	DocumentIDs     []string `json:"document_ids"`
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	DurationSeconds int    `json:"duration_seconds"`
+	CreatedBy       string `json:"created_by"`
 }
 
 type CreateAssessmentResponse struct {
@@ -26,15 +25,14 @@ type CreateAssessmentResponse struct {
 }
 
 type GetAssessmentResponse struct {
-	ID              string   `json:"id"`
-	Title           string   `json:"title"`
-	Description     string   `json:"description"`
-	DurationSeconds int      `json:"duration_seconds"`
-	CreatedBy       string   `json:"created_by"`
-	CreatedByName   string   `json:"created_by_name,omitempty"`
-	CreatedAt       string   `json:"created_at"`
-	UpdatedAt       string   `json:"updated_at"`
-	DocumentIDs     []string `json:"document_ids,omitempty"`
+	ID              string `json:"id"`
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	DurationSeconds int    `json:"duration_seconds"`
+	CreatedBy       string `json:"created_by"`
+	CreatedByName   string `json:"created_by_name,omitempty"`
+	CreatedAt       string `json:"created_at"`
+	UpdatedAt       string `json:"updated_at"`
 }
 
 type ListAssessmentsResponse struct {
@@ -152,7 +150,6 @@ func (h *Handler) CreateAssessment(w http.ResponseWriter, r *http.Request) {
 		Description:     req.Description,
 		DurationSeconds: req.DurationSeconds,
 		CreatedBy:       req.CreatedBy,
-		DocumentIDs:     req.DocumentIDs,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -210,7 +207,6 @@ func (h *Handler) ListAssessments(w http.ResponseWriter, r *http.Request) {
 			CreatedByName:   assessment.CreatedByName,
 			CreatedAt:       assessment.CreatedAt.Format(http.TimeFormat),
 			UpdatedAt:       assessment.UpdatedAt.Format(http.TimeFormat),
-			DocumentIDs:     assessment.DocumentIDs,
 		})
 	}
 
@@ -237,7 +233,6 @@ func (h *Handler) GetAssessmentByID(w http.ResponseWriter, r *http.Request, asse
 		CreatedByName:   out.CreatedByName,
 		CreatedAt:       out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:       out.UpdatedAt.Format(http.TimeFormat),
-		DocumentIDs:     out.DocumentIDs,
 	})
 }
 

@@ -7,7 +7,6 @@ type CreateAssessmentInput struct {
 	Description     string
 	DurationSeconds int
 	CreatedBy       string
-	DocumentIDs     []string
 }
 
 type CreateAssessmentOutput struct {

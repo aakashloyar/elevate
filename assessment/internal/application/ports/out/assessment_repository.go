@@ -13,8 +13,6 @@ type AssessmentRepository interface {
 	FindMarkingScheme(assessmentID string) (domain.AssessmentMarkingScheme, error)
 	CreateMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error
 	UpsertMarkingScheme(markingScheme domain.AssessmentMarkingScheme) error
-	AddDocuments(assessmentID string, documentIDs []string) error
-	FindDocumentIDs(assessmentID string) ([]string, error)
 }
 
 type FindAllAssessmentFilters struct {

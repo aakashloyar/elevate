@@ -18,7 +18,6 @@ type GetAssessmentOutput struct {
 	CreatedByName   string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	DocumentIDs     []string
 }
 
 type GetAssessmentService interface {

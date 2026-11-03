@@ -26,9 +26,8 @@ type ServerConfig struct {
 }
 
 type ServiceConfig struct {
-	ProblemServiceURL  string
-	UserServiceURL     string
-	DocumentServiceURL string
+	ProblemServiceURL string
+	UserServiceURL    string
 }
 
 type KafkaConfig struct {
@@ -68,15 +67,11 @@ func load() Config {
 	}
 
 	services := ServiceConfig{
-		ProblemServiceURL:  os.Getenv("PROBLEM_SERVICE_URL"),
-		UserServiceURL:     os.Getenv("USER_SERVICE_URL"),
-		DocumentServiceURL: os.Getenv("DOCUMENT_SERVICE_URL"),
+		ProblemServiceURL: os.Getenv("PROBLEM_SERVICE_URL"),
+		UserServiceURL:    os.Getenv("USER_SERVICE_URL"),
 	}
 	if services.UserServiceURL == "" {
 		services.UserServiceURL = "http://localhost:8081"
-	}
-	if services.DocumentServiceURL == "" {
-		services.DocumentServiceURL = "http://localhost:8090"
 	}
 
 	kafka := KafkaConfig{
