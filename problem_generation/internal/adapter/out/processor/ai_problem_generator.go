@@ -17,10 +17,11 @@ type AIProblemGenerator struct {
 	ai        out.AITextGenerator
 	publisher out.GeneratedProblemPublisher
 	topic     string
+	documents out.DocumentClient
 }
 
-func NewAIProblemGenerator(ai out.AITextGenerator, publisher out.GeneratedProblemPublisher, topic string) out.GenerationProcessor {
-	return &AIProblemGenerator{ai: ai, publisher: publisher, topic: topic}
+func NewAIProblemGenerator(ai out.AITextGenerator, publisher out.GeneratedProblemPublisher, topic string, documents out.DocumentClient) out.GenerationProcessor {
+	return &AIProblemGenerator{ai: ai, publisher: publisher, topic: topic, documents: documents}
 }
 
 func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.GenerationJob) (int, error) {
@@ -28,9 +29,21 @@ func (p *AIProblemGenerator) ProcessGeneration(ctx context.Context, job domain.G
 		return 0, errors.New("assessment id is required to publish generated problems")
 	}
 
+	documentContext := ""
+	if job.DocumentID != nil && strings.TrimSpace(*job.DocumentID) != "" {
+		if p.documents == nil {
+			return 0, errors.New("document service client is not configured")
+		}
+		content, err := p.documents.GetContent(ctx, strings.TrimSpace(*job.DocumentID))
+		if err != nil {
+			return 0, fmt.Errorf("load document content: %w", err)
+		}
+		documentContext = buildDocumentContext(content, 40000)
+	}
+
 	response, err := p.ai.GenerateText(ctx, out.GenerateTextRequest{
 		SystemPrompt:     systemPrompt(),
-		UserPrompt:       userPrompt(job),
+		UserPrompt:       userPrompt(job, documentContext),
 		ResponseMimeType: "application/json",
 		Temperature:      floatPtr(0.2),
 	})
@@ -80,8 +93,8 @@ func systemPrompt() string {
 	}, " ")
 }
 
-func userPrompt(job domain.GenerationJob) string {
-	return fmt.Sprintf(
+func userPrompt(job domain.GenerationJob, documentContext string) string {
+	prompt := fmt.Sprintf(
 		"Create %d single-correct, %d multiple-correct, and %d numerical problems. Level: %s. Description: %s. Topic IDs: %s.",
 		job.SingleCorrectCount,
 		job.MultiCorrectCount,
@@ -90,6 +103,25 @@ func userPrompt(job domain.GenerationJob) string {
 		job.Description,
 		strings.Join(job.TopicIDs, ", "),
 	)
+	if documentContext == "" {
+		return prompt
+	}
+	return prompt + " Use the following source document as the primary factual context. Generate questions only from this content and do not invent facts outside it.\n\nSOURCE DOCUMENT CONTEXT:\n" + documentContext + "\nEND SOURCE DOCUMENT CONTEXT"
+}
+
+func buildDocumentContext(content string, maxCharacters int) string {
+	if maxCharacters <= 0 {
+		return ""
+	}
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return ""
+	}
+	runes := []rune(content)
+	if len(runes) > maxCharacters {
+		runes = runes[:maxCharacters]
+	}
+	return string(runes)
 }
 
 func parseGeneratedProblemBatch(text string) (generatedProblemBatch, error) {

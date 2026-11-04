@@ -25,6 +25,7 @@ type ServerConfig struct {
 type ServiceConfig struct {
 	AssessmentServiceURL string
 	UserServiceURL       string
+	DocumentServiceURL   string
 }
 
 type KafkaConfig struct {
@@ -112,12 +113,15 @@ func load() Config {
 		}
 	}
 
-	services := ServiceConfig{AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"), UserServiceURL: os.Getenv("USER_SERVICE_URL")}
+	services := ServiceConfig{AssessmentServiceURL: os.Getenv("ASSESSMENT_SERVICE_URL"), UserServiceURL: os.Getenv("USER_SERVICE_URL"), DocumentServiceURL: os.Getenv("DOCUMENT_SERVICE_URL")}
 	if services.AssessmentServiceURL == "" {
 		services.AssessmentServiceURL = "http://localhost:8082"
 	}
 	if services.UserServiceURL == "" {
 		services.UserServiceURL = "http://localhost:8081"
+	}
+	if services.DocumentServiceURL == "" {
+		services.DocumentServiceURL = "http://localhost:8090"
 	}
 	return Config{Postgres: postgres, Server: server, Services: services, Kafka: kafka, Worker: worker, AI: ai}
 }

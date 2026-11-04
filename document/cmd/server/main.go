@@ -10,11 +10,9 @@ import (
 	chunkhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/chunk"
 	uploadhttp "github.com/aakashloyar/elevate/document/internal/adapter/in/http/upload"
 	kafkaconsumer "github.com/aakashloyar/elevate/document/internal/adapter/in/kafka"
-	gemini "github.com/aakashloyar/elevate/document/internal/adapter/out/ai/gemini"
 	kafkaproducer "github.com/aakashloyar/elevate/document/internal/adapter/out/kafka"
 	"github.com/aakashloyar/elevate/document/internal/adapter/out/postgres"
 	s3adapter "github.com/aakashloyar/elevate/document/internal/adapter/out/s3"
-	"github.com/aakashloyar/elevate/document/internal/adapter/out/vectordb"
 	"github.com/aakashloyar/elevate/document/internal/application/ports/out/system"
 	chunkSvc "github.com/aakashloyar/elevate/document/internal/application/service/chunk"
 	processSvc "github.com/aakashloyar/elevate/document/internal/application/service/process_document"
@@ -73,14 +71,7 @@ func main() {
 
 	uploadRepo := postgres.NewUploadRepository(db)
 	chunkRepo := postgres.NewChunkRepository(db)
-	vectorRepo := vectordb.NewChunkRepository(db)
-	embedder := gemini.NewClient(gemini.Config{
-		BaseURL:          appConfig.Gemini.BaseURL,
-		APIKey:           appConfig.Gemini.APIKey,
-		Model:            appConfig.Gemini.EmbeddingModel,
-		OutputDimensions: appConfig.Gemini.OutputDimensions,
-	})
-	processDocumentService := processSvc.NewService(uploadRepo, storage, embedder, vectorRepo, idGen)
+	processDocumentService := processSvc.NewService(uploadRepo, storage)
 	documentConsumer, err := kafkaconsumer.NewConsumer(kafkaconsumer.Config{
 		Brokers:               appConfig.Kafka.Brokers,
 		DocumentUploadedTopic: appConfig.Kafka.DocumentUploadedTopic,
@@ -102,10 +93,11 @@ func main() {
 	initUploadService := uploadsvc.NewInitUploadService(uploadRepo, storage, idGen, clock)
 	completeUploadService := uploadsvc.NewCompleteUploadService(uploadRepo, storage, eventPublisher)
 	listDocumentsService := uploadsvc.NewListDocumentsService(uploadRepo)
-	getDocumentsService := uploadsvc.NewGetDocumentsService(uploadRepo)
+	getDocumentService := uploadsvc.NewGetDocumentService(uploadRepo)
+	getDocumentContentService := uploadsvc.NewGetDocumentContentService(uploadRepo)
 	markChunkService := chunkSvc.NewMarkChunkService(chunkRepo, idGen, clock)
 
-	uploadHandler := uploadhttp.NewHandler(initUploadService, completeUploadService, listDocumentsService, getDocumentsService)
+	uploadHandler := uploadhttp.NewHandler(initUploadService, completeUploadService, listDocumentsService, getDocumentService, getDocumentContentService)
 	chunkHandler := chunkhttp.NewHandler(markChunkService)
 
 	mux := http.NewServeMux()

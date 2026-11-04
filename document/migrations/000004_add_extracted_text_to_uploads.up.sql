@@ -1,0 +1,2 @@
+ALTER TABLE uploads
+    ADD COLUMN IF NOT EXISTS extracted_text TEXT NOT NULL DEFAULT '';

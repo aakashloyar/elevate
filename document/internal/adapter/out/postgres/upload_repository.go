@@ -66,6 +66,12 @@ func (r *UploadRepository) Complete(uploadID string, status domain.UploadStatus)
 	return err
 }
 
+func (r *UploadRepository) SaveExtractedText(uploadID, text string) error {
+	defer observeDB("uploads.save_extracted_text")()
+	_, err := r.db.Exec(`UPDATE uploads SET extracted_text = $1, updated_at = NOW() WHERE id = $2`, text, uploadID)
+	return err
+}
+
 func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 	defer observeDB("uploads.find_by_id")()
 	query := `
@@ -79,6 +85,7 @@ func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 			storage_upload_id,
 			storage_key,
 			total_chunks,
+			extracted_text,
 			created_at,
 			updated_at
 		FROM uploads
@@ -97,6 +104,7 @@ func (r *UploadRepository) FindByID(uploadID string) (domain.Upload, error) {
 		&upload.StorageUploadID,
 		&upload.StorageKey,
 		&upload.TotalChunks,
+		&upload.ExtractedText,
 		&upload.CreatedAt,
 		&upload.UpdatedAt,
 	)
@@ -187,15 +195,6 @@ func (r *UploadRepository) List(filters out.UploadListFilters) ([]domain.Upload,
 	query := `SELECT id, created_by, file_name, content_type, file_size, status,
 		storage_upload_id, storage_key, total_chunks, created_at, updated_at
 		FROM uploads WHERE ` + strings.Join(where, " AND ") + " ORDER BY created_at DESC"
-	if filters.Limit > 0 {
-		query += fmt.Sprintf(" LIMIT $%d", argIndex)
-		args = append(args, filters.Limit)
-		argIndex++
-	}
-	if filters.Offset > 0 {
-		query += fmt.Sprintf(" OFFSET $%d", argIndex)
-		args = append(args, filters.Offset)
-	}
 
 	rows, err := r.db.Query(query, args...)
 	if err != nil {

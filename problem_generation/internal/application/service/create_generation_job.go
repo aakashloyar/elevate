@@ -16,12 +16,13 @@ type CreateGenerationJobService struct {
 	eventPublisher   out.EventPublisher
 	userClient       out.UserClient
 	assessmentClient out.AssessmentClient
+	documentClient   out.DocumentClient
 	idGen            out.IDGenerator
 	clock            out.Clock
 }
 
-func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPublisher out.EventPublisher, userClient out.UserClient, assessmentClient out.AssessmentClient, idGen out.IDGenerator, clock out.Clock) in.CreateGenerationJobService {
-	return &CreateGenerationJobService{jobRepo: jobRepo, eventPublisher: eventPublisher, userClient: userClient, assessmentClient: assessmentClient, idGen: idGen, clock: clock}
+func NewCreateGenerationJobService(jobRepo out.GenerationJobRepository, eventPublisher out.EventPublisher, userClient out.UserClient, assessmentClient out.AssessmentClient, documentClient out.DocumentClient, idGen out.IDGenerator, clock out.Clock) in.CreateGenerationJobService {
+	return &CreateGenerationJobService{jobRepo: jobRepo, eventPublisher: eventPublisher, userClient: userClient, assessmentClient: assessmentClient, documentClient: documentClient, idGen: idGen, clock: clock}
 }
 
 func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.CreateGenerationJobInput) (in.CreateGenerationJobOutput, error) {
@@ -35,6 +36,21 @@ func (s *CreateGenerationJobService) Execute(ctx context.Context, input in.Creat
 	if input.AssessmentID != nil && strings.TrimSpace(*input.AssessmentID) != "" {
 		if err := s.assessmentClient.Exists(ctx, strings.TrimSpace(*input.AssessmentID)); err != nil {
 			return in.CreateGenerationJobOutput{}, fmt.Errorf("assessment id is invalid: %w", err)
+		}
+	}
+	if input.DocumentID != nil && strings.TrimSpace(*input.DocumentID) != "" {
+		if s.documentClient == nil {
+			return in.CreateGenerationJobOutput{}, errors.New("document service client is not configured")
+		}
+		document, err := s.documentClient.GetDocument(ctx, strings.TrimSpace(*input.DocumentID))
+		if err != nil {
+			return in.CreateGenerationJobOutput{}, fmt.Errorf("document id is invalid: %w", err)
+		}
+		if document.Status != "READY" {
+			return in.CreateGenerationJobOutput{}, fmt.Errorf("document %s is not ready", document.ID)
+		}
+		if document.CreatedBy != "" && document.CreatedBy != input.UserID {
+			return in.CreateGenerationJobOutput{}, fmt.Errorf("document %s does not belong to the user", document.ID)
 		}
 	}
 

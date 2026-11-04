@@ -11,6 +11,7 @@ import (
 	kafkaconsumer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/in/kafka"
 	aiadapter "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/ai"
 	assessmenthttp "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/assessmenthttp"
+	documenthttp "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/documenthttp"
 	kafkaproducer "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/kafka"
 	postgres "github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/postgres"
 	"github.com/aakashloyar/elevate/problem_generation/internal/adapter/out/processor"
@@ -58,7 +59,8 @@ func main() {
 
 	userClient := userhttp.NewClient(config.App.Services.UserServiceURL)
 	assessmentClient := assessmenthttp.NewClient(config.App.Services.AssessmentServiceURL)
-	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, userClient, assessmentClient, idGen, clock)
+	documentClient := documenthttp.NewClient(config.App.Services.DocumentServiceURL)
+	createJobService := generationjobsvc.NewCreateGenerationJobService(jobRepo, eventPublisher, userClient, assessmentClient, documentClient, idGen, clock)
 	getJobService := generationjobsvc.NewGetGenerationJobService(jobRepo, assessmentClient)
 	listJobsService := generationjobsvc.NewListGenerationJobsService(jobRepo, assessmentClient)
 
@@ -72,7 +74,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed to configure AI provider: %v", err)
 		}
-		generationProcessor := processor.NewAIProblemGenerator(aiClient, eventPublisher, config.App.Kafka.GeneratedProblemsTopic)
+		generationProcessor := processor.NewAIProblemGenerator(aiClient, eventPublisher, config.App.Kafka.GeneratedProblemsTopic, documentClient)
 		processJobService := generationjobsvc.NewProcessGenerationJobService(jobRepo, generationProcessor)
 
 		consumer, err := kafkaconsumer.Config{

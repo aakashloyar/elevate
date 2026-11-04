@@ -21,6 +21,7 @@ type Upload struct {
 	StorageUploadID string
 	StorageKey      string
 	TotalChunks     int
+	ExtractedText   string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 }

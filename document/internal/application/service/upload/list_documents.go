@@ -28,7 +28,6 @@ func (s *ListDocumentsService) Execute(ctx context.Context, input in.ListDocumen
 	}
 	items, total, err := s.repo.List(out.UploadListFilters{
 		CreatedBy: createdBy, Status: input.Status, Search: search,
-		Limit: input.Limit, Offset: input.Offset,
 	})
 	if err != nil {
 		return in.ListDocumentsOutput{}, err
@@ -41,5 +40,5 @@ func (s *ListDocumentsService) Execute(ctx context.Context, input in.ListDocumen
 			CreatedAt: item.CreatedAt, UpdatedAt: item.UpdatedAt,
 		})
 	}
-	return in.ListDocumentsOutput{Documents: documents, Total: total, Limit: input.Limit, Offset: input.Offset}, nil
+	return in.ListDocumentsOutput{Documents: documents, Total: total}, nil
 }

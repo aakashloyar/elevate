@@ -11,8 +11,6 @@ type ListDocumentsInput struct {
 	CreatedBy string
 	Status    *domain.UploadStatus
 	Search    string
-	Limit     int
-	Offset    int
 }
 
 type DocumentSummary struct {
@@ -29,8 +27,6 @@ type DocumentSummary struct {
 type ListDocumentsOutput struct {
 	Documents []DocumentSummary `json:"documents"`
 	Total     int               `json:"total"`
-	Limit     int               `json:"limit"`
-	Offset    int               `json:"offset"`
 }
 
 type ListDocumentsService interface {

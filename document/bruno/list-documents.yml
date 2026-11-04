@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8090/documents?status=READY&limit=10&offset=0
+  url: http://localhost:8090/documents?status=READY
   auth: inherit
 
 settings:
