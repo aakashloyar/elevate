@@ -57,7 +57,7 @@ func (r *SubmissionRepository) Save(submission domain.Submission, drafts []domai
 			optionIDs = append(optionIDs, option.ID)
 			optionTexts = append(optionTexts, option.Text)
 		}
-		if _, err := tx.Exec(`INSERT INTO submission_answer_drafts (submission_id, problem_id, problem_type, option_ids, option_texts, answer, answer_updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`, submission.ID, draft.ProblemID, draft.ProblemType, pqStringArray(optionIDs), pqStringArray(optionTexts), pqStringArray(draft.Answer), draft.AnswerUpdatedAt); err != nil {
+		if _, err := tx.Exec(`INSERT INTO submission_answer_drafts (submission_id, problem_id, problem_type, option_ids, option_texts, answer, time_spent_seconds, answer_updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, submission.ID, draft.ProblemID, draft.ProblemType, pqStringArray(optionIDs), pqStringArray(optionTexts), pqStringArray(draft.Answer), draft.TimeSpentSeconds, draft.AnswerUpdatedAt); err != nil {
 			return err
 		}
 	}
@@ -91,10 +91,11 @@ func (r *SubmissionRepository) SaveAnswer(answer domain.SubmissionAnswerDraft) (
 	result, err := tx.Exec(`
 		UPDATE submission_answer_drafts
 		SET answer = $3,
-			answer_updated_at = $4
+			answer_updated_at = $4,
+			time_spent_seconds = time_spent_seconds + $5
 		WHERE submission_id = $1
 			AND problem_id = $2
-	`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt)
+	`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt, answer.TimeSpentSeconds)
 	if err != nil {
 		return false, err
 	}
@@ -151,10 +152,11 @@ func (r *SubmissionRepository) SaveAnswers(answers []domain.SubmissionAnswerDraf
 		result, err := tx.Exec(`
 			UPDATE submission_answer_drafts
 			SET answer = $3,
-				answer_updated_at = $4
+				answer_updated_at = $4,
+				time_spent_seconds = time_spent_seconds + $5
 			WHERE submission_id = $1
 				AND problem_id = $2
-		`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt)
+		`, answer.SubmissionID, answer.ProblemID, pqStringArray(answer.Answer), answerUpdatedAt, answer.TimeSpentSeconds)
 		if err != nil {
 			return false, err
 		}
@@ -188,6 +190,7 @@ func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.
 			draft.option_ids,
 			draft.option_texts,
 			draft.answer,
+			draft.time_spent_seconds,
 			draft.answer_updated_at
 		FROM submissions AS submission
 		INNER JOIN submission_answer_drafts AS draft
@@ -210,7 +213,7 @@ func (r *SubmissionRepository) FindAnswerSnapshots(submissionID string) (domain.
 		var optionTexts []string
 		var answer []string
 		var answerUpdatedAt sql.NullTime
-		if err := rows.Scan(&status, &draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &answerUpdatedAt); err != nil {
+		if err := rows.Scan(&status, &draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &draft.TimeSpentSeconds, &answerUpdatedAt); err != nil {
 			return "", nil, err
 		}
 		draft.SubmissionID = submissionID
@@ -264,7 +267,7 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 	if submittedAt.Valid {
 		submission.SubmittedAt = &submittedAt.Time
 	}
-	draftRows, err := r.db.Query(`SELECT problem_id, problem_type, option_ids, option_texts, answer, answer_updated_at FROM submission_answer_drafts WHERE submission_id = $1 ORDER BY problem_id`, submissionID)
+	draftRows, err := r.db.Query(`SELECT problem_id, problem_type, option_ids, option_texts, answer, time_spent_seconds, answer_updated_at FROM submission_answer_drafts WHERE submission_id = $1 ORDER BY problem_id`, submissionID)
 	if err != nil {
 		return domain.Submission{}, nil, err
 	}
@@ -276,7 +279,7 @@ func (r *SubmissionRepository) FindByID(submissionID string) (domain.Submission,
 		var optionTexts []string
 		var answer []string
 		var answerUpdatedAt sql.NullTime
-		if err := draftRows.Scan(&draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &answerUpdatedAt); err != nil {
+		if err := draftRows.Scan(&draft.ProblemID, &draft.ProblemType, pq.Array(&optionIDs), pq.Array(&optionTexts), pq.Array(&answer), &draft.TimeSpentSeconds, &answerUpdatedAt); err != nil {
 			return domain.Submission{}, nil, err
 		}
 		draft.SubmissionID = submissionID

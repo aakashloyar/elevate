@@ -42,8 +42,9 @@ type SubmissionSummaryResponse struct {
 }
 
 type SaveAnswerRequest struct {
-	ProblemID string   `json:"problem_id"`
-	Answer    []string `json:"answer"`
+	ProblemID        string   `json:"problem_id"`
+	Answer           []string `json:"answer"`
+	TimeSpentSeconds int      `json:"time_spent_seconds"`
 }
 
 type SaveAnswerResponse struct{}
@@ -74,7 +75,6 @@ type GetSubmissionResponse struct {
 	CreatedAt       string                      `json:"created_at"`
 	UpdatedAt       string                      `json:"updated_at"`
 	MarkingScheme   *domain.MarkingScheme       `json:"marking_scheme,omitempty"`
-	Answers         []SubmissionAnswerResponse  `json:"answers"`
 	Problems        []SubmissionProblemResponse `json:"problems"`
 }
 
@@ -93,19 +93,14 @@ type UpdateSubmissionStatusResponse struct {
 	Status       string `json:"status"`
 }
 
-type SubmissionAnswerResponse struct {
-	ProblemID string   `json:"problem_id"`
-	Answer    []string `json:"answer"`
-	CreatedAt string   `json:"created_at"`
-	UpdatedAt string   `json:"updated_at"`
-}
-
 type SubmissionProblemResponse struct {
-	ProblemID       string   `json:"problem_id"`
-	ProblemType     string   `json:"problem_type"`
-	OptionIDs       []string `json:"option_ids"`
-	OptionTexts     []string `json:"option_texts"`
-	AnswerUpdatedAt *string  `json:"answer_updated_at,omitempty"`
+	ProblemID        string   `json:"problem_id"`
+	ProblemType      string   `json:"problem_type"`
+	OptionIDs        []string `json:"option_ids"`
+	OptionTexts      []string `json:"option_texts"`
+	Answer           []string `json:"answer"`
+	TimeSpentSeconds int      `json:"time_spent_seconds"`
+	AnswerUpdatedAt  *string  `json:"answer_updated_at,omitempty"`
 }
 
 type Handler struct {
@@ -227,7 +222,7 @@ func (h *Handler) SaveAnswerBatch(w http.ResponseWriter, r *http.Request, submis
 
 	answers := make([]in.SaveAnswerBatchItem, 0, len(req.Answers))
 	for _, item := range req.Answers {
-		answers = append(answers, in.SaveAnswerBatchItem{ProblemID: item.ProblemID, Answer: item.Answer})
+		answers = append(answers, in.SaveAnswerBatchItem{ProblemID: item.ProblemID, Answer: item.Answer, TimeSpentSeconds: item.TimeSpentSeconds})
 	}
 
 	out, err := h.saveAnswerBatchService.Execute(r.Context(), in.SaveAnswerBatchInput{SubmissionID: submissionID, Answers: answers})
@@ -275,15 +270,6 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		expiresAt = &value
 	}
 
-	answers := make([]SubmissionAnswerResponse, 0, len(out.Answers))
-	for _, ans := range out.Answers {
-		answers = append(answers, SubmissionAnswerResponse{
-			ProblemID: ans.ProblemID,
-			Answer:    ans.Answer,
-			CreatedAt: ans.CreatedAt.Format(http.TimeFormat),
-			UpdatedAt: ans.UpdatedAt.Format(http.TimeFormat),
-		})
-	}
 	problems := make([]SubmissionProblemResponse, 0, len(out.Problems))
 	for _, problem := range out.Problems {
 		var answerUpdatedAt *string
@@ -292,11 +278,13 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 			answerUpdatedAt = &value
 		}
 		problems = append(problems, SubmissionProblemResponse{
-			ProblemID:       problem.ProblemID,
-			ProblemType:     string(problem.ProblemType),
-			OptionIDs:       problem.OptionIDs,
-			OptionTexts:     problem.OptionTexts,
-			AnswerUpdatedAt: answerUpdatedAt,
+			ProblemID:        problem.ProblemID,
+			ProblemType:      string(problem.ProblemType),
+			OptionIDs:        problem.OptionIDs,
+			OptionTexts:      problem.OptionTexts,
+			Answer:           problem.Answer,
+			TimeSpentSeconds: problem.TimeSpentSeconds,
+			AnswerUpdatedAt:  answerUpdatedAt,
 		})
 	}
 
@@ -314,7 +302,6 @@ func (h *Handler) GetSubmissionByID(w http.ResponseWriter, r *http.Request, subm
 		CreatedAt:       out.CreatedAt.Format(http.TimeFormat),
 		UpdatedAt:       out.UpdatedAt.Format(http.TimeFormat),
 		MarkingScheme:   out.MarkingScheme,
-		Answers:         answers,
 		Problems:        problems,
 	})
 }

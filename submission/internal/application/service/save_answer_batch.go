@@ -49,6 +49,13 @@ func (s *SaveAnswerBatchService) Execute(ctx context.Context, input in.SaveAnswe
 			})
 			continue
 		}
+		if item.TimeSpentSeconds < 0 {
+			validationErrors = append(validationErrors, in.SaveAnswerBatchItemError{
+				ProblemID: problemID,
+				Message:   "time_spent_seconds cannot be negative",
+			})
+			continue
+		}
 		snapshot, ok := snapshotsByProblem[problemID]
 		if !ok {
 			validationErrors = append(validationErrors, in.SaveAnswerBatchItemError{
@@ -66,10 +73,11 @@ func (s *SaveAnswerBatchService) Execute(ctx context.Context, input in.SaveAnswe
 			continue
 		}
 		answers = append(answers, domain.SubmissionAnswerDraft{
-			SubmissionID:    input.SubmissionID,
-			ProblemID:       problemID,
-			Answer:          answer,
-			AnswerUpdatedAt: &answerUpdatedAt,
+			SubmissionID:     input.SubmissionID,
+			ProblemID:        problemID,
+			Answer:           answer,
+			TimeSpentSeconds: item.TimeSpentSeconds,
+			AnswerUpdatedAt:  &answerUpdatedAt,
 		})
 	}
 

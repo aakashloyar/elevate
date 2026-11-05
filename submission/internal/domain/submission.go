@@ -49,12 +49,13 @@ type Marks struct {
 }
 
 type SubmissionAnswerDraft struct {
-	SubmissionID    string
-	ProblemID       string
-	ProblemType     ProblemType
-	Options         []Option
-	Answer          []string
-	AnswerUpdatedAt *time.Time
+	SubmissionID     string
+	ProblemID        string
+	ProblemType      ProblemType
+	Options          []Option
+	Answer           []string
+	TimeSpentSeconds int
+	AnswerUpdatedAt  *time.Time
 }
 
 type Option struct {

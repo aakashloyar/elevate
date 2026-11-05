@@ -15,14 +15,16 @@ http:
             "problem_id": "019fd16d-8296-7039-949f-65044c31d28f",
             "answer": [
               "019fd16d-8296-7039-949f-65044c31d28f"
-            ]
+            ],
+            "time_spent_seconds": 18
           },
           {
             "problem_id": "019fd16d-8296-7039-949f-65044c31d290",
             "answer": [
               "019fd16d-8296-7039-949f-65044c31d291",
               "019fd16d-8296-7039-949f-65044c31d292"
-            ]
+            ],
+            "time_spent_seconds": 12
           }
         ]
       }

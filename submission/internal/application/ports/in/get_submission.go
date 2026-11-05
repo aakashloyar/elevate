@@ -23,23 +23,17 @@ type GetSubmissionOutput struct {
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	MarkingScheme   *domain.MarkingScheme
-	Answers         []SubmissionAnswerOutput
 	Problems        []SubmissionProblemOutput
 }
 
 type SubmissionProblemOutput struct {
-	ProblemID       string
-	ProblemType     domain.ProblemType
-	OptionIDs       []string
-	OptionTexts     []string
-	AnswerUpdatedAt *time.Time
-}
-
-type SubmissionAnswerOutput struct {
-	ProblemID string
-	Answer    []string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ProblemID        string
+	ProblemType      domain.ProblemType
+	OptionIDs        []string
+	OptionTexts      []string
+	Answer           []string
+	TimeSpentSeconds int
+	AnswerUpdatedAt  *time.Time
 }
 
 type GetSubmissionService interface {

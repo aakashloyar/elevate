@@ -8,8 +8,9 @@ type AttemptDraft struct {
 }
 
 type DraftAnswer struct {
-	ProblemID string
-	Answer    []string
+	ProblemID        string
+	Answer           []string
+	TimeSpentSeconds int
 }
 
 type SubmissionClient interface {

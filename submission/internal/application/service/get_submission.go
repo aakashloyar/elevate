@@ -30,18 +30,14 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 			optionTexts = append(optionTexts, option.Text)
 		}
 		problemOutputs = append(problemOutputs, in.SubmissionProblemOutput{
-			ProblemID:       draft.ProblemID,
-			ProblemType:     draft.ProblemType,
-			OptionIDs:       optionIDs,
-			OptionTexts:     optionTexts,
-			AnswerUpdatedAt: draft.AnswerUpdatedAt,
+			ProblemID:        draft.ProblemID,
+			ProblemType:      draft.ProblemType,
+			OptionIDs:        optionIDs,
+			OptionTexts:      optionTexts,
+			Answer:           draft.Answer,
+			TimeSpentSeconds: draft.TimeSpentSeconds,
+			AnswerUpdatedAt:  draft.AnswerUpdatedAt,
 		})
-	}
-	answerOutputs := make([]in.SubmissionAnswerOutput, 0, len(drafts))
-	for _, draft := range drafts {
-		if draft.AnswerUpdatedAt != nil {
-			answerOutputs = append(answerOutputs, in.SubmissionAnswerOutput{ProblemID: draft.ProblemID, Answer: draft.Answer, CreatedAt: *draft.AnswerUpdatedAt, UpdatedAt: *draft.AnswerUpdatedAt})
-		}
 	}
 
 	return in.GetSubmissionOutput{
@@ -56,7 +52,6 @@ func (s *GetSubmissionService) Execute(ctx context.Context, input in.GetSubmissi
 		CreatedAt:       submission.CreatedAt,
 		UpdatedAt:       submission.UpdatedAt,
 		MarkingScheme:   submission.MarkingScheme,
-		Answers:         answerOutputs,
 		Problems:        problemOutputs,
 	}, nil
 }

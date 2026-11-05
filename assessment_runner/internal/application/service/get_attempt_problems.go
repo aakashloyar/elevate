@@ -50,9 +50,18 @@ func (s *GetAttemptProblemsService) Execute(ctx context.Context, input in.GetAtt
 			return in.GetAttemptProblemsOutput{}, fmt.Errorf("get problem %s: %w", problemID, err)
 		}
 		problem.DraftAnswer = draftAnswers[problem.ID]
+		problem.TimeSpentSeconds = draftTimeByProblemID(attempt.Answers)[problem.ID]
 		problems = append(problems, problem)
 	}
 	return in.GetAttemptProblemsOutput{Problems: problems}, nil
+}
+
+func draftTimeByProblemID(answers []out.DraftAnswer) map[string]int {
+	times := make(map[string]int, len(answers))
+	for _, answer := range answers {
+		times[answer.ProblemID] = answer.TimeSpentSeconds
+	}
+	return times
 }
 
 func draftAnswerByProblemID(answers []out.DraftAnswer) map[string][]string {

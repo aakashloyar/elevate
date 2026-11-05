@@ -23,13 +23,14 @@ type GetSubmissionRequest struct {
 }
 
 type GetSubmissionResponse struct {
-	AssessmentID string                        `json:"assessment_id"`
-	Answers      []GetSubmissionAnswerResponse `json:"answers"`
+	AssessmentID string                         `json:"assessment_id"`
+	Problems     []GetSubmissionProblemResponse `json:"problems"`
 }
 
-type GetSubmissionAnswerResponse struct {
-	ProblemID string   `json:"problem_id"`
-	Answer    []string `json:"answer"`
+type GetSubmissionProblemResponse struct {
+	ProblemID        string   `json:"problem_id"`
+	Answer           []string `json:"answer"`
+	TimeSpentSeconds int      `json:"time_spent_seconds"`
 }
 
 func NewClient(baseURL string) out.SubmissionClient {
@@ -45,11 +46,12 @@ func (c *Client) GetAttemptDraft(ctx context.Context, attemptID string) (out.Att
 	if response.AssessmentID == "" {
 		return out.AttemptDraft{}, fmt.Errorf("submission response has no assessment_id")
 	}
-	answers := make([]out.DraftAnswer, 0, len(response.Answers))
-	for _, answer := range response.Answers {
+	answers := make([]out.DraftAnswer, 0, len(response.Problems))
+	for _, problem := range response.Problems {
 		answers = append(answers, out.DraftAnswer{
-			ProblemID: answer.ProblemID,
-			Answer:    answer.Answer,
+			ProblemID:        problem.ProblemID,
+			Answer:           problem.Answer,
+			TimeSpentSeconds: problem.TimeSpentSeconds,
 		})
 	}
 	return out.AttemptDraft{AssessmentID: response.AssessmentID, Answers: answers}, nil
